@@ -14,7 +14,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brand: "#FD4F00",
+        turquoise: '#31B4F2',
+        accent: '#0000FF',
+        bluegrotto: '#025492',
+        gold: '#F8CF40'
       }
     },
   },

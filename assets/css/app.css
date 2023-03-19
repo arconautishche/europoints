@@ -2,4 +2,10 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@import url("https://fonts.googleapis.com/css?family=Kanit");
+
+body {
+  font-family: 'Kanit'
+}
+
 /* This file is for your main application CSS */
