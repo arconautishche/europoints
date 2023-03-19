@@ -17,7 +17,16 @@ defmodule PointexWeb.Router do
   scope "/", PointexWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/login", Login
+    post "/login", LoginController, :post
+
+    live_session :default, on_mount: PointexWeb.UserAuth do
+      live "/", Home
+    end
+
+    live_session :logged_in, on_mount: {PointexWeb.UserAuth, :ensure_logged_in} do
+      live "/wp/new", NewWatchParty
+    end
   end
 
   # Other scopes may use custom stacks.

@@ -255,8 +255,8 @@ defmodule PointexWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 rounded-lg bg-accent hover:bg-accent/75 py-2 px-3 disabled:bg-bluegrotto/50",
+        "text-sm font-semibold leading-6 text-white/80 hover:text-white active:text-white disabled:text-white/50",
         @class
       ]}
       {@rest}
@@ -602,6 +602,20 @@ defmodule PointexWeb.CoreComponents do
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
     <span class={[@name, @class]} />
+    """
+  end
+
+  def navigate(assigns) do
+    ~H"""
+    <.link
+      navigate={@to}
+      class={[
+        "text-center text-bluegrotto underline hover:bg-bluegrotto/10 rounded-full px-8 py-2",
+        @class
+      ]}
+    >
+      <%= render_slot(@inner_block) %>
+    </.link>
     """
   end
 
