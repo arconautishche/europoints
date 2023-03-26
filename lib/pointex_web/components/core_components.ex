@@ -226,7 +226,7 @@ defmodule PointexWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="space-y-8 bg-white mt-10">
+      <div class="space-y-8">
         <%= render_slot(@inner_block, f) %>
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           <%= render_slot(action, f) %>
@@ -246,24 +246,36 @@ defmodule PointexWeb.CoreComponents do
   """
   attr :type, :string, default: nil
   attr :class, :string, default: nil
+  attr :kind, :string, values: ["primary", "secondary"], default: "primary"
+  attr :navigate_to, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
 
-  def button(assigns) do
+  def button(%{navigate_to: nil} = assigns) do
     ~H"""
-    <button
-      type={@type}
-      class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-accent hover:bg-accent/75 py-2 px-3 disabled:bg-bluegrotto/50",
-        "text-sm font-semibold leading-6 text-white/80 hover:text-white active:text-white disabled:text-white/50",
-        @class
-      ]}
-      {@rest}
-    >
+    <button type={@type} class={[kind_class(@kind), @class]} {@rest}>
       <%= render_slot(@inner_block) %>
     </button>
     """
+  end
+
+  def button(assigns) do
+    ~H"""
+    <.link navigate={@navigate_to} class={[kind_class(@kind), @class]} {@rest}>
+      <%= render_slot(@inner_block) %>
+    </.link>
+    """
+  end
+
+  defp kind_class("secondary") do
+    "phx-submit-loading:opacity-75 rounded-lg bg-sky-200 hover:bg-sky-300/80 py-2 px-3 disabled:bg-sky-600/50
+      text-sm text-center font-normal leading-6 text-gray-900/90 hover:text-gray-900/75 active:text-white disabled:text-white/50"
+  end
+
+  defp kind_class(_) do
+    "phx-submit-loading:opacity-75 rounded-lg bg-sky-600 hover:bg-sky-700 py-2 px-3 disabled:bg-sky-800/50
+      text-sm text-center font-semibold leading-6 text-white/90 hover:text-white active:text-white disabled:text-white/50"
   end
 
   @doc """
@@ -387,6 +399,7 @@ defmodule PointexWeb.CoreComponents do
           "text-zinc-900 focus:outline-none focus:ring-4 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400 phx-no-feedback:focus:ring-zinc-800/5",
           "border-zinc-300 focus:border-zinc-400 focus:ring-zinc-800/5",
+          "placeholder:text-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10"
         ]}
         {@rest}
@@ -404,7 +417,7 @@ defmodule PointexWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block text-sm leading-6 text-slate-800">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -610,7 +623,7 @@ defmodule PointexWeb.CoreComponents do
     <.link
       navigate={@to}
       class={[
-        "text-center text-bluegrotto underline hover:bg-bluegrotto/10 rounded-full px-8 py-2",
+        "text-center text-sky-800 underline hover:bg-sky-800/10 rounded-lg px-8 py-2",
         @class
       ]}
     >

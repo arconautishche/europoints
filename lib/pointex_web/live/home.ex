@@ -4,9 +4,11 @@ defmodule PointexWeb.Home do
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
-    <div class="mx-auto flex flex-col mt-20 gap-8 my-auto">
+    <div class="mx-auto flex flex-col md:-mt-10 gap-4 max-w-md bg-white shadow rounded p-4 sm:p-6 md:p-8">
       <.button>Join Watch Party</.button>
-      <.navigate to={~p"/wp/new"} class="place-self-center">New Watch Party</.navigate>
+      <.button navigate_to={~p"/wp/new"} kind="secondary">
+        New Watch Party
+      </.button>
     </div>
     """
   end
