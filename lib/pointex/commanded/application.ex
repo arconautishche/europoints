@@ -5,4 +5,6 @@ defmodule Pointex.Commanded.Application do
       adapter: Commanded.EventStore.Adapters.EventStore,
       event_store: Pointex.Commanded.EventStore
     ]
+
+  router(Pointex.Model.Router)
 end

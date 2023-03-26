@@ -17,14 +17,19 @@ defmodule PointexWeb.Router do
   scope "/", PointexWeb do
     pipe_through :browser
 
-    live "/login", Login
-    post "/login", LoginController, :post
+    post "/login", LoginController, :login
+    get "/logout", LoginController, :logout
 
     live_session :default, on_mount: PointexWeb.UserAuth do
       live "/", Home
+      live "/login", Login
     end
 
-    live_session :logged_in, on_mount: {PointexWeb.UserAuth, :ensure_logged_in} do
+    live_session :logged_in,
+      on_mount: [
+        PointexWeb.UserAuth,
+        {PointexWeb.UserAuth, :ensure_logged_in}
+      ] do
       live "/wp/new", NewWatchParty
     end
   end

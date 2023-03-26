@@ -17,7 +17,8 @@ defmodule Pointex.Application do
       # Start Finch
       {Finch, name: Pointex.Finch},
       # Start the Endpoint (http/https)
-      PointexWeb.Endpoint
+      PointexWeb.Endpoint,
+      Pointex.Commanded.Application
       # Start a worker by calling: Pointex.Worker.start_link(arg)
       # {Pointex.Worker, arg}
     ]

@@ -27,7 +27,7 @@ defmodule PointexWeb.Login do
 
   @impl Phoenix.LiveView
   def mount(params, %{"user" => %{user_id: _}}, socket) do
-    return_to = Map.get(params, "return_to", ~p"/") |> IO.inspect(label: "+++++++++++")
+    return_to = Map.get(params, "return_to", ~p"/")
     {:ok, push_navigate(socket, to: return_to)}
   end
 

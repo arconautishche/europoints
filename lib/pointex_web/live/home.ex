@@ -15,8 +15,6 @@ defmodule PointexWeb.Home do
 
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
-    IO.inspect(socket.assigns)
-
     {:ok, socket}
   end
 end

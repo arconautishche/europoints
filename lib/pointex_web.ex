@@ -55,6 +55,10 @@ defmodule PointexWeb do
         layout: {PointexWeb.Layouts, :app}
 
       unquote(html_helpers())
+
+      defp user(socket) do
+        socket.assigns.user.id
+      end
     end
   end
 

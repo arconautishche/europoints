@@ -8,13 +8,11 @@ defmodule PointexWeb.UserAuth do
         %{"user" => %{user_id: user_id, user_name: user_name}},
         socket
       ) do
-    {:cont,
-     socket
-     |> assign(user: %{id: user_id, name: user_name})}
+    {:cont, assign(socket, user: %{id: user_id, name: user_name})}
   end
 
   def on_mount(:default, _params, _session, socket) do
-    {:cont, socket}
+    {:cont, assign(socket, user: nil)}
   end
 
   def on_mount(
@@ -27,6 +25,7 @@ defmodule PointexWeb.UserAuth do
   end
 
   def on_mount(:ensure_logged_in, _params, _session, socket) do
-    {:halt, push_navigate(socket, to: "/login?return_to=#{socket.private.connect_info.request_path}")}
+    {:halt,
+     push_navigate(socket, to: "/login?return_to=#{socket.private.connect_info.request_path}")}
   end
 end

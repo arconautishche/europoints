@@ -1,7 +1,7 @@
 defmodule PointexWeb.LoginController do
   use PointexWeb, :controller
 
-  def post(conn, %{"login_data" => login_data, "return_to" => return_to}) do
+  def login(conn, %{"login_data" => login_data, "return_to" => return_to}) do
     if valid?(login_data) do
       conn
       |> Plug.Conn.put_session("user", %{
@@ -12,6 +12,12 @@ defmodule PointexWeb.LoginController do
     else
       redirect(conn, to: ~p"/login")
     end
+  end
+
+  def logout(conn, _) do
+    conn
+      |> Plug.Conn.put_session("user", nil)
+      |> redirect(to: ~p"/")
   end
 
   defp valid?(login_data) do
