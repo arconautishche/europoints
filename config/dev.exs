@@ -66,7 +66,7 @@ config :pointex, PointexWeb.Endpoint,
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/pointex_web/(controllers|live|components)/.*(ex|heex)$"
+      ~r"lib/.*$"
     ]
   ]
 
