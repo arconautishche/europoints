@@ -18,7 +18,11 @@ defmodule Pointex.Application do
       {Finch, name: Pointex.Finch},
       # Start the Endpoint (http/https)
       PointexWeb.Endpoint,
-      Pointex.Commanded.Application
+      Pointex.Commanded.Application,
+
+      # projectors
+      {Pointex.Model.ReadModels.MyWatchPartiesProjector, application: Pointex.Commanded.Application, name: "my_watch_parties"}
+
       # Start a worker by calling: Pointex.Worker.start_link(arg)
       # {Pointex.Worker, arg}
     ]

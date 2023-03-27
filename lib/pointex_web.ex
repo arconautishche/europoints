@@ -57,7 +57,7 @@ defmodule PointexWeb do
       unquote(html_helpers())
 
       defp user(socket) do
-        socket.assigns.user.id
+        socket.assigns.user
       end
     end
   end

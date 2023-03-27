@@ -45,7 +45,7 @@ defmodule PointexWeb.NewWatchParty do
     case Commands.StartWatchParty.new(%{
            name: name,
            id: Ecto.UUID.generate(),
-           owner_id: user(socket)
+           owner_id: user(socket).id
          }) do
       {:ok, _} ->
         {:noreply, assign(socket, valid?: true)}
@@ -62,7 +62,7 @@ defmodule PointexWeb.NewWatchParty do
     case Commands.StartWatchParty.dispatch_new(%{
            name: name,
            id: Ecto.UUID.generate(),
-           owner_id: user(socket)
+           owner_id: user(socket).id
          }) do
       :ok ->
         {:noreply, push_navigate(socket, to: ~p"/")}
