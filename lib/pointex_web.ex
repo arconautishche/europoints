@@ -56,8 +56,12 @@ defmodule PointexWeb do
 
       unquote(html_helpers())
 
-      defp user(socket) do
-        socket.assigns.user
+      defp user(%{assigns: assigns}) do
+        user(assigns)
+      end
+
+      defp user(assigns) do
+        assigns.user
       end
     end
   end
