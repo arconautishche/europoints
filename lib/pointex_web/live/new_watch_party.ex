@@ -21,6 +21,9 @@ defmodule PointexWeb.NewWatchParty do
           phx-submit="submit"
         >
           <.input field={f[:name]} placeholder="What shall we call it?" autocomplete="off" />
+
+          <.show_selector selected_show={@selected_show} />
+
           <:actions>
             <.button class="grow" disabled={!@valid?} type="submit">Let's do this!</.button>
           </:actions>
@@ -35,20 +38,15 @@ defmodule PointexWeb.NewWatchParty do
     {:ok,
      socket
      |> assign(watch_party: %{})
+     |> assign(selected_show: :semi_final_1)
      |> assign(valid?: false)}
   end
 
   @impl Phoenix.LiveView
   def handle_event("validate", user_input, socket) do
-    %{"watch_party" => %{"name" => name}} = user_input
-
-    case Commands.StartWatchParty.new(%{
-           name: name,
-           id: Ecto.UUID.generate(),
-           owner_id: user(socket).id
-         }) do
-      {:ok, _} ->
-        {:noreply, assign(socket, valid?: true)}
+    case Commands.StartWatchParty.new(command_params_from(user_input, socket.assigns)) do
+      {:ok, command} ->
+        {:noreply, assign(socket, %{valid?: true, watch_party: %{"name" => command.name}})}
 
       {:errors, _} ->
         {:noreply, assign(socket, valid?: false)}
@@ -57,18 +55,67 @@ defmodule PointexWeb.NewWatchParty do
 
   @impl Phoenix.LiveView
   def handle_event("submit", user_input, socket) do
-    %{"watch_party" => %{"name" => name}} = user_input
-
-    case Commands.StartWatchParty.dispatch_new(%{
-           name: name,
-           id: Ecto.UUID.generate(),
-           owner_id: user(socket).id
-         }) do
+    case Commands.StartWatchParty.dispatch_new(command_params_from(user_input, socket.assigns)) do
       :ok ->
         {:noreply, push_navigate(socket, to: ~p"/")}
 
       {:errors, _} ->
         {:noreply, assign(socket, valid?: false)}
     end
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event("select_show", params, socket) do
+    show = String.to_existing_atom(params["show"])
+
+    {:noreply, assign(socket, selected_show: show)}
+  end
+
+  defp command_params_from(user_input, assigns) do
+    %{"watch_party" => %{"name" => name}} = user_input
+    %{selected_show: selected_show} = assigns
+
+    %{
+      name: name,
+      id: Ecto.UUID.generate(),
+      owner_id: user(assigns).id,
+      year: 2003,
+      show: selected_show
+    }
+  end
+
+  defp show_selector(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-4">
+      <span class="text-lg opacity-50">2023</span>
+      <div class="grid grid-rows-3 gap-4">
+        <.show_button selected_show={@selected_show} show_name={:semi_final_1} label="Semi-final 1" />
+        <.show_button selected_show={@selected_show} show_name={:semi_final_2} label="Semi-final 2" />
+        <.show_button selected_show={@selected_show} show_name={:final} label="Final" />
+      </div>
+    </div>
+    """
+  end
+
+  defp show_button(assigns) do
+    ~H"""
+    <button
+      phx-click="select_show"
+      phx-value-show={@show_name}
+      type="button"
+      class={[
+        "px-4 py-2 text-lg rounded shadow-lg",
+        "transition",
+        "hover:bg-sky-300",
+        if(@selected_show == @show_name,
+          do:
+            "bg-gradient-to-br from-amber-500 to-amber-400 text-amber-900 shadow-none hover:bg-amber-400",
+          else: "bg-sky-200 text-sky-900"
+        )
+      ]}
+    >
+      <%= @label %>
+    </button>
+    """
   end
 end

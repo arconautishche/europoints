@@ -21,7 +21,7 @@ defmodule Pointex.Application do
       Pointex.Commanded.Application,
 
       # projectors
-      {Pointex.Model.ReadModels.MyWatchPartiesProjector, application: Pointex.Commanded.Application, name: "my_watch_parties"},
+      {Pointex.Model.ReadModels.MyWatchParties.Projector, application: Pointex.Commanded.Application, name: "my_watch_parties"},
       {Pointex.Model.ReadModels.Participants.Projector, application: Pointex.Commanded.Application, name: "participants"}
 
       # Start a worker by calling: Pointex.Worker.start_link(arg)

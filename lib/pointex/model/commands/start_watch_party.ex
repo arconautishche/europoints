@@ -8,11 +8,13 @@ defmodule Pointex.Model.Commands.StartWatchParty do
     field :id, :string
     field :owner_id, :string
     field :name, :string
+    field :year, :integer
+    field :show, Ecto.Enum, values: [:semi_final_1, :semi_final_2, :final]
   end
 
   def new(attrs) do
     %__MODULE__{}
-    |> Changeset.cast(attrs, [:id, :owner_id, :name])
+    |> Changeset.cast(attrs, [:id, :owner_id, :name, :year, :show])
     |> validate()
   end
 
@@ -30,8 +32,10 @@ defmodule Pointex.Model.Commands.StartWatchParty do
 
   defp validate(changeset) do
     changeset
-    |> Changeset.validate_required([:id, :owner_id, :name])
+    |> Changeset.validate_required([:id, :owner_id, :name, :year, :show])
     |> Changeset.validate_length(:name, min: 3, max: 50)
+    |> Changeset.validate_number(:year, greater_than: 1956)
+    |> Changeset.validate_inclusion(:show, Ecto.Enum.values(__MODULE__, :show))
     |> case do
       %{valid?: false} = changeset -> {:errors, changeset}
       changeset -> Changeset.apply_action(changeset, :new)
