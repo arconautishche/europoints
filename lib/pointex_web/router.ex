@@ -21,7 +21,6 @@ defmodule PointexWeb.Router do
     get "/logout", LoginController, :logout
 
     live_session :default, on_mount: PointexWeb.UserAuth do
-      live "/", Home
       live "/login", Login
     end
 
@@ -30,6 +29,7 @@ defmodule PointexWeb.Router do
         PointexWeb.UserAuth,
         {PointexWeb.UserAuth, :ensure_logged_in}
       ] do
+      live "/", Home
       live "/wp/new", NewWatchParty
     end
   end
