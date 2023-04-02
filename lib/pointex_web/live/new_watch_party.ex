@@ -5,7 +5,7 @@ defmodule PointexWeb.NewWatchParty do
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
-    <section class="bg-gradient-to-br from-white to-sky-100/50 rounded sm:border border-gray-200 sm:shadow max-w-md mx-auto overflow-clip">
+    <section class="bg-gradient-to-br from-white to-sky-100/50 sm:rounded sm:border border-gray-200 sm:shadow max-w-md mx-auto overflow-clip">
       <div class="h-[6px] w-full bg-sky-600" />
       <div class="flex flex-col gap-4 p-4 sm:p-6 md:p-8 ">
         <div class="flex items-baseline gap-4 opacity-75 font-light text-xl text-center">
@@ -35,11 +35,13 @@ defmodule PointexWeb.NewWatchParty do
 
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
+    user_name = user(socket).name
+
     {:ok,
      socket
-     |> assign(watch_party: %{})
+     |> assign(watch_party: %{"name" => "#{user_name}'s party"})
      |> assign(selected_show: :semi_final_1)
-     |> assign(valid?: false)}
+     |> assign(valid?: true)}
   end
 
   @impl Phoenix.LiveView
@@ -76,10 +78,10 @@ defmodule PointexWeb.NewWatchParty do
     %{selected_show: selected_show} = assigns
 
     %{
-      name: name,
       id: Ecto.UUID.generate(),
       owner_id: user(assigns).id,
-      year: 2003,
+      name: name,
+      year: 2023,
       show: selected_show
     }
   end
@@ -104,17 +106,20 @@ defmodule PointexWeb.NewWatchParty do
       phx-value-show={@show_name}
       type="button"
       class={[
-        "px-4 py-2 text-lg rounded shadow-lg",
+        "flex items-center",
+        "px-4 py-2 text-lg rounded border border-l-4",
         "transition",
         "hover:bg-sky-300",
         if(@selected_show == @show_name,
           do:
-            "bg-gradient-to-br from-amber-500 to-amber-400 text-amber-900 shadow-none hover:bg-amber-400",
-          else: "bg-sky-200 text-sky-900"
+            "bg-gradient-to-br from-amber-500 to-amber-400 border-amber-600 text-amber-900 shadow-none hover:bg-amber-400",
+          else: "border-sky-600 text-sky-900"
         )
       ]}
     >
-      <%= @label %>
+      <.icon :if={@selected_show == @show_name} name="hero-check-circle" class="w-6 h-6" />
+      <div :if={@selected_show != @show_name} class="w-6 h-6" />
+      <span class="grow -ml-8"><%= @label %></span>
     </button>
     """
   end

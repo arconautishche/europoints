@@ -15,7 +15,7 @@ defmodule Pointex.Model.ReadModels.Shows do
     "Serbia" => %{
       flag: "🇷🇸",
       artist: "Luke Black",
-      song: "Samo mi se spava (Само ми се спава)",
+      song: "Samo mi se spava",
       languages: ["Serbian", "English"]
     },
     "Latvia" => %{
@@ -263,15 +263,15 @@ defmodule Pointex.Model.ReadModels.Shows do
 
   @final []
 
-  def show(2023, :semi_final_1) do
+  def songs(2023, :semi_final_1) do
     list_songs_from(@semi_final_1)
   end
 
-  def show(2023, :semi_final_2) do
+  def songs(2023, :semi_final_2) do
     list_songs_from(@semi_final_2)
   end
 
-  def show(2023, :final) do
+  def songs(2023, :final) do
     list_songs_from(@final)
   end
 

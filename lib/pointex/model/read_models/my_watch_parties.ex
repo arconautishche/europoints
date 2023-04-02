@@ -7,8 +7,11 @@ defmodule Pointex.Model.ReadModels.MyWatchParties do
       field :id, :binary_id
       field :participant_id, :binary_id
       field :name, :string
-      field :year, :integer, default: 2003
-      field :show, Ecto.Enum, values: [:semi_final_1, :semi_final_2, :final], default: :semi_final_1
+      field :year, :integer, default: 2023
+
+      field :show, Ecto.Enum,
+        values: [:semi_final_1, :semi_final_2, :final],
+        default: :semi_final_1
 
       timestamps()
     end
@@ -20,14 +23,18 @@ defmodule Pointex.Model.ReadModels.MyWatchParties do
       repo: Pointex.Repo,
       name: "my_watch_parties"
 
-      alias Pointex.Model.Events
-      alias Pointex.Model.ReadModels.MyWatchParties
+    alias Pointex.Model.Events
+    alias Pointex.Model.ReadModels.MyWatchParties
 
     project(%Events.WatchPartyStarted{} = event, fn multi ->
-      %{owner_id: owner_id, id: id, name: name} = event
-      Ecto.Multi.insert(multi, :my_watch_parties, %MyWatchParties.Schema{id: id, participant_id: owner_id, name: name})
+      Ecto.Multi.insert(multi, :my_watch_parties, %MyWatchParties.Schema{
+        id: event.id,
+        participant_id: event.owner_id,
+        name: event.name,
+        year: event.year,
+        show: event.show
+      })
     end)
-
   end
 
   import Ecto.Query

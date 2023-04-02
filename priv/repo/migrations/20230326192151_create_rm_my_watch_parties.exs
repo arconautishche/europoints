@@ -3,7 +3,7 @@ defmodule Pointex.Repo.Migrations.CreateRmMyWatchParties do
 
   def change do
     create table("my_watch_parties", primary_key: false) do
-      add :id, :binary_id, primary_key: true
+      add :id, :binary_id
       add :participant_id, :binary_id
       add :name, :string
 
