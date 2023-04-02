@@ -1,20 +1,22 @@
-defmodule PointexWeb.Login do
+defmodule PointexWeb.Register do
+  alias Ecto.UUID
   use PointexWeb, :live_view
 
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
     <section class="rounded bg-white/50 border border-gray-200 pb-10 px-4 sm:px-6 md:px-8 w-full sm:w-3/4 md:w-2/3 mx-auto">
-      <p class="mt-4 opacity-75 font-light text-xl text-center">👋 Welcome back!</p>
+      <p class="mt-4 opacity-75 font-light text-xl text-center">👋 Hey there!</p>
 
       <.simple_form
         :let={f}
-        for={@login_params}
-        as={:login_params}
+        for={@register_params}
+        as={:register_params}
         phx-change="validate"
-        action={~p"/login?return_to=#{@return_to}"}
+        action={~p"/register?return_to=#{@return_to}"}
       >
-        <.input field={f[:user_id]} placeholder="Your unique ID?" />
+        <.input field={f[:user_id]} type="hidden" />
+        <.input field={f[:user_name]} placeholder="What's your name?" />
         <:actions>
           <.button class="grow" disabled={!@valid?} type="submit">Let me in</.button>
         </:actions>
@@ -32,21 +34,22 @@ defmodule PointexWeb.Login do
   def mount(params, _session, socket) do
     {:ok,
      socket
-     |> assign(login_params: %{})
+     |> assign(register_params: %{"user_id" => UUID.generate()})
      |> assign(valid?: false)
      |> assign(return_to: Map.get(params, "return_to", ~p"/"))}
   end
 
   @impl Phoenix.LiveView
-  def handle_event("validate", %{"login_params" => login_params}, socket) do
+  def handle_event("validate", %{"register_params" => register_params}, socket) do
     {:noreply,
      socket
-     |> assign(valid?: valid?(login_params))}
+     |> assign(valid?: valid?(register_params))}
   end
 
-  defp valid?(login_params) do
-    user_id = Map.get(login_params, "user_id", "")
+  defp valid?(register_params) do
+    user_id = Map.get(register_params, "user_id", "")
+    user_name = Map.get(register_params, "user_name", "")
 
-    user_id != ""
+    user_id != "" && user_name != ""
   end
 end

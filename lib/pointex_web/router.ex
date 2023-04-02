@@ -17,10 +17,12 @@ defmodule PointexWeb.Router do
   scope "/", PointexWeb do
     pipe_through :browser
 
+    post "/register", LoginController, :register
     post "/login", LoginController, :login
     get "/logout", LoginController, :logout
 
     live_session :default, on_mount: PointexWeb.UserAuth do
+      live "/register", Register
       live "/login", Login
     end
 
