@@ -1,6 +1,8 @@
 defmodule PointexWeb.WatchParty.Viewing do
-  alias Pointex.Model.ReadModels.WatchPartyViewing
   use PointexWeb, :live_view
+  alias PointexWeb.Endpoint
+  alias Pointex.Model.ReadModels.WatchPartyViewing
+  alias Pointex.Model.Commands
 
   @impl Phoenix.LiveView
   def render(assigns) do
@@ -19,11 +21,45 @@ defmodule PointexWeb.WatchParty.Viewing do
 
   @impl Phoenix.LiveView
   def handle_params(%{"id" => wp_id}, _uri, socket) do
+    if connected?(socket), do: Endpoint.subscribe("watch_party_viewing:#{wp_id}")
+
     {:noreply, assign(socket, load_data(wp_id, user(socket).id))}
   end
 
+  @impl Phoenix.LiveView
+  def handle_event("shortlist", %{"id" => song_id}, socket) do
+    %{wp_id: wp_id} = socket.assigns
+
+    :ok =
+      Commands.ShortlistSong.dispatch_new(%{
+        watch_party_id: wp_id,
+        participant_id: user(socket).id,
+        song_id: song_id
+      })
+
+    {:noreply, socket}
+  end
+
+  def handle_event("nope", %{"id" => song_id}, socket) do
+    %{wp_id: wp_id} = socket.assigns
+
+    :ok =
+      Commands.NopeSong.dispatch_new(%{
+        watch_party_id: wp_id,
+        participant_id: user(socket).id,
+        song_id: song_id
+      })
+
+    {:noreply, socket}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_info(%{event: "updated"}, socket) do
+    {:noreply, assign(socket, load_data(socket.assigns.wp_id, user(socket).id))}
+  end
+
   defp load_data(wp_id, user_id) do
-    read_model = WatchPartyViewing.get(wp_id, user_id) |> IO.inspect()
+    read_model = WatchPartyViewing.get(wp_id, user_id)
 
     %{wp_id: wp_id, songs: read_model.songs}
   end
@@ -57,15 +93,42 @@ defmodule PointexWeb.WatchParty.Viewing do
       </div>
 
       <div class="flex gap-0 sm:gap-4 items-center">
-        <.button class="text-green-500 bg-transparent hover:bg-green-300 hover:text-green-700">
-          <.icon name="hero-hand-thumb-up" class="w-8 h-8" />
-        </.button>
-        <.button class="text-red-600 bg-transparent hover:bg-red-200 hover:text-red-700">
-          <.icon name="hero-hand-thumb-down" class="w-8 h-8" />
-        </.button>
+        <.shortlist_button id={@song.details["country"]} active={@song.shortlisted} />
+        <.nope_button id={@song.details["country"]} active={@song.noped} />
       </div>
     </div>
     """
   end
 
+  defp shortlist_button(assigns) do
+    ~H"""
+    <.button
+      phx-click="shortlist"
+      phx-value-id={@id}
+      class={
+        if @active,
+          do: "bg-green-300 text-green-700 py-2 px-3 rounded-lg hover:bg-green-200 hover:text-green-700",
+          else: "text-green-500 bg-transparent hover:bg-green-300 hover:text-green-700"
+      }
+    >
+      <.icon name="hero-hand-thumb-up" class="w-8 h-8" />
+    </.button>
+    """
+  end
+
+  defp nope_button(assigns) do
+    ~H"""
+    <.button
+      phx-click="nope"
+      phx-value-id={@id}
+      class={
+        if @active,
+          do: "bg-red-200 text-red-700 py-2 px-3 rounded-lg hover:bg-red-100 hover:text-red-700",
+          else: "text-red-600 bg-transparent hover:bg-red-200 hover:text-red-700"
+      }
+    >
+      <.icon name="hero-hand-thumb-down" class="w-8 h-8" />
+    </.button>
+    """
+  end
 end
