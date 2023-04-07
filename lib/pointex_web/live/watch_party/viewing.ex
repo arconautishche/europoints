@@ -105,11 +105,13 @@ defmodule PointexWeb.WatchParty.Viewing do
     <.button
       phx-click="shortlist"
       phx-value-id={@id}
-      class={
-        if @active,
-          do: "bg-green-300 text-green-700 py-2 px-3 rounded-lg hover:bg-green-200 hover:text-green-700",
-          else: "text-green-500 bg-transparent hover:bg-green-300 hover:text-green-700"
-      }
+      class={[
+        "border border-transparent hover:border-green-500 hover:bg-transparent hover:text-green-600 active:text-green-600",
+        if(@active,
+          do: "bg-green-300 text-green-700 py-2 px-3 rounded-lg",
+          else: "text-green-500 bg-transparent"
+        )
+      ]}
     >
       <.icon name="hero-hand-thumb-up" class="w-8 h-8" />
     </.button>
@@ -121,11 +123,13 @@ defmodule PointexWeb.WatchParty.Viewing do
     <.button
       phx-click="nope"
       phx-value-id={@id}
-      class={
-        if @active,
-          do: "bg-red-200 text-red-700 py-2 px-3 rounded-lg hover:bg-red-100 hover:text-red-700",
-          else: "text-red-600 bg-transparent hover:bg-red-200 hover:text-red-700"
-      }
+      class={[
+        "border border-transparent hover:border-red-700 hover:bg-transparent hover:text-red-600 active:text-red-600",
+        if(@active,
+          do: "bg-red-200 text-red-700 py-2 px-3 rounded-lg",
+          else: "text-red-600 bg-transparent"
+        )
+      ]}
     >
       <.icon name="hero-hand-thumb-down" class="w-8 h-8" />
     </.button>
