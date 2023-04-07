@@ -106,10 +106,10 @@ defmodule PointexWeb.WatchParty.Viewing do
       phx-click="shortlist"
       phx-value-id={@id}
       class={[
-        "border border-transparent hover:border-green-500 hover:bg-transparent hover:text-green-600 active:text-green-600",
+        "border border-transparent hover:border-green-500 hover:text-green-600 active:text-green-600",
         if(@active,
-          do: "bg-green-300 text-green-700 py-2 px-3 rounded-lg",
-          else: "text-green-500 bg-transparent"
+          do: "bg-green-300 text-green-700 py-2 px-3 rounded-lg hover:bg-green-300",
+          else: "text-green-500 bg-transparent hover:bg-transparent"
         )
       ]}
     >
@@ -124,10 +124,10 @@ defmodule PointexWeb.WatchParty.Viewing do
       phx-click="nope"
       phx-value-id={@id}
       class={[
-        "border border-transparent hover:border-red-700 hover:bg-transparent hover:text-red-600 active:text-red-600",
+        "border border-transparent hover:border-red-700 hover:text-red-600 active:text-red-600",
         if(@active,
-          do: "bg-red-200 text-red-700 py-2 px-3 rounded-lg",
-          else: "text-red-600 bg-transparent"
+          do: "bg-red-200 text-red-700 py-2 px-3 rounded-lg hover:bg-red-200",
+          else: "text-red-600 bg-transparent hover:bg-transparent"
         )
       ]}
     >
