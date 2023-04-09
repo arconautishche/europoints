@@ -40,14 +40,20 @@ defmodule Pointex.Model.ReadModels.WatchPartyViewing do
       })
     end)
 
-    project(%Events.SongShortlisted{} = event, fn multi ->
+    project(%Events.SongShortlistedChanged{} = event, fn multi ->
       %{watch_party_id: id, participant_id: participant_id, song_id: song_id} = event
-      update_song_in_watch_party(multi, id, participant_id, song_id,  & %{shortlisted: !&1.shortlisted, noped: false})
+
+      update_song_in_watch_party(multi, id, participant_id, song_id, fn _ ->
+        %{shortlisted: event.shortlisted}
+      end)
     end)
 
-    project(%Events.SongNoped{} = event, fn multi ->
+    project(%Events.SongNopedChanged{} = event, fn multi ->
       %{watch_party_id: id, participant_id: participant_id, song_id: song_id} = event
-      update_song_in_watch_party(multi, id, participant_id, song_id,  & %{noped: !&1.noped, shortlisted: false})
+
+      update_song_in_watch_party(multi, id, participant_id, song_id, fn _ ->
+        %{noped: event.noped}
+      end)
     end)
 
     @impl Commanded.Projections.Ecto

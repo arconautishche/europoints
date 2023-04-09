@@ -1,4 +1,4 @@
-defmodule Pointex.Model.Commands.ShortlistSong do
+defmodule Pointex.Model.Commands.ToggleSongShortlisted do
   use Ecto.Schema
   alias Ecto.Changeset
   alias Pointex.Commanded.Application, as: CommandedApp

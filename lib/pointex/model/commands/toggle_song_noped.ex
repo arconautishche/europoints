@@ -1,4 +1,4 @@
-defmodule Pointex.Model.Commands.NopeSong do
+defmodule Pointex.Model.Commands.ToggleSongNoped do
   use Ecto.Schema
   alias Ecto.Changeset
   alias Pointex.Commanded.Application, as: CommandedApp

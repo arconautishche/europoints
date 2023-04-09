@@ -18,27 +18,45 @@ defmodule Pointex.Model.Aggregates.WatchParty do
     {:error, :already_started}
   end
 
-  def execute(%__MODULE__{} = watch_party, %Commands.ShortlistSong{} = command) do
-    if command.participant_id in watch_party.participants do
-      %Events.SongShortlisted{
-        watch_party_id: command.watch_party_id,
-        participant_id: command.participant_id,
-        song_id: command.song_id
-      }
+  def execute(%__MODULE__{} = watch_party, %Commands.ToggleSongShortlisted{} = command) do
+    with %{} = participant <- participant(watch_party, command.participant_id) do
+      [
+        %Events.SongShortlistedChanged{
+          watch_party_id: command.watch_party_id,
+          participant_id: command.participant_id,
+          song_id: command.song_id,
+          shortlisted: !Enum.any?(participant.shortlisted, &(&1 == command.song_id))
+        },
+        %Events.SongNopedChanged{
+          watch_party_id: command.watch_party_id,
+          participant_id: command.participant_id,
+          song_id: command.song_id,
+          noped: false
+        }
+      ]
     else
-      {:error, :unknown_participant}
+      nil -> {:error, :unknown_participant}
     end
   end
 
-  def execute(%__MODULE__{} = watch_party, %Commands.NopeSong{} = command) do
-    if command.participant_id in watch_party.participants do
-      %Events.SongNoped{
-        watch_party_id: command.watch_party_id,
-        participant_id: command.participant_id,
-        song_id: command.song_id
-      }
+  def execute(%__MODULE__{} = watch_party, %Commands.ToggleSongNoped{} = command) do
+    with %{} = participant <- participant(watch_party, command.participant_id) do
+      [
+        %Events.SongNopedChanged{
+          watch_party_id: command.watch_party_id,
+          participant_id: command.participant_id,
+          song_id: command.song_id,
+          noped: !Enum.any?(participant.noped, &(&1 == command.song_id))
+        },
+        %Events.SongShortlistedChanged{
+          watch_party_id: command.watch_party_id,
+          participant_id: command.participant_id,
+          song_id: command.song_id,
+          shortlisted: false
+        }
+      ]
     else
-      {:error, :unknown_participant}
+      nil -> {:error, :unknown_participant}
     end
   end
 
@@ -52,15 +70,52 @@ defmodule Pointex.Model.Aggregates.WatchParty do
         owner_id: event.owner_id,
         year: event.year,
         show: event.show,
-        participants: [event.owner_id]
+        participants: Enum.into([new_participant(event.owner_id)], %{})
     }
   end
 
-  def apply(%__MODULE__{} = watch_party, %Events.SongShortlisted{} = _event) do
-    watch_party
+  def apply(%__MODULE__{} = watch_party, %Events.SongShortlistedChanged{} = event) do
+    participant = participant(watch_party, event.participant_id)
+
+    %__MODULE__{
+      watch_party
+      | participants:
+          Map.replace(watch_party.participants, event.participant_id, %{
+            participant
+            | shortlisted: toggle_song(participant.shortlisted, event.song_id, event.shortlisted)
+          })
+    }
   end
 
-  def apply(%__MODULE__{} = watch_party, %Events.SongNoped{} = _event) do
-    watch_party
+  def apply(%__MODULE__{} = watch_party, %Events.SongNopedChanged{} = event) do
+    participant = participant(watch_party, event.participant_id)
+
+    %__MODULE__{
+      watch_party
+      | participants:
+          Map.replace(watch_party.participants, event.participant_id, %{
+            participant
+            | noped: toggle_song(participant.noped, event.song_id, event.noped)
+          })
+    }
+  end
+
+  defp new_participant(id) do
+    {id, %{shortlisted: [], noped: [], votes: %{}}}
+  end
+
+  defp participant(state, id) do
+    Map.get(state.participants, id)
+  end
+
+  defp toggle_song(list, song_id, true) do
+    list
+    |> MapSet.new()
+    |> MapSet.put(song_id)
+    |> MapSet.to_list()
+  end
+
+  defp toggle_song(list, song_id, false) do
+    Enum.reject(list, &(&1 == song_id))
   end
 end
