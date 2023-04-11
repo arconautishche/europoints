@@ -44,7 +44,10 @@ defmodule PointexWeb.Home do
 
   defp watch_party_card(assigns) do
     ~H"""
-    <.link navigate={~p"/wp/#{@watch_party.id}/viewing"} class="w-full flex flex-col gap-4 max-w-md bg-white shadow rounded p-4 px-6 cursor-pointer transition hover:bg-amber-100/50 hover:scale-105">
+    <.link
+      navigate={~p"/wp/#{@watch_party.id}/viewing"}
+      class="w-full flex flex-col gap-4 max-w-md bg-white shadow rounded p-4 px-6 cursor-pointer transition hover:bg-sky-200/50 hover:scale-105"
+    >
       <div class="flex gap-4 items-center">
         <.icon name="hero-user-group" class="text-sky-700 h-8 w-8" />
         <div class="flex flex-col gap-2">

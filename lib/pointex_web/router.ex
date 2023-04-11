@@ -34,6 +34,8 @@ defmodule PointexWeb.Router do
       live "/", Home
       live "/wp/new", NewWatchParty
       live "/wp/:id/viewing", WatchParty.Viewing
+      live "/wp/:id/voting", WatchParty.Voting
+      live "/wp/:id/results", WatchParty.Viewing
     end
   end
 

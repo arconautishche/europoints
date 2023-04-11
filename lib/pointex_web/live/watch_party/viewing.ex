@@ -3,12 +3,18 @@ defmodule PointexWeb.WatchParty.Viewing do
   alias PointexWeb.Endpoint
   alias Pointex.Model.ReadModels.WatchPartyViewing
   alias Pointex.Model.Commands
+  alias PointexWeb.WatchParty.Nav
+  alias PointexWeb.WatchParty.SongComponents
 
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col divide-y divide-gray-200">
-      <.song_viewing :for={song <- @songs} song={song} />
+    <div class="relative">
+      <Nav.nav wp_id={@wp_id} mobile={false} active={:viewing} />
+      <div class="flex flex-col divide-y divide-gray-200 my-2">
+        <.song_viewing :for={song <- @songs} song={song} />
+      </div>
+      <Nav.nav wp_id={@wp_id} mobile={true} active={:viewing} />
     </div>
     """
   end
@@ -31,7 +37,7 @@ defmodule PointexWeb.WatchParty.Viewing do
     %{wp_id: wp_id} = socket.assigns
 
     :ok =
-      Commands.ShortlistSong.dispatch_new(%{
+      Commands.ToggleSongShortlisted.dispatch_new(%{
         watch_party_id: wp_id,
         participant_id: user(socket).id,
         song_id: song_id
@@ -44,7 +50,7 @@ defmodule PointexWeb.WatchParty.Viewing do
     %{wp_id: wp_id} = socket.assigns
 
     :ok =
-      Commands.NopeSong.dispatch_new(%{
+      Commands.ToggleSongNoped.dispatch_new(%{
         watch_party_id: wp_id,
         participant_id: user(socket).id,
         song_id: song_id
@@ -67,30 +73,8 @@ defmodule PointexWeb.WatchParty.Viewing do
   defp song_viewing(assigns) do
     ~H"""
     <div class="flex items-top justify-between gap-2 px-2 sm:px-4 py-3 hover:bg-sky-100">
-      <div class="w-8 opacity-25 font-bold text-3xl">
-        <%= @song.details["ro"] %>
-      </div>
-
-      <div class="flex gap-2 grow">
-        <div class="text-4xl">
-          <%= @song.details["flag"] %>
-        </div>
-        <div class="flex flex-col gap-2">
-          <div class="text-xl pt-1">
-            <%= @song.details["country"] %>
-          </div>
-          <div class="flex flex-col gap-2 opacity-50">
-            <div class="flex gap-2 items-center">
-              <.icon name="hero-microphone" class="text-sky-400 w-4 h-4" />
-              <%= @song.details["artist"] %>
-            </div>
-            <div class="flex gap-2 items-center">
-              <.icon name="hero-musical-note" class="text-sky-400 w-4 h-4" />
-              <%= @song.details["song"] %>
-            </div>
-          </div>
-        </div>
-      </div>
+      <SongComponents.ro song={@song} />
+      <SongComponents.description song={@song} />
 
       <div class="flex gap-0 sm:gap-4 items-center">
         <.shortlist_button id={@song.details["country"]} active={@song.shortlisted} />
