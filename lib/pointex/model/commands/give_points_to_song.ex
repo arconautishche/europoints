@@ -28,7 +28,7 @@ defmodule Pointex.Model.Commands.GivePointsToSong do
 
   defp validate(changeset) do
     changeset
-    |> Changeset.validate_required([:watch_party_id, :participant_id, :song_id, :points])
-    |> Changeset.validate_inclusion(:points, [1, 2, 3, 4, 5, 6, 7, 8, 10, 12])
+    |> Changeset.validate_required([:watch_party_id, :participant_id, :song_id])
+    |> Changeset.validate_inclusion(:points, [nil, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12])
   end
 end

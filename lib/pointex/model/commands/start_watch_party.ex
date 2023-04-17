@@ -18,7 +18,7 @@ defmodule Pointex.Model.Commands.StartWatchParty do
     |> validate()
   end
 
-   def dispatch_new(attrs) do
+  def dispatch_new(attrs) do
     attrs
     |> new()
     |> case do
@@ -39,7 +39,6 @@ defmodule Pointex.Model.Commands.StartWatchParty do
     |> case do
       %{valid?: false} = changeset -> {:errors, changeset}
       changeset -> Changeset.apply_action(changeset, :new)
-
     end
   end
 end

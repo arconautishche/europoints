@@ -124,7 +124,11 @@ defmodule Pointex.Model.Aggregates.WatchPartyTest do
                })
     end
 
-    test "vote replaces points, but gap underneath", %{started_wp: state, owner_id: owner_id, wp_id: wp_id} do
+    test "vote replaces points, but gap underneath", %{
+      started_wp: state,
+      owner_id: owner_id,
+      wp_id: wp_id
+    } do
       state =
         WatchParty.apply(state, %Events.TopTenByParticipantUpdated{
           watch_party_id: wp_id,
@@ -167,7 +171,11 @@ defmodule Pointex.Model.Aggregates.WatchPartyTest do
                })
     end
 
-    test "vote replaces points, but gap above and underneath", %{started_wp: state, owner_id: owner_id, wp_id: wp_id} do
+    test "vote replaces points, but gap above and underneath", %{
+      started_wp: state,
+      owner_id: owner_id,
+      wp_id: wp_id
+    } do
       state =
         WatchParty.apply(state, %Events.TopTenByParticipantUpdated{
           watch_party_id: wp_id,
@@ -210,7 +218,11 @@ defmodule Pointex.Model.Aggregates.WatchPartyTest do
                })
     end
 
-    test "vote replaces points, and fills a gap underneath", %{started_wp: state, owner_id: owner_id, wp_id: wp_id} do
+    test "vote replaces points, and fills a gap underneath", %{
+      started_wp: state,
+      owner_id: owner_id,
+      wp_id: wp_id
+    } do
       state =
         WatchParty.apply(state, %Events.TopTenByParticipantUpdated{
           watch_party_id: wp_id,
@@ -232,16 +244,16 @@ defmodule Pointex.Model.Aggregates.WatchPartyTest do
       assert [
                %Events.TopTenByParticipantUpdated{
                  top_ten: %{
-                  1 => "Song 1",
-                  2 => "Song 2",
-                  3 => "Song 3",
-                  4 => nil,
-                  5 => nil,
-                  6 => "Song 6",
-                  7 => "Song 7",
-                  8 => "Song 10",
-                  10 => "New Song 10",
-                  12 => "Song 12"
+                   1 => "Song 1",
+                   2 => "Song 2",
+                   3 => "Song 3",
+                   4 => nil,
+                   5 => nil,
+                   6 => "Song 6",
+                   7 => "Song 7",
+                   8 => "Song 10",
+                   10 => "New Song 10",
+                   12 => "Song 12"
                  }
                }
              ] =
@@ -250,6 +262,96 @@ defmodule Pointex.Model.Aggregates.WatchPartyTest do
                  participant_id: owner_id,
                  song_id: "New Song 10",
                  points: 10
+               })
+    end
+
+    test "all places taken, bump an existing song", %{
+      started_wp: state,
+      owner_id: owner_id,
+      wp_id: wp_id
+    } do
+      state =
+        WatchParty.apply(state, %Events.TopTenByParticipantUpdated{
+          watch_party_id: wp_id,
+          participant_id: owner_id,
+          top_ten: %{
+            1 => "Song 1",
+            2 => "Song 2",
+            3 => "Song 3",
+            4 => "Song 4",
+            5 => "Song 5",
+            6 => "Song 6",
+            7 => "Song 7",
+            8 => "Song 8",
+            10 => "Song 10",
+            12 => "Song 12"
+          }
+        })
+
+      assert [
+               %Events.TopTenByParticipantUpdated{
+                 top_ten: %{
+                   1 => "Song 1",
+                   2 => "Song 2",
+                   3 => "Song 3",
+                   4 => "Song 4",
+                   5 => "Song 5",
+                   6 => "Song 6",
+                   7 => "Song 7",
+                   8 => "Song 8",
+                   10 => "Song 12",
+                   12 => "Song 10"
+                 }
+               }
+             ] =
+               WatchParty.execute(state, %Commands.GivePointsToSong{
+                 watch_party_id: wp_id,
+                 participant_id: owner_id,
+                 song_id: "Song 10",
+                 points: 12
+               })
+    end
+
+    test "unvote", %{started_wp: state, owner_id: owner_id, wp_id: wp_id} do
+      state =
+        WatchParty.apply(state, %Events.TopTenByParticipantUpdated{
+          watch_party_id: wp_id,
+          participant_id: owner_id,
+          top_ten: %{
+            1 => "Song 1",
+            2 => "Song 2",
+            3 => "Song 3",
+            4 => "Song 4",
+            5 => "Song 5",
+            6 => "Song 6",
+            7 => "Song 7",
+            8 => "Song 8",
+            10 => "Song 10",
+            12 => "Song 12"
+          }
+        })
+
+      assert [
+               %Events.TopTenByParticipantUpdated{
+                 top_ten: %{
+                   1 => nil,
+                   2 => "Song 2",
+                   3 => "Song 3",
+                   4 => "Song 4",
+                   5 => "Song 5",
+                   6 => "Song 6",
+                   7 => "Song 7",
+                   8 => "Song 8",
+                   10 => "Song 10",
+                   12 => "Song 12"
+                 }
+               }
+             ] =
+               WatchParty.execute(state, %Commands.GivePointsToSong{
+                 watch_party_id: wp_id,
+                 participant_id: owner_id,
+                 song_id: "Song 1",
+                 points: nil
                })
     end
   end

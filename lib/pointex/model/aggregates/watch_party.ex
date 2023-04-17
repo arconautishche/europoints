@@ -176,7 +176,7 @@ defmodule Pointex.Model.Aggregates.WatchParty do
           if p > points || idx >= stop_index do
             {p, s}
           else
-            {decrease_points(p), s}
+            {PossiblePoints.dec(p), s}
           end
         end)
         |> Enum.reject(fn {p, _} -> p < 1 end)
@@ -186,8 +186,4 @@ defmodule Pointex.Model.Aggregates.WatchParty do
         |> Enum.into(%{})
     end
   end
-
-  defp decrease_points(12), do: 10
-  defp decrease_points(10), do: 8
-  defp decrease_points(p), do: p - 1
 end

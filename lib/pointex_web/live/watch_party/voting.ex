@@ -56,14 +56,19 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   def handle_event("give_points", params, socket) do
-    %{"id" => song_id, "points" => points} = params
+    {song_id, points} =
+      case params do
+        %{"id" => song_id, "points" => points} -> {song_id, points}
+        %{"id" => song_id} -> {song_id, nil}
+      end
 
-    :ok = Commands.GivePointsToSong.dispatch_new(%{
-      watch_party_id: socket.assigns.wp_id,
-      participant_id: user(socket).id,
-      song_id: song_id,
-      points: points
-    })
+    :ok =
+      Commands.GivePointsToSong.dispatch_new(%{
+        watch_party_id: socket.assigns.wp_id,
+        participant_id: user(socket).id,
+        song_id: song_id,
+        points: points
+      })
 
     {:noreply, assign(socket, selected_id: nil)}
   end
@@ -89,13 +94,15 @@ defmodule PointexWeb.WatchParty.Voting do
 
   defp top_10(assigns) do
     ~H"""
-    <section>
+    <section class="w-full">
       <.section_header label="🏅 My TOP 10" class="" />
       <div class="flex flex-col divide-y divide-gray-200 bg-white shadow-lg border border-gray-200">
         <.points_given
           :for={points <- PossiblePoints.desc()}
           points={points}
           song={voted(@songs, points)}
+          song_above={voted(@songs, PossiblePoints.inc(points))}
+          song_below={voted(@songs, PossiblePoints.dec(points))}
         />
       </div>
     </section>
@@ -122,13 +129,43 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   defp points_given(assigns) do
+    %{song: song, song_below: song_below, points: points} = assigns
+
+    assigns =
+      assign(
+        assigns,
+        down_button_params: song &&
+          if(song_below,
+            do: %{"phx-value-id" => song_below.id, "phx-value-points" => points},
+            else: %{"phx-value-id" => assigns.song.id, "phx-value-points" => PossiblePoints.dec(points)}
+          )
+      )
+
     ~H"""
-    <div class="flex">
+    <div class="flex" >
       <.points_label points={@points} active={@song != nil} />
-      <div :if={@song} class="px-2 py-2 w-72">
+      <div :if={@song} class="grow flex gap-4 px-2 py-2 w-72 transition-all">
         <SongComponents.description song={@song} />
+
+        <div class="flex gap-0 sm:gap-4 items-center">
+          <.button
+            phx-click="give_points"
+            phx-value-id={@song.id}
+            phx-value-points={PossiblePoints.inc(@points)}
+            class={"#{if @points == 12, do: "invisible"} border border-transparent text-green-600 bg-transparent hover:bg-green-200 hover:border-green-500 hover:text-green-600 active:text-green-600"}
+          >
+            <.icon name="hero-arrow-small-up" class="w-8 h-8" />
+          </.button>
+          <.button
+            phx-click="give_points"
+            {@down_button_params}
+            class="border border-transparent text-red-600 bg-transparent hover:bg-red-200 hover:border-red-700 hover:text-red-600 active:text-red-600"
+          >
+            <.icon name="hero-arrow-small-down" class="w-8 h-8" />
+          </.button>
+        </div>
       </div>
-      <div :if={!@song} class="text-gray-300 px-2 py-2 w-72">No song here (yet)</div>
+      <div :if={!@song} class="text-gray-300 px-2 py-2 w-72 transition-all">No song here (yet)</div>
     </div>
     """
   end
@@ -137,7 +174,7 @@ defmodule PointexWeb.WatchParty.Voting do
     ~H"""
     <div class={[
       if(@active, do: "bg-sky-600 text-sky-100", else: "bg-gray-400 text-gray-100 animate-pulse"),
-      "font-bold text-2xl w-12 flex items-center justify-center"
+      "font-bold text-2xl w-12 flex items-center justify-center transition-all"
     ]}>
       <%= @points %>
     </div>
@@ -146,7 +183,7 @@ defmodule PointexWeb.WatchParty.Voting do
 
   defp song_with_no_points(assigns) do
     ~H"""
-    <div class={[if(@selected, do: "bg-white shadow", else: "")]}>
+    <div class={[if(@selected, do: "bg-white shadow", else: "")]} >
       <div
         phx-click="toggle_selected"
         phx-value-id={@song.id}
