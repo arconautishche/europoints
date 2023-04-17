@@ -1,6 +1,7 @@
 defmodule Pointex.Model.Aggregates.WatchParty do
   defstruct [:id, :name, :owner_id, :year, :show, :participants]
 
+  alias Pointex.Model.PossiblePoints
   alias Pointex.Model.Commands
   alias Pointex.Model.Events
 
@@ -60,6 +61,20 @@ defmodule Pointex.Model.Aggregates.WatchParty do
     end
   end
 
+  def execute(%__MODULE__{} = watch_party, %Commands.GivePointsToSong{} = command) do
+    with %{} = participant <- participant(watch_party, command.participant_id) do
+      [
+        %Events.TopTenByParticipantUpdated{
+          watch_party_id: command.watch_party_id,
+          participant_id: command.participant_id,
+          top_ten: insert_vote(participant.top_ten, command.points, command.song_id)
+        }
+      ]
+    else
+      nil -> {:error, :unknown_participant}
+    end
+  end
+
   # state mutators
 
   def apply(%__MODULE__{} = watch_party, %Events.WatchPartyStarted{} = event) do
@@ -100,8 +115,26 @@ defmodule Pointex.Model.Aggregates.WatchParty do
     }
   end
 
+  def apply(%__MODULE__{} = watch_party, %Events.TopTenByParticipantUpdated{} = event) do
+    participant = participant(watch_party, event.participant_id)
+
+    %__MODULE__{
+      watch_party
+      | participants:
+          Map.replace(watch_party.participants, event.participant_id, %{
+            participant
+            | top_ten: event.top_ten
+          })
+    }
+  end
+
   defp new_participant(id) do
-    {id, %{shortlisted: [], noped: [], votes: %{}}}
+    {id,
+     %{
+       shortlisted: [],
+       noped: [],
+       top_ten: PossiblePoints.asc() |> Enum.map(&{&1, nil}) |> Enum.into(%{})
+     }}
   end
 
   defp participant(state, id) do
@@ -118,4 +151,43 @@ defmodule Pointex.Model.Aggregates.WatchParty do
   defp toggle_song(list, song_id, false) do
     Enum.reject(list, &(&1 == song_id))
   end
+
+  defp insert_vote(top_ten, points, song_id) do
+    top_ten =
+      case Enum.find(top_ten, fn {_, song} -> song == song_id end) do
+        nil -> top_ten
+        {prev_points, _} -> Map.replace(top_ten, prev_points, nil)
+      end
+
+    case Map.get(top_ten, points) do
+      nil ->
+        Map.replace(top_ten, points, song_id)
+
+      _points_already_taken ->
+        top_ten = Enum.reverse(top_ten)
+        song_index = Enum.find_index(top_ten, fn {p, _s} -> p == points end)
+
+        {songs_above, songs_with} = Enum.split(top_ten, song_index)
+        stop_index = Enum.find_index(songs_with, fn {_p, s} -> s == nil end) || 9
+
+        songs_with
+        |> Enum.with_index()
+        |> Enum.map(fn {{p, s}, idx} ->
+          if p > points || idx >= stop_index do
+            {p, s}
+          else
+            {decrease_points(p), s}
+          end
+        end)
+        |> Enum.reject(fn {p, _} -> p < 1 end)
+        |> Enum.concat([{points, song_id}])
+        |> Enum.concat(songs_above)
+        |> Enum.sort()
+        |> Enum.into(%{})
+    end
+  end
+
+  defp decrease_points(12), do: 10
+  defp decrease_points(10), do: 8
+  defp decrease_points(p), do: p - 1
 end

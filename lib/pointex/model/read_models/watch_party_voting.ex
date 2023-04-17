@@ -64,7 +64,40 @@ defmodule Pointex.Model.ReadModels.WatchPartyVoting do
       end)
     end)
 
+    project(%Events.TopTenByParticipantUpdated{} = event, fn multi ->
+      %{watch_party_id: id, participant_id: participant_id} = event
+
+      viewing = WatchPartyVoting.get(id, participant_id)
+
+      update =
+        viewing
+        |> Changeset.change()
+        |> Changeset.put_embed(
+          :songs,
+          change_songs(viewing, fn _ -> true end, fn song ->
+            IO.inspect(song, label: "song")
+
+            %{
+              points:
+                Enum.find_value(
+                  event.top_ten,
+                  0,
+                  fn {p, s} -> if s == song.id, do: p end
+                )
+            }
+            |> IO.inspect(label: "points")
+          end)
+        )
+
+      Ecto.Multi.update(multi, :watch_party_voting, update)
+    end)
+
     @impl Commanded.Projections.Ecto
+    def after_update(%{id: id} = _event, _metadata, _changes) do
+      Endpoint.broadcast("watch_party_voting:#{id}", "updated", %{})
+      :ok
+    end
+
     def after_update(event, _metadata, _changes) do
       Endpoint.broadcast("watch_party_voting:#{event.watch_party_id}", "updated", %{})
       :ok
