@@ -1,6 +1,18 @@
 defmodule Pointex.Commanded.Util do
   alias Pointex.Repo
 
+  def reset_all() do
+    reset_eventstore!()
+    reset_all_projections()
+  end
+
+  def reset_all_projections() do
+    reset_projection("my_watch_parties")
+    reset_projection("participants")
+    reset_projection("watch_party_viewing")
+    reset_projection("watch_party_voting")
+  end
+
   def reset_projection(name) do
     Repo.query("""
           truncate table
