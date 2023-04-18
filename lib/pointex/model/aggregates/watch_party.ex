@@ -154,7 +154,9 @@ defmodule Pointex.Model.Aggregates.WatchParty do
 
   defp insert_vote(top_ten, points, song_id) do
     top_ten =
-      case Enum.find(top_ten, fn {_, song} -> song == song_id end) do
+      top_ten
+      |> Enum.find(fn {_, song} -> song == song_id end)
+      |> case do
         nil -> top_ten
         {prev_points, _} -> Map.replace(top_ten, prev_points, nil)
       end
@@ -179,11 +181,11 @@ defmodule Pointex.Model.Aggregates.WatchParty do
             {PossiblePoints.dec(p), s}
           end
         end)
-        |> Enum.reject(fn {p, _} -> p < 1 end)
+        |> Enum.reject(fn {p, _} -> p < 1 || p == nil end)
         |> Enum.concat([{points, song_id}])
         |> Enum.concat(songs_above)
         |> Enum.sort()
         |> Enum.into(%{})
-    end
+    end |> IO.inspect(label: "insert_vote")
   end
 end

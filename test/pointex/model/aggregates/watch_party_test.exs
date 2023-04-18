@@ -354,5 +354,48 @@ defmodule Pointex.Model.Aggregates.WatchPartyTest do
                  points: nil
                })
     end
+
+    test "remove last vote", %{started_wp: state, owner_id: owner_id, wp_id: wp_id} do
+      state =
+        WatchParty.apply(state, %Events.TopTenByParticipantUpdated{
+          watch_party_id: wp_id,
+          participant_id: owner_id,
+          top_ten: %{
+            1 => "Last Song",
+            2 => nil,
+            3 => nil,
+            4 => nil,
+            5 => nil,
+            6 => nil,
+            7 => nil,
+            8 => nil,
+            10 => nil,
+            12 => nil
+          }
+        })
+
+      assert [
+               %Events.TopTenByParticipantUpdated{
+                 top_ten: %{
+                   1 => nil,
+                   2 => nil,
+                   3 => nil,
+                   4 => nil,
+                   5 => nil,
+                   6 => nil,
+                   7 => nil,
+                   8 => nil,
+                   10 => nil,
+                   12 => nil
+                 }
+               }
+             ] =
+               WatchParty.execute(state, %Commands.GivePointsToSong{
+                 watch_party_id: wp_id,
+                 participant_id: owner_id,
+                 song_id: "Last Song",
+                 points: nil
+               })
+    end
   end
 end

@@ -75,8 +75,6 @@ defmodule Pointex.Model.ReadModels.WatchPartyVoting do
         |> Changeset.put_embed(
           :songs,
           change_songs(viewing, fn _ -> true end, fn song ->
-            IO.inspect(song, label: "song")
-
             %{
               points:
                 Enum.find_value(
@@ -85,7 +83,6 @@ defmodule Pointex.Model.ReadModels.WatchPartyVoting do
                   fn {p, s} -> if s == song.id, do: p end
                 )
             }
-            |> IO.inspect(label: "points")
           end)
         )
 
