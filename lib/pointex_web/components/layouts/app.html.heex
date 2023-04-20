@@ -11,13 +11,6 @@
     >
       <.icon name="hero-home" class="w-4 h-4 opacity-50" /> Europoints
     </.link>
-    <.link
-      :if={@socket.view |> Atom.to_string() |> String.contains?("WatchParty")}
-      navigate={~p"/wp/#{@wp_id}"}
-      class="self-end -mb-8 bg-amber-100 px-8 py-2 rounded-t text-amber-700 mx-auto hover:text-amber-900 hover:bg-amber-50 border-t hover:border-t-gray-500/50 hover:scale-105 origin-bottom transition-all"
-    >
-      Invite others!
-    </.link>
     <div :if={@user} class="flex items-center gap-2">
       <%= @user.name %>
       <.link
@@ -36,7 +29,7 @@
     </.link>
   </nav>
 </header>
-<main class="relative p-0 sm:p-4 md:p-8">
+<main class="p-0 sm:p-4 md:p-8">
   <div class="mx-auto">
     <.flash_group flash={@flash} />
     <%= @inner_content %>

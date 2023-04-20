@@ -9,7 +9,7 @@ defmodule PointexWeb.Home do
     <div class={"flex flex-col md:gap-8 p-4 #{if length(@my_watch_parties) > 0, do: "gap-8", else: "gap-4"}"}>
       <.my_watch_parties :if={@user} my_watch_parties={@my_watch_parties} />
 
-      <div class={"flex flex-col gap-2 w-full #{if length(@my_watch_parties) > 0, do: "opacity-50", else: ""}"}>
+      <div class={"flex flex-col gap-2 w-full #{if length(@my_watch_parties) > 0, do: "opacity-50 hover:opacity-100", else: ""}"}>
         <h1 class="uppercase text-gray-400">No watch party yet?</h1>
         <div class={[
           "w-full flex flex-col gap-4 max-w-lg bg-white shadow rounded p-4 sm:p-6 md:p-8",
