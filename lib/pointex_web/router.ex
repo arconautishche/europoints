@@ -32,10 +32,15 @@ defmodule PointexWeb.Router do
         {PointexWeb.UserAuth, :ensure_logged_in}
       ] do
       live "/", Home
-      live "/wp/new", NewWatchParty
-      live "/wp/:id/viewing", WatchParty.Viewing
-      live "/wp/:id/voting", WatchParty.Voting
-      live "/wp/:id/results", WatchParty.Viewing
+
+      scope "/wp" do
+        live "/new", WatchParty.New
+        live "/join", WatchParty.Join
+        live "/join/:id", WatchParty.Join
+        live "/:id/viewing", WatchParty.Viewing
+        live "/:id/voting", WatchParty.Voting
+        live "/:id/results", WatchParty.Viewing
+      end
     end
   end
 

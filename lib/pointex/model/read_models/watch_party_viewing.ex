@@ -40,6 +40,16 @@ defmodule Pointex.Model.ReadModels.WatchPartyViewing do
       })
     end)
 
+    project(%Events.ParticipantJoinedWatchParty{} = event, fn multi ->
+      %{id: id, participant_id: participant_id, year: year, show: show} = event
+
+      Ecto.Multi.insert(multi, :watch_party_viewing, %WatchPartyViewing.Schema{
+        id: id,
+        participant_id: participant_id,
+        songs: all_songs(year, String.to_atom(show))
+      })
+    end)
+
     project(%Events.SongShortlistedChanged{} = event, fn multi ->
       %{watch_party_id: id, participant_id: participant_id, song_id: song_id} = event
 
@@ -57,8 +67,13 @@ defmodule Pointex.Model.ReadModels.WatchPartyViewing do
     end)
 
     @impl Commanded.Projections.Ecto
-    def after_update(event, _metadata, _changes) do
-      Endpoint.broadcast("watch_party_viewing:#{event.watch_party_id}", "updated", %{})
+    def after_update(%{watch_party_id: id}, _metadata, _changes) do
+      Endpoint.broadcast("watch_party_viewing:#{id}", "updated", %{})
+      :ok
+    end
+
+    def after_update(%{id: id}, _metadata, _changes) do
+      Endpoint.broadcast("watch_party_viewing:#{id}", "updated", %{})
       :ok
     end
 

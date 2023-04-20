@@ -1,4 +1,4 @@
-defmodule PointexWeb.NewWatchParty do
+defmodule PointexWeb.WatchParty.New do
   alias Pointex.Model.Commands
   use PointexWeb, :live_view
 

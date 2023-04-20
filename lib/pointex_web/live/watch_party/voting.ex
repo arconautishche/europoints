@@ -85,7 +85,7 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   defp load_data(wp_id, user_id) do
-    read_model = WatchPartyVoting.get(wp_id, user_id)
+    read_model = WatchPartyVoting.get(wp_id, user_id) || %{songs: []}
 
     used_points =
       read_model.songs

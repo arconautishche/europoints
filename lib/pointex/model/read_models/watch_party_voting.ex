@@ -40,6 +40,16 @@ defmodule Pointex.Model.ReadModels.WatchPartyVoting do
       })
     end)
 
+    project(%Events.ParticipantJoinedWatchParty{} = event, fn multi ->
+      %{id: id, participant_id: participant_id, year: year, show: show} = event
+
+      Ecto.Multi.insert(multi, :watch_party_voting, %WatchPartyVoting.Schema{
+        id: id,
+        participant_id: participant_id,
+        songs: all_songs(year, String.to_atom(show))
+      })
+    end)
+
     project(%Events.SongShortlistedChanged{} = event, fn multi ->
       %{watch_party_id: id, participant_id: participant_id, song_id: song_id} = event
 

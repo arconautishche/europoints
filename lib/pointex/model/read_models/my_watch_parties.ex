@@ -44,6 +44,24 @@ defmodule Pointex.Model.ReadModels.MyWatchParties do
         )
       )
     end)
+
+    project(%Events.ParticipantJoinedWatchParty{} = event, fn multi ->
+      Ecto.Multi.insert(
+        multi,
+        :my_watch_parties,
+        %MyWatchParties.Schema{}
+        |> Changeset.cast(
+          %{
+            id: event.id,
+            participant_id: event.participant_id,
+            name: event.name,
+            year: event.year,
+            show: event.show
+          },
+          [:id, :participant_id, :name, :year, :show]
+        )
+      )
+    end)
   end
 
   import Ecto.Query

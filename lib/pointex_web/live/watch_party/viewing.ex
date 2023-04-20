@@ -65,7 +65,7 @@ defmodule PointexWeb.WatchParty.Viewing do
   end
 
   defp load_data(wp_id, user_id) do
-    read_model = WatchPartyViewing.get(wp_id, user_id)
+    read_model = WatchPartyViewing.get(wp_id, user_id) || %{songs: []}
 
     %{wp_id: wp_id, songs: read_model.songs}
   end
