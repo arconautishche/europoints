@@ -1,6 +1,6 @@
 defmodule PointexWeb.WatchParty.New do
-  alias Pointex.Model.Commands
   use PointexWeb, :live_view
+  alias Pointex.Model.Commands
 
   @impl Phoenix.LiveView
   def render(assigns) do

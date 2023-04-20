@@ -40,6 +40,7 @@ defmodule PointexWeb.Router do
         live "/:id/viewing", WatchParty.Viewing
         live "/:id/voting", WatchParty.Voting
         live "/:id/results", WatchParty.Viewing
+        live "/:id", WatchParty.Overview
       end
     end
   end

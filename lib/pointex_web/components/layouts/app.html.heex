@@ -1,12 +1,22 @@
 <header class="relative">
-  <div class="absolute inset-0 bg-amber-200 -z-10"/>
-  <div class="absolute inset-0 bg-amber-300 -z-10" style="clip-path: polygon(0 0, 100% 0, 100% 100%)" />
+  <div class="absolute inset-0 bg-amber-200 -z-10" />
+  <div
+    class="absolute inset-0 bg-amber-300 -z-10"
+    style="clip-path: polygon(0 0, 100% 0, 100% 100%)"
+  />
   <nav class="px-4 sm:p-6 md:p-8 flex items-center justify-between py-3 ">
     <.link
       navigate={~p"/"}
       class="p-1 my-1 text-slate-600 font-bold flex items-center gap-2 border-b border-transparent hover:border-slate-600/20"
     >
-      <.icon name="hero-home" class="w-4 h-4 opacity-50" /> Pointex
+      <.icon name="hero-home" class="w-4 h-4 opacity-50" /> Europoints
+    </.link>
+    <.link
+      :if={@socket.view |> Atom.to_string() |> String.contains?("WatchParty")}
+      navigate={~p"/wp/#{@wp_id}"}
+      class="self-end -mb-8 bg-amber-100 px-8 py-2 rounded-t text-amber-700 mx-auto hover:text-amber-900 hover:bg-amber-50 border-t hover:border-t-gray-500/50 hover:scale-105 origin-bottom transition-all"
+    >
+      Invite others!
     </.link>
     <div :if={@user} class="flex items-center gap-2">
       <%= @user.name %>

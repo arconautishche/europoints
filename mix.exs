@@ -52,7 +52,8 @@ defmodule Pointex.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:commanded, "~> 1.4"},
       {:commanded_eventstore_adapter, "~> 1.4"},
-      {:commanded_ecto_projections, "~> 1.3"}
+      {:commanded_ecto_projections, "~> 1.3"},
+      {:eqrcode, "~> 0.1.10"}
     ]
   end
 
