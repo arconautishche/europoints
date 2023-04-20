@@ -18,11 +18,9 @@ defmodule PointexWeb.WatchParty.Overview do
           <.link navigate={@link} class=" border-b border-sky-900/20"><%= @link %></.link>
         </div>
 
-        <span class="text-sm text-gray-400">Or let them scan this</span>
+        <span class="text-sm text-gray-400">... or lazy much?</span>
         <div class="flex items-baseline gap-4 font-light">
           <img src={"data:image/png;base64," <> @qr} />
-
-
         </div>
       </div>
     </section>
