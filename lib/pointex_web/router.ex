@@ -32,6 +32,7 @@ defmodule PointexWeb.Router do
         {PointexWeb.UserAuth, :ensure_logged_in}
       ] do
       live "/", Home
+      live "/felicitoshka", UserList
 
       scope "/wp" do
         live "/new", WatchParty.New

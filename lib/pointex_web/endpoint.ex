@@ -8,7 +8,8 @@ defmodule PointexWeb.Endpoint do
     store: :cookie,
     key: "_pointex_key",
     signing_salt: "wQtjVGFt",
-    same_site: "Lax"
+    same_site: "Lax",
+    max_age: 7 * 24 * 60 * 60
   ]
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
