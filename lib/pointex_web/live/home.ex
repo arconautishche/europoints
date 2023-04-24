@@ -46,16 +46,29 @@ defmodule PointexWeb.Home do
     ~H"""
     <.link
       navigate={~p"/wp/#{@watch_party.id}/viewing"}
-      class="w-full flex flex-col gap-4 max-w-lg bg-white shadow rounded p-4 px-6 cursor-pointer transition hover:bg-sky-200/50 hover:scale-105"
+      class="w-full flex flex-col gap-4 max-w-lg bg-white shadow rounded p-3 sm:py-4 sm:px-6 cursor-pointer transition hover:bg-sky-200/50 hover:scale-105"
     >
-      <div class="flex gap-4 items-center">
-        <.icon name="hero-user-group" class="text-sky-700 h-8 w-8" />
+      <div class="flex gap-2 sm:gap-4 items-top">
+        <.icon name="hero-user-group" class="text-sky-700 h-8 w-8 mt-1" />
         <div class="flex flex-col gap-2">
           <h2><%= @watch_party.name %></h2>
           <ShowLabel.show_label year={@watch_party.year} show_name={@watch_party.show} />
+
+          <div class="flex gap-2 flex-wrap text-gray-500 mt-4">
+            <.participant :for={participant <- @watch_party.other_participants} name={participant.name} />
+          </div>
         </div>
       </div>
     </.link>
+    """
+  end
+
+  defp participant(assigns) do
+    ~H"""
+    <div class="flex items-center gap-1 rounded bg-gray-100 px-1">
+      <.icon name="hero-user" class="text-sky-700 h-3 w-3" />
+      <span><%= @name %></span>
+    </div>
     """
   end
 end
