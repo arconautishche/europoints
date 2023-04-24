@@ -16,7 +16,7 @@ defmodule PointexWeb.UserList do
   end
 
   @impl Phoenix.LiveView
-  def mount(params, session, socket) do
+  def mount(_params, _session, socket) do
     {:ok, assign(socket, all_users: Repo.all(Participants.Schema))}
   end
 end
