@@ -11,7 +11,10 @@ defmodule PointexWeb.WatchParty.Results do
     ~H"""
     <Nav.layout wp_id={@wp_id} active={:results}>
       <div class="flex flex-col sm:flex-row gap-4 my-2">
-        <.still_voting :if={@still_voting_participants != []} participants={@still_voting_participants} />
+        <.still_voting
+          :if={@still_voting_participants != []}
+          participants={@still_voting_participants}
+        />
         <.wp_totals songs={@wp_totals} />
       </div>
     </Nav.layout>

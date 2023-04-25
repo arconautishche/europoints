@@ -92,8 +92,11 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
             :predictions_top,
             results.predictions_top
             |> Enum.map(fn
-              %{participant_id: ^participant_id} = p -> Ecto.Changeset.change(p, %{done_voting: true})
-              p -> p
+              %{participant_id: ^participant_id} = p ->
+                Ecto.Changeset.change(p, %{done_voting: true})
+
+              p ->
+                p
             end)
           )
 
