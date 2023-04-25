@@ -15,7 +15,6 @@ defmodule Pointex.Model.Commands.GivePointsToSong do
     %__MODULE__{}
     |> Changeset.cast(attrs, [:watch_party_id, :participant_id, :song_id, :points])
     |> validate()
-    |> IO.inspect(label: "Commands.GivePointsToSong")
     |> case do
       %{valid?: false} = changeset ->
         {:errors, changeset}

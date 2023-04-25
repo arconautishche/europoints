@@ -87,6 +87,5 @@ defmodule Pointex.Model.ReadModels.MyWatchParties do
       |> Map.from_struct()
       |> Map.merge(%{other_participants: other_participants})
     end)
-    |> IO.inspect()
   end
 end

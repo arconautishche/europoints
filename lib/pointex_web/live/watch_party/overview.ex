@@ -40,7 +40,6 @@ defmodule PointexWeb.WatchParty.Overview do
          |> EQRCode.encode()
          |> EQRCode.png()
          |> Base.encode64()
-         |> IO.inspect()
      })}
   end
 end

@@ -41,7 +41,7 @@ defmodule PointexWeb.WatchParty.Join do
 
   @impl Phoenix.LiveView
   def handle_params(params, _uri, socket) do
-    case params |> IO.inspect() do
+    case params do
       %{"id" => wp_id} ->
         {:noreply,
          socket
