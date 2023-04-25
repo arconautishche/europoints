@@ -11,6 +11,7 @@ defmodule Pointex.Commanded.Util do
     reset_projection("participants")
     reset_projection("watch_party_viewing")
     reset_projection("watch_party_voting")
+    reset_projection("watch_party_results")
   end
 
   def reset_projection(name) do
@@ -18,9 +19,11 @@ defmodule Pointex.Commanded.Util do
           truncate table
             #{name}
           restart identity;
-    """) |> IO.inspect()
+    """)
+    |> IO.inspect()
 
-    Repo.query("delete from projection_versions where projection_name = '#{name}'") |> IO.inspect()
+    Repo.query("delete from projection_versions where projection_name = '#{name}'")
+    |> IO.inspect()
 
     Pointex.Commanded.EventStore.delete_subscription("$all", name) |> IO.inspect()
   end

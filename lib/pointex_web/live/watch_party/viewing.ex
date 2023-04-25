@@ -9,13 +9,11 @@ defmodule PointexWeb.WatchParty.Viewing do
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
-    <div class="relative">
-      <Nav.nav wp_id={@wp_id} mobile={false} active={:viewing} />
+    <Nav.layout wp_id={@wp_id} active={:viewing}>
       <div class="flex flex-col divide-y divide-gray-200 my-2">
         <.song_viewing :for={song <- @songs} song={song} />
       </div>
-      <Nav.nav wp_id={@wp_id} mobile={true} active={:viewing} />
-    </div>
+    </Nav.layout>
     """
   end
 

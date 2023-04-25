@@ -1,9 +1,12 @@
 defmodule PointexWeb.WatchParty.SongComponents do
   use PointexWeb, :html
 
+  attr :song, :map, required: true
+  attr :class, :any, default: ""
+
   def description(assigns) do
     ~H"""
-    <div class="flex gap-2 grow">
+    <div class={"flex gap-2 grow " <> @class}>
       <div class="text-4xl">
         <%= @song.details["flag"] %>
       </div>

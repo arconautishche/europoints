@@ -24,7 +24,7 @@ defmodule Pointex.Model.Aggregates.WatchParty do
   end
 
   def execute(%__MODULE__{} = watch_party, %Commands.JoinWatchParty{} = command) do
-    if command.participant_id in [watch_party.owner_id] ++ Map.keys(watch_party.participants) do
+    if command.participant_id in ([watch_party.owner_id] ++ Map.keys(watch_party.participants)) do
       []
     else
       %Events.ParticipantJoinedWatchParty{
@@ -82,13 +82,40 @@ defmodule Pointex.Model.Aggregates.WatchParty do
 
   def execute(%__MODULE__{} = watch_party, %Commands.GivePointsToSong{} = command) do
     with %{} = participant <- participant(watch_party, command.participant_id) do
+      participants_top_ten = insert_vote(participant.top_ten, command.points, command.song_id)
+
+      total_updates =
+        if complete_top_ten?(participants_top_ten) do
+          totals =
+            watch_party.participants
+            |> Enum.reject(fn {id, _} -> id == command.participant_id end)
+            |> Enum.map(fn {_id, participant} -> participant.top_ten end)
+            |> Enum.concat([participants_top_ten])
+            |> Enum.filter(fn individual_top_ten -> complete_top_ten?(individual_top_ten) end)
+            |> Enum.flat_map(fn top_ten -> top_ten end)
+            |> Enum.group_by(fn {_p, s} -> s end)
+            |> Enum.map(fn {s, song_points} ->
+              {s, Enum.reduce(song_points, 0, fn {p, _}, acc -> p + acc end)}
+            end)
+            |> Enum.into(%{})
+
+          [
+            %Events.WatchPartyTotalsUpdated{
+              watch_party_id: command.watch_party_id,
+              totals: totals
+            }
+          ]
+        else
+          []
+        end
+
       [
         %Events.TopTenByParticipantUpdated{
           watch_party_id: command.watch_party_id,
           participant_id: command.participant_id,
-          top_ten: insert_vote(participant.top_ten, command.points, command.song_id)
+          top_ten: participants_top_ten
         }
-      ]
+      ] ++ total_updates
     else
       nil -> {:error, :unknown_participant}
     end
@@ -158,6 +185,10 @@ defmodule Pointex.Model.Aggregates.WatchParty do
     }
   end
 
+  def apply(%__MODULE__{} = watch_party, %Events.WatchPartyTotalsUpdated{}) do
+    watch_party
+  end
+
   defp new_participant(id) do
     {id,
      %{
@@ -217,6 +248,9 @@ defmodule Pointex.Model.Aggregates.WatchParty do
         |> Enum.sort()
         |> Enum.into(%{})
     end
-    |> IO.inspect(label: "insert_vote")
+  end
+
+  defp complete_top_ten?(top_ten) do
+    Enum.all?(top_ten, fn {_p, s} -> s != nil end)
   end
 end

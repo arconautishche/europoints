@@ -55,7 +55,10 @@ defmodule PointexWeb.Home do
           <ShowLabel.show_label year={@watch_party.year} show_name={@watch_party.show} />
 
           <div class="flex gap-2 flex-wrap text-gray-500 mt-4">
-            <.participant :for={participant <- @watch_party.other_participants} name={participant.name} />
+            <.participant
+              :for={participant <- @watch_party.other_participants}
+              name={participant.name}
+            />
           </div>
         </div>
       </div>

@@ -10,8 +10,7 @@ defmodule PointexWeb.WatchParty.Voting do
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
-    <div class="relative">
-      <Nav.nav wp_id={@wp_id} mobile={false} active={:voting} />
+    <Nav.layout wp_id={@wp_id} active={:voting}>
       <div class="flex flex-col sm:flex-row gap-4 my-2">
         <.top_10 songs={@songs} />
         <flex class="flex flex-col gap-4 w-full overflow-x-hidden">
@@ -41,8 +40,7 @@ defmodule PointexWeb.WatchParty.Voting do
           />
         </flex>
       </div>
-      <Nav.nav wp_id={@wp_id} mobile={true} active={:voting} />
-    </div>
+    </Nav.layout>
     """
   end
 
@@ -90,7 +88,7 @@ defmodule PointexWeb.WatchParty.Voting do
     used_points =
       read_model.songs
       |> Enum.map(& &1.points)
-      |> Enum.reject(& &1 == 0)
+      |> Enum.reject(&(&1 == 0))
       |> Enum.sort(:desc)
 
     unused_points = Enum.reject(PossiblePoints.desc(), fn p -> p in used_points end)
@@ -240,7 +238,9 @@ defmodule PointexWeb.WatchParty.Voting do
             used={false}
           />
         </div>
-        <span :if={@used_points != []} class="mt-3 mb-1 mx-2 text-gray-400 text-xs">Already used</span>
+        <span :if={@used_points != []} class="mt-3 mb-1 mx-2 text-gray-400 text-xs">
+          Already used
+        </span>
         <div class="flex">
           <.points_button
             :for={points <- @used_points}
