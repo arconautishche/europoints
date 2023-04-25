@@ -38,4 +38,11 @@ defmodule Pointex.Model.ReadModels.Participants do
       participant -> participant
     end
   end
+
+  def all_names() do
+    __MODULE__.Schema
+    |> Repo.all()
+    |> Enum.map(&{&1.id, &1.name})
+    |> Enum.into(%{})
+  end
 end

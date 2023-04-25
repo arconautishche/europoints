@@ -11,6 +11,7 @@ defmodule PointexWeb.WatchParty.Results do
     ~H"""
     <Nav.layout wp_id={@wp_id} active={:results}>
       <div class="flex flex-col sm:flex-row gap-4 my-2">
+        <.still_voting :if={@still_voting_participants != []} participants={@still_voting_participants} />
         <.wp_totals songs={@wp_totals} />
       </div>
     </Nav.layout>
@@ -33,8 +34,20 @@ defmodule PointexWeb.WatchParty.Results do
       wp_totals:
         read_model.songs
         |> Enum.sort_by(& &1.points, :desc)
-        |> Enum.with_index(if any_results?, do: 1, else: -100)
+        |> Enum.with_index(if any_results?, do: 1, else: -100),
+      still_voting_participants: Enum.reject(read_model.predictions_top, & &1.done_voting)
     }
+  end
+
+  defp still_voting(assigns) do
+    ~H"""
+    <section class="w-full">
+      <.section_header label="⏳ Still Voting..." class="mb-4" />
+      <div class="flex flex-col gap-4 place-items-start ml-4">
+        <.participant :for={participant <- @participants} name={participant.name} />
+      </div>
+    </section>
+    """
   end
 
   defp wp_totals(assigns) do
@@ -80,6 +93,15 @@ defmodule PointexWeb.WatchParty.Results do
           ?
         <% end %>
       </span>
+    </div>
+    """
+  end
+
+  defp participant(assigns) do
+    ~H"""
+    <div class="flex items-center gap-1 rounded bg-red-50 text-red-900 shadow px-2 py-1 animate-bounce">
+      <.icon name="hero-user-solid" class="text-red-800 h-3 w-3" />
+      <span><%= @name %></span>
     </div>
     """
   end

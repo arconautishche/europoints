@@ -69,11 +69,7 @@ defmodule Pointex.Model.ReadModels.MyWatchParties do
   alias Pointex.Repo
 
   def for(participant_id) do
-    all_participants =
-      Participants.Schema
-      |> Repo.all()
-      |> Enum.map(&{&1.id, &1.name})
-      |> Enum.into(%{})
+    names = Participants.all_names()
 
     __MODULE__.Schema
     |> where(participant_id: ^participant_id)
@@ -85,7 +81,7 @@ defmodule Pointex.Model.ReadModels.MyWatchParties do
         |> where([w], w.participant_id != ^participant_id)
         |> select([w], w.participant_id)
         |> Repo.all()
-        |> Enum.map(&%{id: &1, name: Map.get(all_participants, &1)})
+        |> Enum.map(&%{id: &1, name: Map.get(names, &1)})
 
       wp
       |> Map.from_struct()

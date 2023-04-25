@@ -14,6 +14,7 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
 
       embeds_many :predictions_top, PredictionTop, primary_key: false, on_replace: :delete do
         field :participant_id, :string, primary_key: true
+        field :done_voting, :boolean, default: false
         field :score, :integer
       end
 
@@ -27,6 +28,7 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
       repo: Pointex.Repo,
       name: "watch_party_results"
 
+    alias Pointex.Repo
     alias PointexWeb.Endpoint
     alias Ecto.Changeset
     alias Pointex.Model.Events
@@ -46,7 +48,7 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
     project(%Events.ParticipantJoinedWatchParty{} = event, fn multi ->
       %{id: id, participant_id: participant_id} = event
 
-      results = WatchPartyResults.get(id)
+      results = Repo.get(WatchPartyResults.Schema, id)
 
       update =
         results
@@ -62,7 +64,7 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
     project(%Events.WatchPartyTotalsUpdated{} = event, fn multi ->
       %{watch_party_id: id, totals: totals} = event
 
-      results = WatchPartyResults.get(id)
+      results = Repo.get(WatchPartyResults.Schema, id)
 
       update =
         results
@@ -73,6 +75,30 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
         )
 
       Ecto.Multi.update(multi, :watch_party_results, update)
+    end)
+
+    project(%Events.TopTenByParticipantUpdated{} = event, fn multi ->
+      %{watch_party_id: id, participant_id: participant_id, top_ten: top_ten} = event
+
+      if Enum.any?(top_ten, fn {_p, s} -> is_nil(s) end) do
+        multi
+      else
+        results = Repo.get(WatchPartyResults.Schema, id)
+
+        update =
+          results
+          |> Changeset.change()
+          |> Changeset.put_embed(
+            :predictions_top,
+            results.predictions_top
+            |> Enum.map(fn
+              %{participant_id: ^participant_id} = p -> Ecto.Changeset.change(p, %{done_voting: true})
+              p -> p
+            end)
+          )
+
+        Ecto.Multi.update(multi, :watch_party_results, update)
+      end
     end)
 
     @impl Commanded.Projections.Ecto
@@ -99,7 +125,7 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
     end
 
     defp new_participant(id) do
-      %{participant_id: id, score: 0}
+      %{participant_id: id, done_voting: false, score: 0}
     end
 
     defp replace_totals(songs, totals) do
@@ -109,9 +135,18 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
     end
   end
 
+  alias Pointex.Model.ReadModels.Participants
   alias Pointex.Repo
 
   def get(id) do
-    Repo.get(__MODULE__.Schema, id)
+    names = Participants.all_names()
+
+    __MODULE__.Schema
+    |> Repo.get(id)
+    |> Map.replace_lazy(:predictions_top, fn predictions ->
+      predictions
+      |> Enum.map(&Map.from_struct/1)
+      |> Enum.map(fn p -> Map.put(p, :name, Map.get(names, p.participant_id)) end)
+    end)
   end
 end
