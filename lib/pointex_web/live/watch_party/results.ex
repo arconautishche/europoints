@@ -67,7 +67,10 @@ defmodule PointexWeb.WatchParty.Results do
   defp song(assigns) do
     ~H"""
     <div class="flex">
-      <div class="grow flex gap-4 w-72 transition-all">
+      <div class="grow flex w-72 transition-all">
+        <div class={"w-8 font-bold text-black/25 text-2xl text-center " <> song_bg(@place)}>
+          <%= @place %>
+        </div>
         <SongComponents.description song={@song} class={song_bg(@place)} />
       </div>
       <.points_label points={@song.points} place={@place} />
