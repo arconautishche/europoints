@@ -9,4 +9,5 @@ defmodule Pointex.Model.Router do
   dispatch(Commands.ToggleSongShortlisted, to: Aggregates.WatchParty, identity: :watch_party_id)
   dispatch(Commands.ToggleSongNoped, to: Aggregates.WatchParty, identity: :watch_party_id)
   dispatch(Commands.GivePointsToSong, to: Aggregates.WatchParty, identity: :watch_party_id)
+  dispatch(Commands.PostRealResults, to: Aggregates.WatchParty, identity: :watch_party_id)
 end

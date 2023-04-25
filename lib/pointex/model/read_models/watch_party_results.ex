@@ -10,6 +10,7 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
         field :id, :string, primary_key: true
         field :details, :map
         field :points, :integer
+        field :real_points, :integer
       end
 
       embeds_many :predictions_top, PredictionTop, primary_key: false, on_replace: :delete do
@@ -77,6 +78,22 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
       Ecto.Multi.update(multi, :watch_party_results, update)
     end)
 
+    project(%Events.RealResultsPosted{} = event, fn multi ->
+      %{watch_party_id: id, points: points} = event
+
+      results = Repo.get(WatchPartyResults.Schema, id)
+
+      update =
+        results
+        |> Changeset.change()
+        |> Changeset.put_embed(
+          :songs,
+          replace_real_points(results.songs, points)
+        )
+
+      Ecto.Multi.update(multi, :watch_party_results, update)
+    end)
+
     project(%Events.TopTenByParticipantUpdated{} = event, fn multi ->
       %{watch_party_id: id, participant_id: participant_id, top_ten: top_ten} = event
 
@@ -134,6 +151,17 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
     defp replace_totals(songs, totals) do
       Enum.map(songs, fn s ->
         Ecto.Changeset.change(s, %{points: Map.get(totals, s.id, 0)})
+      end)
+    end
+
+    defp replace_real_points(songs, points) do
+      points =
+        points
+        |> Enum.map(fn {p, s} -> {s, p} end)
+        |> Enum.into(%{})
+
+      Enum.map(songs, fn s ->
+        Ecto.Changeset.change(s, %{real_points: Map.get(points, s.id, 0)})
       end)
     end
   end

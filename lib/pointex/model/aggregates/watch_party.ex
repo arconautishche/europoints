@@ -121,6 +121,10 @@ defmodule Pointex.Model.Aggregates.WatchParty do
     end
   end
 
+  def execute(_, %Commands.PostRealResults{} = command) do
+    [%Events.RealResultsPosted{watch_party_id: command.watch_party_id, points: command.points}]
+  end
+
   # state mutators
 
   def apply(%__MODULE__{} = watch_party, %Events.WatchPartyStarted{} = event) do
@@ -186,6 +190,10 @@ defmodule Pointex.Model.Aggregates.WatchParty do
   end
 
   def apply(%__MODULE__{} = watch_party, %Events.WatchPartyTotalsUpdated{}) do
+    watch_party
+  end
+
+  def apply(%__MODULE__{} = watch_party, %Events.RealResultsPosted{} = event) do
     watch_party
   end
 
