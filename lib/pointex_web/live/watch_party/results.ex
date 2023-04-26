@@ -12,15 +12,18 @@ defmodule PointexWeb.WatchParty.Results do
     ~H"""
     <Nav.layout wp_id={@wp_id} active={:results}>
       <div :if={!@results_visible} class="flex w-full justify-center py-32">
-        <div class="max-w-lg mb-32 flex flex-col items-center gap-4 bg-red-100 px-16 py-8 rounded-lg shadow-xl border border-red-200">
-          <h2 class="font-bold text-red-800">🙈 Hey hey!</h2>
-          <p>
-            <span class="text-black/50">No peeking! </span>
-            <.link navigate={~p"/wp/#{@wp_id}/voting"} class="underline text-sky-800 mx-1">
-              Finish your own voting first!
-            </.link>
-            <span>😉</span>
-          </p>
+        <div class="max-w-lg mb-32 flex flex-col items-center gap-4 bg-red-100 rounded-lg shadow-xl border border-red-200 overflow-clip">
+          <div class="h-[6px] w-full bg-red-300" />
+          <div class="px-16 py-8">
+            <h2 class="font-bold text-red-800">🙈 Hey hey!</h2>
+            <p>
+              <span class="text-black/50">No peeking! </span>
+              <.link navigate={~p"/wp/#{@wp_id}/voting"} class="underline text-sky-800 mx-1">
+                Finish your own voting first!
+              </.link>
+              <span>😉</span>
+            </p>
+          </div>
         </div>
       </div>
       <div :if={@results_visible} class="flex flex-col sm:flex-row gap-4 my-2">
