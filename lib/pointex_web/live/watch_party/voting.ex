@@ -57,9 +57,10 @@ defmodule PointexWeb.WatchParty.Voting do
 
   @impl Phoenix.LiveView
   def handle_params(%{"id" => wp_id}, _uri, socket) do
-    if connected?(socket), do: Endpoint.subscribe("watch_party_voting:#{wp_id}")
+    user_id = user(socket).id
+    if connected?(socket), do: Endpoint.subscribe("watch_party_voting:#{wp_id}:#{user_id}")
 
-    {:noreply, assign(socket, load_data(wp_id, user(socket).id))}
+    {:noreply, assign(socket, load_data(wp_id, user_id))}
   end
 
   @impl Phoenix.LiveView

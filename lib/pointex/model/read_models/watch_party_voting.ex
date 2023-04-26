@@ -101,13 +101,20 @@ defmodule Pointex.Model.ReadModels.WatchPartyVoting do
     end)
 
     @impl Commanded.Projections.Ecto
-    def after_update(%{id: id} = _event, _metadata, _changes) do
-      Endpoint.broadcast("watch_party_voting:#{id}", "updated", %{})
-      :ok
+    def after_update(%{id: id, participant_id: participant_id} = _event, _metadata, _changes) do
+      broadcast(id, participant_id)
     end
 
-    def after_update(event, _metadata, _changes) do
-      Endpoint.broadcast("watch_party_voting:#{event.watch_party_id}", "updated", %{})
+    def after_update(%{watch_party_id: id, participant_id: participant_id} = _event, _metadata, _changes) do
+      broadcast(id, participant_id)
+    end
+
+    def after_update(%{id: id, owner_id: participant_id} = _event, _metadata, _changes) do
+      broadcast(id, participant_id)
+    end
+
+    defp broadcast(wp_id, participant_id) do
+      Endpoint.broadcast("watch_party_voting:#{wp_id}:#{participant_id}", "updated", %{})
       :ok
     end
 
