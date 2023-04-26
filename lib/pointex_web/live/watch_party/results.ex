@@ -1,6 +1,7 @@
 defmodule PointexWeb.WatchParty.Results do
   use PointexWeb, :live_view
 
+  alias Pointex.Model.ReadModels.WatchPartyVoting
   alias PointexWeb.WatchParty.SongComponents
   alias Pointex.Model.ReadModels.WatchPartyResults
   alias PointexWeb.Endpoint
@@ -10,7 +11,19 @@ defmodule PointexWeb.WatchParty.Results do
   def render(assigns) do
     ~H"""
     <Nav.layout wp_id={@wp_id} active={:results}>
-      <div class="flex flex-col sm:flex-row gap-4 my-2">
+      <div :if={!@results_visible} class="flex w-full justify-center py-32">
+        <div class="max-w-lg mb-32 flex flex-col items-center gap-4 bg-red-100 px-16 py-8 rounded-lg shadow-xl border border-red-200">
+          <h2 class="font-bold text-red-800">🙈 Hey hey!</h2>
+          <p>
+            <span class="text-black/50">No peeking! </span>
+            <.link navigate={~p"/wp/#{@wp_id}/voting"} class="underline text-sky-800 mx-1">
+              Finish your own voting first!
+            </.link>
+            <span>😉</span>
+          </p>
+        </div>
+      </div>
+      <div :if={@results_visible} class="flex flex-col sm:flex-row gap-4 my-2">
         <.still_voting
           :if={@still_voting_participants != []}
           participants={@still_voting_participants}
@@ -25,20 +38,21 @@ defmodule PointexWeb.WatchParty.Results do
   def handle_params(%{"id" => wp_id}, _uri, socket) do
     if connected?(socket), do: Endpoint.subscribe("watch_party_results:#{wp_id}")
 
-    {:noreply, assign(socket, load_data(wp_id))}
+    {:noreply, assign(socket, load_data(wp_id, user(socket).id))}
   end
 
   @impl Phoenix.LiveView
   def handle_info(%{event: "updated"}, socket) do
-    {:noreply, assign(socket, load_data(socket.assigns.wp_id))}
+    {:noreply, assign(socket, load_data(socket.assigns.wp_id, user(socket).id))}
   end
 
-  defp load_data(wp_id) do
+  defp load_data(wp_id, user_id) do
     read_model = WatchPartyResults.get(wp_id)
     any_results? = Enum.any?(read_model.songs, &(&1.points > 0))
 
     %{
       wp_id: wp_id,
+      results_visible: WatchPartyVoting.get(wp_id, user_id).vote_submitted,
       wp_totals:
         read_model.songs
         |> Enum.sort_by(& &1.points, :desc)
@@ -73,7 +87,10 @@ defmodule PointexWeb.WatchParty.Results do
     ~H"""
     <div class="flex">
       <div class="grow flex w-72 transition-all">
-        <div :if={@place > 0} class={"w-8 font-bold text-black/25 text-2xl text-center " <> song_bg(@place)}>
+        <div
+          :if={@place > 0}
+          class={"w-8 font-bold text-black/25 text-2xl text-center " <> song_bg(@place)}
+        >
           <%= @place %>
         </div>
         <SongComponents.description song={@song} class={song_bg(@place)} />

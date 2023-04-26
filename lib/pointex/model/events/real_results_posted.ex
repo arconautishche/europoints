@@ -3,7 +3,6 @@ defmodule Pointex.Model.Events.RealResultsPosted do
   defstruct [:watch_party_id, :points]
 end
 
-
 alias Pointex.Model.Events.RealResultsPosted
 
 defimpl Commanded.Serialization.JsonDecoder, for: RealResultsPosted do

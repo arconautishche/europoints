@@ -245,7 +245,7 @@ defmodule PointexWeb.CoreComponents do
       <.button phx-click="go" class="ml-2">Send!</.button>
   """
   attr :type, :string, default: nil
-  attr :class, :string, default: nil
+  attr :class, :any, default: nil
   attr :kind, :string, values: ["primary", "secondary"], default: "primary"
   attr :navigate_to, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)

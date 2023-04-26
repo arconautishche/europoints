@@ -33,7 +33,9 @@ defmodule PointexWeb.WatchParty.RealResults do
      assign(socket, %{
        wp_id: wp_id,
        real_points: %{},
-       songs: WatchPartyResults.get(wp_id).songs |> Enum.map(& {"#{&1.details["flag"]} #{&1.details["country"]}", &1.details["country"]})
+       songs:
+         WatchPartyResults.get(wp_id).songs
+         |> Enum.map(&{"#{&1.details["flag"]} #{&1.details["country"]}", &1.details["country"]})
      })}
   end
 

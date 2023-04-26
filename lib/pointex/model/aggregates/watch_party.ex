@@ -80,42 +80,54 @@ defmodule Pointex.Model.Aggregates.WatchParty do
     end
   end
 
+  def execute(%__MODULE__{} = watch_party, %Commands.FinalizeParticipantsVote{} = command) do
+    with %{} = participant <- participant(watch_party, command.participant_id) do
+      participants_top_ten = participant.top_ten
+
+      if complete_top_ten?(participants_top_ten) do
+        totals =
+          watch_party.participants
+          |> Enum.filter(fn {_id, participant} -> participant.votes_final? end)
+          |> Enum.map(fn {_id, participant} -> participant.top_ten end)
+          |> Enum.flat_map(fn top_ten -> top_ten end)
+          |> Enum.group_by(fn {_p, s} -> s end)
+          |> Enum.map(fn {s, song_points} ->
+            {s, Enum.reduce(song_points, 0, fn {p, _}, acc -> p + acc end)}
+          end)
+          |> Enum.into(%{})
+
+        [
+          %Events.TopTenByParticipantUpdated{
+            watch_party_id: watch_party.id,
+            participant_id: command.participant_id,
+            final?: true,
+            top_ten: participant.top_ten
+          },
+          %Events.WatchPartyTotalsUpdated{
+            watch_party_id: command.watch_party_id,
+            totals: totals
+          }
+        ]
+      else
+        {:error, :vote_incomplete}
+      end
+    else
+      nil -> {:error, :unknown_participant}
+    end
+  end
+
   def execute(%__MODULE__{} = watch_party, %Commands.GivePointsToSong{} = command) do
     with %{} = participant <- participant(watch_party, command.participant_id) do
       participants_top_ten = insert_vote(participant.top_ten, command.points, command.song_id)
-
-      total_updates =
-        if complete_top_ten?(participants_top_ten) do
-          totals =
-            watch_party.participants
-            |> Enum.reject(fn {id, _} -> id == command.participant_id end)
-            |> Enum.map(fn {_id, participant} -> participant.top_ten end)
-            |> Enum.concat([participants_top_ten])
-            |> Enum.filter(fn individual_top_ten -> complete_top_ten?(individual_top_ten) end)
-            |> Enum.flat_map(fn top_ten -> top_ten end)
-            |> Enum.group_by(fn {_p, s} -> s end)
-            |> Enum.map(fn {s, song_points} ->
-              {s, Enum.reduce(song_points, 0, fn {p, _}, acc -> p + acc end)}
-            end)
-            |> Enum.into(%{})
-
-          [
-            %Events.WatchPartyTotalsUpdated{
-              watch_party_id: command.watch_party_id,
-              totals: totals
-            }
-          ]
-        else
-          []
-        end
 
       [
         %Events.TopTenByParticipantUpdated{
           watch_party_id: command.watch_party_id,
           participant_id: command.participant_id,
+          final?: false,
           top_ten: participants_top_ten
         }
-      ] ++ total_updates
+      ]
     else
       nil -> {:error, :unknown_participant}
     end
@@ -184,7 +196,8 @@ defmodule Pointex.Model.Aggregates.WatchParty do
       | participants:
           Map.replace(watch_party.participants, event.participant_id, %{
             participant
-            | top_ten: event.top_ten
+            | top_ten: event.top_ten,
+              votes_final?: event.final?
           })
     }
   end
@@ -193,7 +206,7 @@ defmodule Pointex.Model.Aggregates.WatchParty do
     watch_party
   end
 
-  def apply(%__MODULE__{} = watch_party, %Events.RealResultsPosted{} = event) do
+  def apply(%__MODULE__{} = watch_party, %Events.RealResultsPosted{}) do
     watch_party
   end
 
@@ -202,6 +215,7 @@ defmodule Pointex.Model.Aggregates.WatchParty do
      %{
        shortlisted: [],
        noped: [],
+       votes_final?: false,
        top_ten: PossiblePoints.asc() |> Enum.map(&{&1, nil}) |> Enum.into(%{})
      }}
   end

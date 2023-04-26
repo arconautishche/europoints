@@ -12,8 +12,19 @@ defmodule PointexWeb.WatchParty.Voting do
     ~H"""
     <Nav.layout wp_id={@wp_id} active={:voting}>
       <div class="flex flex-col sm:flex-row gap-4 my-2">
-        <.top_10 songs={@songs} />
-        <flex class="flex flex-col gap-4 w-full overflow-x-hidden">
+        <div class="w-full flex flex-col items-center">
+          <.button
+            :if={@can_submit}
+            phx-click="submit_vote"
+            class="flex w-fit gap-2 mt-2 bg-gradient-to-br from-red-200 to-red-300 border border-red-400 shadow-lg text-red-800 uppercase hover:from-red-300 hover:to-red-300 active:from-red-200 active:to-red-200"
+          >
+            <span>🚨</span>
+            <span>This is my final decision</span>
+            <span>🚀</span>
+          </.button>
+          <.top_10 songs={@songs} readonly={@vote_submitted} />
+        </div>
+        <flex :if={!@vote_submitted} class="flex flex-col gap-4 w-full overflow-x-hidden">
           <.unvoted_section
             label="👍 Shortlisted"
             songs={unvoted_subset(@songs, :shortlisted)}
@@ -77,6 +88,18 @@ defmodule PointexWeb.WatchParty.Voting do
     {:noreply, assign(socket, selected_id: nil)}
   end
 
+  def handle_event("submit_vote", _params, socket) do
+    %{wp_id: wp_id} = socket.assigns
+
+    :ok =
+      Commands.FinalizeParticipantsVote.dispatch_new(%{
+        watch_party_id: wp_id,
+        participant_id: user(socket).id
+      })
+
+    {:noreply, push_navigate(socket, to: ~p"/wp/#{wp_id}/results")}
+  end
+
   @impl Phoenix.LiveView
   def handle_info(%{event: "updated"}, socket) do
     {:noreply, assign(socket, load_data(socket.assigns.wp_id, user(socket).id))}
@@ -95,6 +118,8 @@ defmodule PointexWeb.WatchParty.Voting do
 
     %{
       wp_id: wp_id,
+      vote_submitted: read_model.vote_submitted,
+      can_submit: unused_points == [] && !read_model.vote_submitted,
       songs: read_model.songs,
       selected_id: nil,
       used_points: used_points,
@@ -118,6 +143,7 @@ defmodule PointexWeb.WatchParty.Voting do
         <.points_given
           :for={points <- PossiblePoints.desc()}
           points={points}
+          readonly={@readonly}
           song={voted(@songs, points)}
           song_above={voted(@songs, PossiblePoints.inc(points))}
           song_below={voted(@songs, PossiblePoints.dec(points))}
@@ -175,7 +201,7 @@ defmodule PointexWeb.WatchParty.Voting do
       <div :if={@song} class="grow flex gap-4 px-2 py-2 w-72 transition-all">
         <SongComponents.description song={@song} />
 
-        <div class="flex gap-0 sm:gap-4 items-center">
+        <div :if={!@readonly} class="flex gap-0 sm:gap-4 items-center">
           <.button
             phx-click="give_points"
             phx-value-id={@song.id}

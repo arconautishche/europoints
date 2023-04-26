@@ -1,6 +1,6 @@
 defmodule Pointex.Model.Events.TopTenByParticipantUpdated do
   @derive Jason.Encoder
-  defstruct [:watch_party_id, :participant_id, :top_ten]
+  defstruct [:watch_party_id, :participant_id, :final?, :top_ten]
 end
 
 alias Pointex.Model.Events.TopTenByParticipantUpdated

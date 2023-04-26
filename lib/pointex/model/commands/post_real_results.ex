@@ -53,7 +53,7 @@ defmodule Pointex.Model.Commands.PostRealResults do
       end
     end)
     |> Changeset.validate_change(:points, fn :points, points ->
-      if points |> Map.values() |> Enum.uniq() |> Enum.count != 10 do
+      if points |> Map.values() |> Enum.uniq() |> Enum.count() != 10 do
         [points: "duplicates"]
       else
         []

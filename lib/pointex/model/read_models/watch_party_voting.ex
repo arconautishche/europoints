@@ -6,6 +6,7 @@ defmodule Pointex.Model.ReadModels.WatchPartyVoting do
     schema "watch_party_voting" do
       field :id, :binary_id, primary_key: true
       field :participant_id, :binary_id, primary_key: true
+      field :vote_submitted, :boolean
 
       embeds_many :songs, Song, primary_key: false, on_replace: :delete do
         field :id, :string, primary_key: true
@@ -81,7 +82,7 @@ defmodule Pointex.Model.ReadModels.WatchPartyVoting do
 
       update =
         viewing
-        |> Changeset.change()
+        |> Changeset.change(%{vote_submitted: event.final?})
         |> Changeset.put_embed(
           :songs,
           change_songs(viewing, fn _ -> true end, fn song ->

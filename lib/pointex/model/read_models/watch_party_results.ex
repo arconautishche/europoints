@@ -78,26 +78,10 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
       Ecto.Multi.update(multi, :watch_party_results, update)
     end)
 
-    project(%Events.RealResultsPosted{} = event, fn multi ->
-      %{watch_party_id: id, points: points} = event
-
-      results = Repo.get(WatchPartyResults.Schema, id)
-
-      update =
-        results
-        |> Changeset.change()
-        |> Changeset.put_embed(
-          :songs,
-          replace_real_points(results.songs, points)
-        )
-
-      Ecto.Multi.update(multi, :watch_party_results, update)
-    end)
-
     project(%Events.TopTenByParticipantUpdated{} = event, fn multi ->
       %{watch_party_id: id, participant_id: participant_id, top_ten: top_ten} = event
 
-      if Enum.any?(top_ten, fn {_p, s} -> is_nil(s) end) do
+      if !event.final? || Enum.any?(top_ten, fn {_p, s} -> is_nil(s) end) do
         multi
       else
         results = Repo.get(WatchPartyResults.Schema, id)
