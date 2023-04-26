@@ -180,14 +180,14 @@ defmodule PointexWeb.WatchParty.Voting do
             phx-click="give_points"
             phx-value-id={@song.id}
             phx-value-points={PossiblePoints.inc(@points)}
-            class={"#{if @points == 12, do: "invisible"} border border-transparent text-green-600 bg-transparent hover:bg-green-200 hover:border-green-500 hover:text-green-600 active:text-green-600"}
+            class={"#{if @points == 12, do: "invisible"} border border-transparent text-green-600 bg-transparent hover:bg-transparent sm:hover:bg-green-200 sm:hover:border-green-500 sm:hover:text-green-600 active:text-green-600"}
           >
             <.icon name="hero-arrow-small-up" class="w-8 h-8" />
           </.button>
           <.button
             phx-click="give_points"
             {@down_button_params}
-            class="border border-transparent text-red-600 bg-transparent hover:bg-red-200 hover:border-red-700 hover:text-red-600 active:text-red-600"
+            class="border border-transparent text-red-600 bg-transparent hover:bg-transparent sm:hover:bg-red-200 sm:hover:border-red-700 sm:hover:text-red-600 active:text-red-600"
           >
             <.icon name="hero-arrow-small-down" class="w-8 h-8" />
           </.button>

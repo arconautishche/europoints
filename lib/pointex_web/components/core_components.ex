@@ -274,8 +274,8 @@ defmodule PointexWeb.CoreComponents do
   end
 
   defp kind_class(_) do
-    "phx-submit-loading:opacity-75 rounded-lg bg-sky-600 hover:bg-sky-700 py-2 px-3 disabled:bg-sky-800/50
-      text-sm text-center font-semibold leading-6 text-white/90 hover:text-white active:text-white disabled:text-white/50"
+    "phx-submit-loading:opacity-75 rounded-lg bg-sky-600 py-2 px-3 disabled:bg-sky-800/50
+      text-sm text-center font-semibold leading-6 text-white/90 disabled:text-white/50"
   end
 
   @doc """

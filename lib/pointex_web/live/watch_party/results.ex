@@ -28,6 +28,11 @@ defmodule PointexWeb.WatchParty.Results do
     {:noreply, assign(socket, load_data(wp_id))}
   end
 
+  @impl Phoenix.LiveView
+  def handle_info(%{event: "updated"}, socket) do
+    {:noreply, assign(socket, load_data(socket.assigns.wp_id))}
+  end
+
   defp load_data(wp_id) do
     read_model = WatchPartyResults.get(wp_id)
     any_results? = Enum.any?(read_model.songs, &(&1.points > 0))
@@ -68,7 +73,7 @@ defmodule PointexWeb.WatchParty.Results do
     ~H"""
     <div class="flex">
       <div class="grow flex w-72 transition-all">
-        <div class={"w-8 font-bold text-black/25 text-2xl text-center " <> song_bg(@place)}>
+        <div :if={@place > 0} class={"w-8 font-bold text-black/25 text-2xl text-center " <> song_bg(@place)}>
           <%= @place %>
         </div>
         <SongComponents.description song={@song} class={song_bg(@place)} />
@@ -129,7 +134,7 @@ defmodule PointexWeb.WatchParty.Results do
   end
 
   defp points_bg(1, _) do
-    "bg-amber-400 text-amber-800"
+    "bg-yellow-400 text-yellow-800"
   end
 
   defp points_bg(2, _) do
