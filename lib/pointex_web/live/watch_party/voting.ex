@@ -60,7 +60,10 @@ defmodule PointexWeb.WatchParty.Voting do
     user_id = user(socket).id
     if connected?(socket), do: Endpoint.subscribe("watch_party_voting:#{wp_id}:#{user_id}")
 
-    {:noreply, assign(socket, load_data(wp_id, user_id))}
+    {:noreply,
+     socket
+     |> assign(load_data(wp_id, user_id))
+     |> assign(selected_id: nil)}
   end
 
   @impl Phoenix.LiveView
@@ -122,7 +125,6 @@ defmodule PointexWeb.WatchParty.Voting do
       vote_submitted: read_model.vote_submitted,
       can_submit: unused_points == [] && !read_model.vote_submitted,
       songs: read_model.songs,
-      selected_id: nil,
       used_points: used_points,
       unused_points: unused_points
     }
