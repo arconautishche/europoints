@@ -65,7 +65,7 @@ defmodule PointexWeb.WatchParty.Results do
     ~H"""
     <section class="w-full">
       <.section_header label="⏳ Still Voting..." class="mb-4" />
-      <div class="flex flex-col gap-4 place-items-start ml-4">
+      <div class="flex flex-wrap gap-4 place-items-start ml-4">
         <.participant :for={participant <- @participants} name={participant.name} />
       </div>
     </section>
