@@ -87,7 +87,7 @@ defmodule Pointex.Model.Aggregates.WatchParty do
       if complete_top_ten?(participants_top_ten) do
         totals =
           watch_party.participants
-          |> Enum.filter(fn {_id, participant} -> participant.votes_final? end)
+          |> Enum.filter(fn {id, participant} -> participant.votes_final? || id == command.participant_id end)
           |> Enum.map(fn {_id, participant} -> participant.top_ten end)
           |> Enum.flat_map(fn top_ten -> top_ten end)
           |> Enum.group_by(fn {_p, s} -> s end)

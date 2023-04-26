@@ -470,7 +470,7 @@ defmodule Pointex.Model.Aggregates.WatchPartyTest do
         |> WatchParty.apply(%Events.TopTenByParticipantUpdated{
           watch_party_id: wp_id,
           participant_id: participant_2_id,
-          final?: true,
+          final?: false,
           top_ten: %{
             1 => "Song 12",
             2 => "Song 1",
