@@ -34,6 +34,7 @@ defmodule PointexWeb.Register do
   def mount(params, _session, socket) do
     {:ok,
      socket
+     |> assign(page_title: "Register")
      |> assign(register_params: %{"user_id" => UUID.generate()})
      |> assign(valid?: false)
      |> assign(return_to: Map.get(params, "return_to", ~p"/"))}

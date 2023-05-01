@@ -62,6 +62,7 @@ defmodule PointexWeb.WatchParty.Voting do
 
     {:noreply,
      socket
+     |> assign(page_title: "Voting")
      |> assign(load_data(wp_id, user_id))
      |> assign(selected_id: nil)}
   end

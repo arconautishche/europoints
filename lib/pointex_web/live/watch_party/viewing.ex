@@ -28,7 +28,9 @@ defmodule PointexWeb.WatchParty.Viewing do
     user_id = user(socket).id
     if connected?(socket), do: Endpoint.subscribe("watch_party_viewing:#{wp_id}:#{user_id}")
 
-    {:noreply, assign(socket, load_data(wp_id, user_id))}
+    {:noreply, socket
+    |> assign(page_title: "Watching")
+    |> assign(load_data(wp_id, user_id))}
   end
 
   @impl Phoenix.LiveView

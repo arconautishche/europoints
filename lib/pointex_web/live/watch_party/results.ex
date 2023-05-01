@@ -41,7 +41,10 @@ defmodule PointexWeb.WatchParty.Results do
   def handle_params(%{"id" => wp_id}, _uri, socket) do
     if connected?(socket), do: Endpoint.subscribe("watch_party_results:#{wp_id}")
 
-    {:noreply, assign(socket, load_data(wp_id, user(socket).id))}
+    {:noreply,
+     socket
+     |> assign(page_title: "Results")
+     |> assign(load_data(wp_id, user(socket).id))}
   end
 
   @impl Phoenix.LiveView

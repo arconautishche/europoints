@@ -32,6 +32,7 @@ defmodule PointexWeb.Login do
   def mount(params, _session, socket) do
     {:ok,
      socket
+     |> assign(page_title: "Login")
      |> assign(login_params: %{})
      |> assign(valid?: false)
      |> assign(return_to: Map.get(params, "return_to", ~p"/"))}

@@ -30,7 +30,7 @@ defmodule PointexWeb.WatchParty.Nav do
       )
     ]}>
       <div class="grid grid-cols-3 divide-x divide-gray-300 border border-gray-300 backdrop-blur-sm">
-        <.nav_item to={~p"/wp/#{@wp_id}/viewing"} label="📺 Viewing" active={@active == :viewing} />
+        <.nav_item to={~p"/wp/#{@wp_id}/viewing"} label="📺 Watching" active={@active == :viewing} />
         <.nav_item to={~p"/wp/#{@wp_id}/voting"} label="🗳️ Voting" active={@active == :voting} />
         <.nav_item to={~p"/wp/#{@wp_id}/results"} label="🏁 Results" active={@active == :results} />
       </div>

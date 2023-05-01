@@ -35,6 +35,7 @@ defmodule PointexWeb.WatchParty.Join do
   def mount(_params, _session, socket) do
     {:ok,
      socket
+     |> assign(page_title: "Join a party")
      |> assign(watch_party: %{"id" => nil})
      |> assign(valid?: false)}
   end

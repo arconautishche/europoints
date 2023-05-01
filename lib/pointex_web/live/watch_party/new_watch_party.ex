@@ -39,6 +39,7 @@ defmodule PointexWeb.WatchParty.New do
 
     {:ok,
      socket
+     |> assign(page_title: "New party")
      |> assign(watch_party: %{"name" => "#{user_name}'s party"})
      |> assign(selected_show: :semi_final_1)
      |> assign(valid?: true)}

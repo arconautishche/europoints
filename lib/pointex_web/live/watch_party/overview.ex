@@ -32,7 +32,9 @@ defmodule PointexWeb.WatchParty.Overview do
     invite_link = url(socket, ~p"/wp/join/#{wp_id}")
 
     {:noreply,
-     assign(socket, %{
+     socket
+     |> assign(page_title: "Share")
+     |> assign(%{
        wp_id: wp_id,
        link: invite_link,
        qr:
