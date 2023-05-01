@@ -105,7 +105,11 @@ defmodule Pointex.Model.ReadModels.WatchPartyVoting do
       broadcast(id, participant_id)
     end
 
-    def after_update(%{watch_party_id: id, participant_id: participant_id} = _event, _metadata, _changes) do
+    def after_update(
+          %{watch_party_id: id, participant_id: participant_id} = _event,
+          _metadata,
+          _changes
+        ) do
       broadcast(id, participant_id)
     end
 
