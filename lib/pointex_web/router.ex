@@ -1,5 +1,6 @@
 defmodule PointexWeb.Router do
   use PointexWeb, :router
+  import PointexWeb.UserAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -26,23 +27,27 @@ defmodule PointexWeb.Router do
       live "/login", Login
     end
 
-    live_session :logged_in,
-      on_mount: [
-        PointexWeb.UserAuth,
-        {PointexWeb.UserAuth, :ensure_logged_in}
-      ] do
-      live "/", Home
-      live "/felicitoshka", UserList
+    scope "/" do
+      pipe_through :try_prolong_user_session
 
-      scope "/wp" do
-        live "/new", WatchParty.New
-        live "/join", WatchParty.Join
-        live "/join/:id", WatchParty.Join
-        live "/:id/viewing", WatchParty.Viewing
-        live "/:id/voting", WatchParty.Voting
-        live "/:id/results", WatchParty.Results
-        live "/:id/real-results", WatchParty.RealResults
-        live "/:id", WatchParty.Overview
+      live_session :logged_in,
+        on_mount: [
+          PointexWeb.UserAuth,
+          {PointexWeb.UserAuth, :ensure_logged_in}
+        ] do
+        live "/", Home
+        live "/felicitoshka", UserList
+
+        scope "/wp" do
+          live "/new", WatchParty.New
+          live "/join", WatchParty.Join
+          live "/join/:id", WatchParty.Join
+          live "/:id/viewing", WatchParty.Viewing
+          live "/:id/voting", WatchParty.Voting
+          live "/:id/results", WatchParty.Results
+          live "/:id/real-results", WatchParty.RealResults
+          live "/:id", WatchParty.Overview
+        end
       end
     end
   end

@@ -4,6 +4,21 @@ defmodule PointexWeb.UserAuth do
   import Phoenix.Component
   import Phoenix.VerifiedRoutes
 
+  def try_prolong_user_session(conn, _opts) do
+    case Plug.Conn.get_session(conn, "user") do
+      %{user_id: user_id, user_name: user_name} ->
+        # re-create the session to prolong it
+        Plug.Conn.put_session(conn, "user", %{
+          user_id: user_id,
+          user_name: user_name
+        })
+
+      _ ->
+        # LiveViews downstream will do redirects (see on_mount below)
+        conn
+    end
+  end
+
   def on_mount(
         :default,
         _params,
