@@ -161,7 +161,7 @@ defmodule PointexWeb.WatchParty.Voting do
     ~H"""
     <section class="w-full">
       <.section_header label={@label} class={@header_class} />
-      <div class="flex flex-col divide-y divide-gray-200 my-2">
+      <div class="flex flex-col divide-y divide-gray-300">
         <.song_with_no_points
           :for={song <- @songs}
           song={song}
@@ -200,29 +200,31 @@ defmodule PointexWeb.WatchParty.Voting do
       )
 
     ~H"""
-    <div class="flex">
+    <div class="flex justify-stretch">
       <.points_label points={@points} active={@song != nil} />
-      <div :if={@song} class="grow flex gap-4 px-2 py-2 w-72 transition-all">
-        <SongComponents.description song={@song} />
+      <SongComponents.song_container :if={@song} song={@song}>
+        <div class="h-full flex gap-4 px-2 py-2 transition-all">
+          <SongComponents.description song={@song} />
 
-        <div :if={!@readonly} class="flex gap-0 sm:gap-4 items-center">
-          <.button
-            phx-click="give_points"
-            phx-value-id={@song.id}
-            phx-value-points={PossiblePoints.inc(@points)}
-            class={"#{if @points == 12, do: "invisible"} border border-transparent text-green-600 bg-transparent hover:bg-transparent sm:hover:bg-green-200 sm:hover:border-green-500 sm:hover:text-green-600 active:text-green-600"}
-          >
-            <.icon name="hero-arrow-small-up" class="w-8 h-8" />
-          </.button>
-          <.button
-            phx-click="give_points"
-            {@down_button_params}
-            class="border border-transparent text-red-600 bg-transparent hover:bg-transparent sm:hover:bg-red-200 sm:hover:border-red-700 sm:hover:text-red-600 active:text-red-600"
-          >
-            <.icon name="hero-arrow-small-down" class="w-8 h-8" />
-          </.button>
+          <div :if={!@readonly} class="flex gap-1 sm:gap-4 items-center">
+            <button
+              phx-click="give_points"
+              phx-value-id={@song.id}
+              phx-value-points={PossiblePoints.inc(@points)}
+              class={"#{if @points == 12, do: "invisible"} border border-transparent rounded-lg text-green-600 bg-white/30 backdrop-blur-sm shadow-lg py-2 px-3 hover:bg-transparent sm:hover:bg-green-200 sm:hover:border-green-500 sm:hover:text-green-600 active:text-green-600"}
+            >
+              <.icon name="hero-arrow-small-up" class="w-8 h-8" />
+            </button>
+            <button
+              phx-click="give_points"
+              {@down_button_params}
+              class="border border-transparent text-red-600 bg-white/30 backdrop-blur-sm shadow-lg rounded-lg py-2 px-3 hover:bg-transparent sm:hover:bg-red-200 sm:hover:border-red-700 sm:hover:text-red-600 active:text-red-600"
+            >
+              <.icon name="hero-arrow-small-down" class="w-8 h-8" />
+            </button>
+          </div>
         </div>
-      </div>
+      </SongComponents.song_container>
       <div :if={!@song} class="text-gray-300 px-2 py-2 w-72 transition-all">No song here (yet)</div>
     </div>
     """
@@ -245,10 +247,14 @@ defmodule PointexWeb.WatchParty.Voting do
       <div
         phx-click="toggle_selected"
         phx-value-id={@song.id}
-        class={["flex items-top justify-between gap-2 px-2 sm:px-4 py-3 hover:bg-sky-100"]}
+        class={["flex items-top justify-between gap-2 hover:bg-sky-100"]}
       >
-        <SongComponents.ro song={@song} />
-        <SongComponents.description song={@song} />
+        <SongComponents.song_container song={@song}>
+          <div class="flex px-2 sm:px-4 py-3">
+            <SongComponents.ro song={@song} />
+            <SongComponents.description song={@song} />
+          </div>
+        </SongComponents.song_container>
       </div>
       <div
         :if={@selected}
