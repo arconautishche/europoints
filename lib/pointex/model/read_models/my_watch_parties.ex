@@ -74,18 +74,38 @@ defmodule Pointex.Model.ReadModels.MyWatchParties do
     __MODULE__.Schema
     |> where(participant_id: ^participant_id)
     |> Repo.all()
-    |> Enum.map(fn %{id: wp_id} = wp ->
-      other_participants =
-        __MODULE__.Schema
-        |> where(id: ^wp_id)
-        |> where([w], w.participant_id != ^participant_id)
-        |> select([w], w.participant_id)
-        |> Repo.all()
-        |> Enum.map(&%{id: &1, name: Map.get(names, &1)})
+    |> Enum.map(fn wp -> with_names_of_participants(wp, names) end)
+  end
 
-      wp
-      |> Map.from_struct()
-      |> Map.merge(%{other_participants: other_participants})
-    end)
+  def by_id(id_str) do
+    case Ecto.UUID.cast(id_str) do
+      :error ->
+        nil
+
+      {:ok, id} ->
+        __MODULE__.Schema
+        |> where(id: ^id)
+        |> Repo.all()
+        |> List.first()
+        |> with_names_of_participants()
+    end
+  end
+
+  defp with_names_of_participants(wp, names \\ nil)
+  defp with_names_of_participants(nil, _names), do: nil
+
+  defp with_names_of_participants(%__MODULE__.Schema{id: wp_id} = wp, names) do
+    names = names || Participants.all_names()
+
+    other_participants =
+      __MODULE__.Schema
+      |> where(id: ^wp_id)
+      |> select([w], w.participant_id)
+      |> Repo.all()
+      |> Enum.map(&%{id: &1, name: Map.get(names, &1)})
+
+    wp
+    |> Map.from_struct()
+    |> Map.merge(%{other_participants: other_participants})
   end
 end
