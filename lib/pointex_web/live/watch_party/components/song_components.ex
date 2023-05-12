@@ -6,7 +6,7 @@ defmodule PointexWeb.WatchParty.SongComponents do
     ~H"""
     <div class="relative h-36 grow flex flex-col">
       <div class="absolute w-full h-full opacity-50 overflow-clip">
-        <img src={song_details(@song.id)[:img]} class="object-cover w-full" />
+        <img src={song_details(@song.id)[:img]} class="object-cover w-full sm:max-w-sm" />
       </div>
       <div class="absolute w-full h-full bg-gradient-to-b from-white/70 via-white/30 to-white/50" />
       <div class="relative grow">
