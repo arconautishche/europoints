@@ -335,7 +335,34 @@ defmodule Pointex.Model.ReadModels.Shows do
     %{ro: 16, country: "Australia"}
   ]
 
-  @final []
+  @final [
+    %{ro: 1, country: "Austria"},
+    %{ro: 2, country: "Portugal"},
+    %{ro: 3, country: "Switzerland"},
+    %{ro: 4, country: "Poland"},
+    %{ro: 5, country: "Serbia"},
+    %{ro: 6, country: "France"},
+    %{ro: 7, country: "Cyprus"},
+    %{ro: 8, country: "Spain"},
+    %{ro: 9, country: "Sweden"},
+    %{ro: 10, country: "Albania"},
+    %{ro: 11, country: "Italy"},
+    %{ro: 12, country: "Estonia"},
+    %{ro: 13, country: "Finland"},
+    %{ro: 14, country: "Czech Republic"},
+    %{ro: 15, country: "Australia"},
+    %{ro: 16, country: "Belgium"},
+    %{ro: 17, country: "Armenia"},
+    %{ro: 18, country: "Moldova"},
+    %{ro: 19, country: "Ukraine"},
+    %{ro: 20, country: "Norway"},
+    %{ro: 21, country: "Germany"},
+    %{ro: 22, country: "Lithuania"},
+    %{ro: 23, country: "Israel"},
+    %{ro: 24, country: "Slovenia"},
+    %{ro: 25, country: "Croatia"},
+    %{ro: 26, country: "United Kingdom"}
+  ]
 
   def songs(2023, :semi_final_1) do
     list_songs_from(@semi_final_1)
