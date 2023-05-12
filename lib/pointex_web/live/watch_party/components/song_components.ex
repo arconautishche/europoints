@@ -22,23 +22,23 @@ defmodule PointexWeb.WatchParty.SongComponents do
   def description(assigns) do
     ~H"""
     <div class={"relative grow " <> @class}>
-      <div class="relative flex gap-2">
-        <div class="text-4xl">
-          <%= song_details(@song.id).flag %>
-        </div>
-        <div class="flex flex-col gap-2">
+      <div class="relative flex flex-col gap-2">
+        <div class="flex gap-2">
+          <div class="text-4xl">
+            <%= song_details(@song.id).flag %>
+          </div>
           <div class="text-xl pt-1">
             <%= @song.id %>
           </div>
-          <div class="flex flex-col gap-2">
-            <div class="flex gap-2 items-center text-black/80">
-              <.icon name="hero-microphone" class="text-sky-400 w-4 h-4" />
-              <%= song_details(@song.id).artist %>
-            </div>
-            <div class="flex gap-2 items-center text-black/80">
-              <.icon name="hero-musical-note" class="text-sky-400 w-4 h-4" />
-              <%= song_details(@song.id).song %>
-            </div>
+        </div>
+        <div class="flex flex-col gap-2 ml-6">
+          <div class="flex gap-2 items-center text-black/80">
+            <.icon name="hero-microphone" class="text-sky-400 w-4 h-4" />
+            <%= song_details(@song.id).artist %>
+          </div>
+          <div class="flex gap-2 items-center text-black/80">
+            <.icon name="hero-musical-note" class="text-sky-400 w-4 h-4" />
+            <%= song_details(@song.id).song %>
           </div>
         </div>
       </div>
