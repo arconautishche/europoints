@@ -32,15 +32,15 @@ defmodule Pointex.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.7.1"},
+      {:phoenix, "~> 1.7"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 3.3"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.18.16"},
+      {:phoenix_html, "~> 4.0"},
+      {:phoenix_live_reload, "~> 1.5", only: :dev},
+      {:phoenix_live_view, "~> 0.20"},
       {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.7.2"},
+      {:phoenix_live_dashboard, "~> 0.8"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
@@ -53,7 +53,9 @@ defmodule Pointex.MixProject do
       {:commanded, "~> 1.4"},
       {:commanded_eventstore_adapter, "~> 1.4"},
       {:commanded_ecto_projections, "~> 1.3"},
-      {:eqrcode, "~> 0.1.10"}
+      {:eqrcode, "~> 0.1.10"},
+      {:ash, "~> 2.19"},
+      {:ash_admin, "~> 0.10.7"}
     ]
   end
 
