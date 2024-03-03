@@ -24,7 +24,7 @@ defmodule PointexWeb.WatchParty.Voting do
           </.button>
           <.top_10 songs={@songs} readonly={@vote_submitted} />
         </div>
-        <flex :if={!@vote_submitted} class="flex flex-col gap-4 w-full overflow-x-hidden">
+        <div :if={!@vote_submitted} class="flex flex-col gap-4 w-full overflow-x-hidden">
           <.unvoted_section
             label="👍 Shortlisted"
             songs={unvoted_subset(@songs, :shortlisted)}
@@ -49,7 +49,7 @@ defmodule PointexWeb.WatchParty.Voting do
             used_points={@used_points}
             unused_points={@unused_points}
           />
-        </flex>
+        </div>
       </div>
     </Nav.layout>
     """
