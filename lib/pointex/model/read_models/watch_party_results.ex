@@ -137,17 +137,6 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
         Ecto.Changeset.change(s, %{points: Map.get(totals, s.id, 0)})
       end)
     end
-
-    defp replace_real_points(songs, points) do
-      points =
-        points
-        |> Enum.map(fn {p, s} -> {s, p} end)
-        |> Enum.into(%{})
-
-      Enum.map(songs, fn s ->
-        Ecto.Changeset.change(s, %{real_points: Map.get(points, s.id, 0)})
-      end)
-    end
   end
 
   alias Pointex.Model.ReadModels.Participants

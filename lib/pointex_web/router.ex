@@ -1,6 +1,7 @@
 defmodule PointexWeb.Router do
   use PointexWeb, :router
   import PointexWeb.UserAuth
+  import AshAdmin.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -50,6 +51,12 @@ defmodule PointexWeb.Router do
         end
       end
     end
+  end
+
+  scope "/admin" do
+    pipe_through :browser
+
+    ash_admin("/")
   end
 
   # Other scopes may use custom stacks.

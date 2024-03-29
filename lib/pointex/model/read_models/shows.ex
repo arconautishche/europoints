@@ -364,6 +364,10 @@ defmodule Pointex.Model.ReadModels.Shows do
     %{ro: 26, country: "United Kingdom"}
   ]
 
+  def songs(2023) do
+    @all_songs
+  end
+
   def songs(2023, :semi_final_1) do
     list_songs_from(@semi_final_1)
   end

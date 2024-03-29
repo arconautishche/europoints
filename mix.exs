@@ -33,8 +33,8 @@ defmodule Pointex.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.7"},
-      {:phoenix_ecto, "~> 4.4"},
-      {:ecto_sql, "~> 3.6"},
+      {:phoenix_ecto, "~> 4.5"},
+      {:ecto_sql, "~> 3.11"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
@@ -48,13 +48,14 @@ defmodule Pointex.MixProject do
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
-      {:jason, "~> 1.3"},
+      {:jason, "~> 1.4"},
       {:plug_cowboy, "~> 2.5"},
       {:commanded, "~> 1.4"},
       {:commanded_eventstore_adapter, "~> 1.4"},
       {:commanded_ecto_projections, "~> 1.3"},
       {:eqrcode, "~> 0.1.10"},
-      {:ash, "~> 2.19"},
+      {:ash, "~> 2.20"},
+      {:ash_postgres, "~> 1.5"},
       {:ash_admin, "~> 0.10.7"}
     ]
   end
