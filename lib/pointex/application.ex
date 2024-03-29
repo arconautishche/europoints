@@ -5,8 +5,6 @@ defmodule Pointex.Application do
 
   use Application
 
-  alias Pointex.Model.ReadModels
-
   @impl true
   def start(_type, _args) do
     children = [
@@ -19,23 +17,7 @@ defmodule Pointex.Application do
       # Start Finch
       {Finch, name: Pointex.Finch},
       # Start the Endpoint (http/https)
-      PointexWeb.Endpoint,
-      Pointex.Commanded.Application,
-
-      # projectors
-      {ReadModels.MyWatchParties.Projector,
-       application: Pointex.Commanded.Application, name: "my_watch_parties"},
-      {ReadModels.Participants.Projector,
-       application: Pointex.Commanded.Application, name: "participants"},
-      {ReadModels.WatchPartyViewing.Projector,
-       application: Pointex.Commanded.Application, name: "watch_party_viewing"},
-      {ReadModels.WatchPartyVoting.Projector,
-       application: Pointex.Commanded.Application, name: "watch_party_voting"},
-      {ReadModels.WatchPartyResults.Projector,
-       application: Pointex.Commanded.Application, name: "watch_party_results"}
-
-      # Start a worker by calling: Pointex.Worker.start_link(arg)
-      # {Pointex.Worker, arg}
+      PointexWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

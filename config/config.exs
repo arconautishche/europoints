@@ -61,6 +61,8 @@ config :phoenix, :json_library, Jason
 
 config :pointex, event_stores: [Pointex.Commanded.EventStore]
 
+config :pointex, :ash_apis, [Pointex.Europoints]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

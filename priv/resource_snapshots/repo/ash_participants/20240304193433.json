@@ -1,0 +1,29 @@
+{
+  "attributes": [
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "id",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": true
+    }
+  ],
+  "table": "ash_participants",
+  "hash": "89E2933F89BA05F1D49AB23DA737B04064FD7CB50F3661E29DDBD7648C61FC0A",
+  "repo": "Elixir.Pointex.Repo",
+  "schema": null,
+  "identities": [],
+  "multitenancy": {
+    "global": null,
+    "attribute": null,
+    "strategy": null
+  },
+  "base_filter": null,
+  "check_constraints": [],
+  "custom_indexes": [],
+  "custom_statements": [],
+  "has_create_action": false
+}
