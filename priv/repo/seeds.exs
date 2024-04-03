@@ -25,10 +25,11 @@ alias Pointex.Europoints
 #   |> Europoints.create!()
 # end)
 
-Pointex.Model.ReadModels.Shows.songs(2023, :final)
-|> Enum.map(fn %{ro: ro, country: country} ->
-  Europoints.Song
-  |> Europoints.get!(country: country, year: 2023)
-  |> Ash.Changeset.for_update(:update, %{order_in_final: ro})
-  |> Europoints.update!()
-end)
+# 2023
+# |> Pointex.Model.ReadModels.Shows.songs(:final)
+# |> Enum.map(fn %{ro: ro, country: country} ->
+#   Europoints.Song
+#   |> Europoints.get!(country: country, year: 2023)
+#   |> Ash.Changeset.for_update(:update, %{order_in_final: ro})
+#   |> Europoints.update!()
+#miend)

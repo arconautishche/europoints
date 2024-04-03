@@ -19,6 +19,7 @@ defmodule Pointex.DataCase do
   using do
     quote do
       alias Pointex.Repo
+      alias Pointex.Europoints
 
       import Ecto
       import Ecto.Changeset

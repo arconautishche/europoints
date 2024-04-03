@@ -54,6 +54,46 @@
       "default": "nil",
       "size": null,
       "type": "bigint",
+      "source": "order_in_sf1",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "bigint",
+      "source": "order_in_sf2",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "bigint",
+      "source": "order_in_final",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "bigint",
+      "source": "final_place",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "bigint",
       "source": "year",
       "references": {
         "name": "songs_year_fkey",
@@ -65,11 +105,11 @@
           "strategy": null
         },
         "primary_key?": true,
+        "on_delete": null,
         "destination_attribute": "year",
         "deferrable": false,
         "match_type": null,
         "match_with": null,
-        "on_delete": null,
         "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null
@@ -80,10 +120,21 @@
     }
   ],
   "table": "songs",
-  "hash": "C7B34D69FE6AB06FCB6254DF8D13F318831208C2C45E7709E93467A2D2FFCA53",
+  "hash": "B98CACE630FB3AE1F30FAD0A6E3608385D0D6B6A1E601F1FF3D6FFD05C9E43AE",
   "repo": "Elixir.Pointex.Repo",
   "schema": null,
-  "identities": [],
+  "identities": [
+    {
+      "name": "song_in_season",
+      "keys": [
+        "year",
+        "country"
+      ],
+      "all_tenants?": false,
+      "index_name": "songs_song_in_season_index",
+      "base_filter": null
+    }
+  ],
   "multitenancy": {
     "global": null,
     "attribute": null,

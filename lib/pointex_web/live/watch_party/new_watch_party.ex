@@ -1,6 +1,7 @@
 defmodule PointexWeb.WatchParty.New do
   use PointexWeb, :live_view
-  alias Pointex.Model.Commands
+  alias Pointex.Europoints
+  alias Pointex.Europoints.WatchParty
 
   @impl Phoenix.LiveView
   def render(assigns) do
@@ -13,19 +14,16 @@ defmodule PointexWeb.WatchParty.New do
           <span class="">Let's start a watch party</span>
         </div>
 
-        <.simple_form
-          :let={f}
-          for={@watch_party}
-          as={:watch_party}
-          phx-change="validate"
-          phx-submit="submit"
-        >
-          <.input field={f[:name]} placeholder="What shall we call it?" autocomplete="off" />
+        <.simple_form for={@watch_party} phx-change="validate" phx-submit="submit">
+          <.input field={@watch_party[:name]} placeholder="What shall we call it?" autocomplete="off" />
+          <.input type="hidden" field={@watch_party[:owner_account_id]} />
 
-          <.show_selector selected_show={@selected_show} />
+          <.show_selector seasons={@seasons} field={@watch_party[:show_id]} />
 
           <:actions>
-            <.button class="grow" disabled={!@valid?} type="submit">Let's do this!</.button>
+            <.button class="grow" disabled={!@watch_party.source.valid?} type="submit">
+              Let's do this!
+            </.button>
           </:actions>
         </.simple_form>
       </div>
@@ -35,93 +33,111 @@ defmodule PointexWeb.WatchParty.New do
 
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
-    user_name = user(socket).name
+    user = user(socket)
+    seasons = Europoints.Season.active!()
+
+    default_show_id =
+      seasons
+      |> Enum.flat_map(& &1.shows)
+      |> Enum.find(&(&1.kind == :semi_final_1))
+      |> Map.get(:id)
 
     {:ok,
      socket
      |> assign(page_title: "New party")
-     |> assign(watch_party: %{"name" => "#{user_name}'s party"})
-     |> assign(selected_show: :semi_final_1)
+     |> assign(seasons: seasons)
+     # |> assign(watch_party: Phoenix.Component.to_form(%{"name" => "#{user_name}'s party"}))
+     |> assign(
+       :watch_party,
+       AshPhoenix.Form.for_create(WatchParty, :start,
+         api: Europoints,
+         as: "watch_party",
+         prepare_source: fn changeset ->
+           changeset
+           |> Ash.Changeset.set_arguments(%{
+             name: "#{user.name}'s party",
+             owner_account_id: user.id,
+             show_id: default_show_id
+           })
+         end
+       )
+       |> to_form()
+     )
+     |> assign(
+       selected_show:
+         seasons
+         |> Enum.flat_map(& &1.shows)
+         |> Enum.find(&(&1.kind == :semi_final_1))
+         |> Map.get(:id)
+     )
      |> assign(valid?: true)}
   end
 
   @impl Phoenix.LiveView
-  def handle_event("validate", user_input, socket) do
-    case Commands.StartWatchParty.new(command_params_from(user_input, socket.assigns)) do
-      {:ok, command} ->
-        {:noreply, assign(socket, %{valid?: true, watch_party: %{"name" => command.name}})}
+  def handle_event("validate", %{"watch_party" => params}, socket) do
+    validated_form = AshPhoenix.Form.validate(socket.assigns.watch_party, params)
 
-      {:errors, _} ->
-        {:noreply, assign(socket, valid?: false)}
-    end
+    {:noreply, assign(socket, watch_party: validated_form)}
   end
 
   @impl Phoenix.LiveView
-  def handle_event("submit", user_input, socket) do
-    case Commands.StartWatchParty.dispatch_new(command_params_from(user_input, socket.assigns)) do
-      :ok ->
+  def handle_event("submit", %{"watch_party" => params}, socket) do
+    case AshPhoenix.Form.submit(socket.assigns.watch_party, params: params) do
+      {:ok, _wp} ->
         {:noreply, push_navigate(socket, to: ~p"/")}
 
-      {:errors, _} ->
-        {:noreply, assign(socket, valid?: false)}
+      {:error, form} ->
+        {:noreply, assign(socket, watch_party: form)}
     end
   end
 
   @impl Phoenix.LiveView
   def handle_event("select_show", params, socket) do
-    show = String.to_existing_atom(params["show"])
+    show = params["show"]
 
     {:noreply, assign(socket, selected_show: show)}
   end
 
-  defp command_params_from(user_input, assigns) do
-    %{"watch_party" => %{"name" => name}} = user_input
-    %{selected_show: selected_show} = assigns
-
-    %{
-      id: Ecto.UUID.generate(),
-      owner_id: user(assigns).id,
-      name: name,
-      year: 2023,
-      show: selected_show
-    }
-  end
-
   defp show_selector(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4">
-      <span class="text-lg opacity-50">2023</span>
+    <div :for={season <- @seasons} class="flex flex-col gap-4">
+      <span class="text-lg opacity-50"><%= season.year %></span>
       <div class="grid grid-rows-3 gap-4">
-        <.show_button selected_show={@selected_show} show_name={:semi_final_1} label="Semi-final 1" />
-        <.show_button selected_show={@selected_show} show_name={:semi_final_2} label="Semi-final 2" />
-        <.show_button selected_show={@selected_show} show_name={:final} label="Final" />
+        <.show_button :for={show <- sort_shows(season.shows)} show={show} field={@field} />
       </div>
     </div>
     """
   end
 
   defp show_button(assigns) do
+    assigns = assign(assigns, selected: assigns.field.value == assigns.show.id)
+
     ~H"""
-    <button
-      phx-click="select_show"
-      phx-value-show={@show_name}
-      type="button"
-      class={[
-        "flex items-center",
-        "px-4 py-2 text-lg rounded border border-l-4",
-        "transition",
-        "hover:bg-sky-300",
-        if(@selected_show == @show_name,
-          do:
-            "bg-gradient-to-br from-amber-500 to-amber-400 border-amber-600 text-amber-900 shadow-none hover:bg-amber-400",
-          else: "border-sky-600 text-sky-900"
-        )
-      ]}
-    >
-      <.icon :if={@selected_show == @show_name} name="hero-check-circle" class="w-6 h-6" />
-      <div :if={@selected_show != @show_name} class="w-6 h-6" />
-      <span class="grow -ml-8"><%= @label %></span>
-    </button>
+    <label class={[
+      "flex items-center gap-4",
+      "px-4 py-2 text-lg rounded border border-l-4",
+      "transition",
+      "hover:bg-sky-300",
+      if(@selected,
+        do:
+          "bg-gradient-to-br from-amber-500 to-amber-400 border-amber-600 text-amber-900 shadow-none hover:bg-amber-400",
+        else: "border-sky-600 text-sky-900"
+      )
+    ]}>
+      <.icon :if={@selected} name="hero-check-circle" class="w-6 h-6" />
+      <div :if={!@selected} class="w-6 h-6" />
+      <span class="grow"><%= show_label(@show.kind) %></span>
+      <input type="radio" name={@field.name} value={@show.id} checked={@selected} class="hidden" />
+    </label>
     """
+  end
+
+  defp show_label(:semi_final_1), do: "Semi-final 1"
+  defp show_label(:semi_final_2), do: "Semi-final 2"
+  defp show_label(:final), do: "Final"
+
+  defp sort_shows(shows) do
+    # TODO
+    Enum.sort_by(shows, & &1.kind)
   end
 end

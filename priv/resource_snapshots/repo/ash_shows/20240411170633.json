@@ -14,7 +14,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "name",
+      "source": "kind",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -23,11 +23,11 @@
     {
       "default": "nil",
       "size": null,
-      "type": "uuid",
-      "source": "owner_id",
+      "type": "bigint",
+      "source": "year",
       "references": {
-        "name": "ash_watch_parties_owner_id_fkey",
-        "table": "ash_participants",
+        "name": "ash_shows_year_fkey",
+        "table": "ash_seasons",
         "schema": "public",
         "multitenancy": {
           "global": null,
@@ -35,25 +35,36 @@
           "strategy": null
         },
         "primary_key?": true,
-        "destination_attribute": "id",
+        "on_delete": null,
+        "destination_attribute": "year",
         "deferrable": false,
         "match_type": null,
         "match_with": null,
-        "on_delete": null,
         "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null
       },
-      "allow_nil?": true,
+      "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
     }
   ],
-  "table": "ash_watch_parties",
-  "hash": "CE1A6A6552946D73DCCE1246C14430E5099B26553C0CC446067B8F6FC1D45D76",
+  "table": "ash_shows",
+  "hash": "5ACB94CDD3B37BD682EC2905CF547C50D24DE7C0F7EE0FB816CD75D0693DEACC",
   "repo": "Elixir.Pointex.Repo",
   "schema": null,
-  "identities": [],
+  "identities": [
+    {
+      "name": "show_in_season",
+      "keys": [
+        "year",
+        "kind"
+      ],
+      "all_tenants?": false,
+      "index_name": "ash_shows_show_in_season_index",
+      "base_filter": null
+    }
+  ],
   "multitenancy": {
     "global": null,
     "attribute": null,

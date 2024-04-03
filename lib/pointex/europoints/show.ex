@@ -1,18 +1,10 @@
 defmodule Pointex.Europoints.Show do
+  require Ash.Query
   alias Pointex.Europoints
 
   use Ash.Resource,
-    # data_layer: AshPostgres.DataLayer,
-    data_layer:
-      if(Mix.env() == :test,
-        do: Ash.DataLayer.Ets,
-        else: AshPostgres.DataLayer
-      ),
+    data_layer: AshPostgres.DataLayer,
     extensions: [AshAdmin.Resource]
-
-  actions do
-    defaults [:read, :create]
-  end
 
   attributes do
     uuid_primary_key :id
@@ -30,11 +22,35 @@ defmodule Pointex.Europoints.Show do
       attribute_type :integer
       source_attribute :year
       destination_attribute :year
+      attribute_writable? true
     end
 
-    has_many :songs, Europoints.Song do
-      no_attributes? true
-      filter expr(year == parent.year)
+    # has_many :songs, Europoints.Song do
+    #   no_attributes? true
+
+    #   filter expr(year == year and not is_nil(order_in_final))
+    # end
+
+    # has_many :songs_manual, Europoints.Song do
+    #   no_attributes? true
+
+    #   manual fn shows, %{query: query} = _context ->
+    #     years = shows |> Enum.map(& &1.year) |> Enum.uniq()
+
+    #      query
+    #      |> Ash.Query.for_read(:read)
+    #      |> Ash.Query.filter(year in ^years)
+    #      |> Europoints.read()
+    #   end
+    # end
+  end
+
+  actions do
+    defaults [:read, :destroy]
+
+    create :new do
+      primary? true
+      accept [:year, :kind]
     end
   end
 
@@ -42,13 +58,8 @@ defmodule Pointex.Europoints.Show do
     identity :show_in_season, [:year, :kind]
   end
 
-  if Mix.env() != :test do
-    require AshPostgres.DataLayer
-    import AshPostgres.DataLayer
-
-    postgres do
-      table "ash_shows"
-      repo Pointex.Repo
-    end
+  postgres do
+    table "ash_shows"
+    repo Pointex.Repo
   end
 end

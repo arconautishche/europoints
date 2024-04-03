@@ -56,7 +56,8 @@ defmodule Pointex.MixProject do
       {:eqrcode, "~> 0.1.10"},
       {:ash, "~> 2.20"},
       {:ash_postgres, "~> 1.5"},
-      {:ash_admin, "~> 0.10.7"}
+      {:ash_admin, "~> 0.10.7"},
+      {:ash_phoenix, "~> 1.3"},
     ]
   end
 
