@@ -1,13 +1,16 @@
 defmodule Pointex.Europoints do
+  alias Pointex.Europoints
+
   use Ash.Api,
     extensions: [AshAdmin.Api]
 
   resources do
-    resource Pointex.Europoints.Season
-    resource Pointex.Europoints.Show
-    resource Pointex.Europoints.Song
-    resource Pointex.Europoints.WatchParty
-    resource Pointex.Europoints.Participant
+    resource Europoints.Account
+    resource Europoints.Season
+    resource Europoints.Show
+    resource Europoints.Song
+    resource Europoints.WatchParty
+    resource Europoints.Participant
   end
 
   admin do
