@@ -21,35 +21,43 @@
       "primary_key?": false
     },
     {
-      "default": "fragment(\"now()\")",
+      "default": "nil",
       "size": null,
-      "type": "utc_datetime_usec",
-      "source": "inserted_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "fragment(\"now()\")",
-      "size": null,
-      "type": "utc_datetime_usec",
-      "source": "updated_at",
-      "references": null,
+      "type": "uuid",
+      "source": "show_id",
+      "references": {
+        "name": "ash_watch_parties_show_id_fkey",
+        "table": "ash_shows",
+        "schema": "public",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "primary_key?": true,
+        "on_delete": null,
+        "destination_attribute": "id",
+        "deferrable": false,
+        "match_type": null,
+        "match_with": null,
+        "on_update": null,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
     }
   ],
-  "table": "ash_accounts",
-  "hash": "24EED0B5CD9F42BC2428D4D7C4F2BE6A040056CCEDF2617FD753F29C67BE8C80",
+  "table": "ash_watch_parties",
+  "hash": "697C626082A8CD21D8EEA75B4122E2E8638CA25622EE3690CD78B04F9F540FCE",
   "repo": "Elixir.Pointex.Repo",
   "schema": null,
   "identities": [],
   "multitenancy": {
     "global": null,
-    "strategy": null,
-    "attribute": null
+    "attribute": null,
+    "strategy": null
   },
   "base_filter": null,
   "check_constraints": [],

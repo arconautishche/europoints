@@ -9,13 +9,6 @@ defmodule Pointex.Europoints.Account do
     """
   end
 
-  code_interface do
-    define_for Pointex.Europoints
-
-    define :register, args: [:name]
-  end
-
-
   attributes do
     uuid_primary_key :id
 
@@ -32,6 +25,12 @@ defmodule Pointex.Europoints.Account do
     create :register do
       accept [:name]
     end
+  end
+
+  code_interface do
+    define_for Pointex.Europoints
+
+    define :register, args: [:name]
   end
 
   postgres do

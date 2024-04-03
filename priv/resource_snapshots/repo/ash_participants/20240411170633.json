@@ -11,10 +11,10 @@
       "primary_key?": true
     },
     {
-      "default": "nil",
+      "default": "false",
       "size": null,
-      "type": "text",
-      "source": "kind",
+      "type": "boolean",
+      "source": "owner",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -23,11 +23,11 @@
     {
       "default": "nil",
       "size": null,
-      "type": "bigint",
-      "source": "year",
+      "type": "uuid",
+      "source": "account_id",
       "references": {
-        "name": "ash_shows_year_fkey",
-        "table": "ash_seasons",
+        "name": "ash_participants_account_id_fkey",
+        "table": "ash_accounts",
         "schema": "public",
         "multitenancy": {
           "global": null,
@@ -35,11 +35,39 @@
           "strategy": null
         },
         "primary_key?": true,
-        "destination_attribute": "year",
+        "on_delete": null,
+        "destination_attribute": "id",
         "deferrable": false,
         "match_type": null,
         "match_with": null,
+        "on_update": null,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "watch_party_id",
+      "references": {
+        "name": "ash_participants_watch_party_id_fkey",
+        "table": "ash_watch_parties",
+        "schema": "public",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "primary_key?": true,
         "on_delete": null,
+        "destination_attribute": "id",
+        "deferrable": false,
+        "match_type": null,
+        "match_with": null,
         "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null
@@ -49,22 +77,11 @@
       "primary_key?": false
     }
   ],
-  "table": "ash_shows",
-  "hash": "B5351E57E41F35A1DBB4432F0110490658FB6999A2A5CBB5C30A7A87516465F8",
+  "table": "ash_participants",
+  "hash": "C5B4DEBC191C37ABE9237C6A2D03068297C0438DA0C15659858A87F54125E700",
   "repo": "Elixir.Pointex.Repo",
   "schema": null,
-  "identities": [
-    {
-      "name": "show_in_season",
-      "keys": [
-        "year",
-        "kind"
-      ],
-      "all_tenants?": false,
-      "index_name": "ash_shows_show_in_season_index",
-      "base_filter": null
-    }
-  ],
+  "identities": [],
   "multitenancy": {
     "global": null,
     "attribute": null,

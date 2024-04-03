@@ -3,26 +3,26 @@
     {
       "default": "nil",
       "size": null,
-      "type": "uuid",
-      "source": "id",
+      "type": "bigint",
+      "source": "year",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": true
     },
     {
-      "default": "nil",
+      "default": "true",
       "size": null,
-      "type": "text",
-      "source": "name",
+      "type": "boolean",
+      "source": "active",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
     }
   ],
-  "table": "ash_accounts",
-  "hash": "F1078BFF3B000E4D44A326AB5C08F81A3D9AB02A919CD3AD00029E0F4EF78B7F",
+  "table": "ash_seasons",
+  "hash": "70E5AE258C88F63256F50CA6CD4A02BAF944738E0C73B1CC4C1B68C432A775E8",
   "repo": "Elixir.Pointex.Repo",
   "schema": null,
   "identities": [],
