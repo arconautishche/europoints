@@ -1,4 +1,6 @@
 defmodule Pointex.Europoints.Account do
+  alias Pointex.Europoints.Participant
+
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAdmin.Resource]
@@ -18,6 +20,11 @@ defmodule Pointex.Europoints.Account do
 
     timestamps()
   end
+
+  relationships do
+    has_many :participants, Participant
+  end
+
 
   actions do
     defaults [:create, :read, :update, :destroy]

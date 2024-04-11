@@ -13,6 +13,7 @@ defmodule Pointex.Europoints.Participant do
 
   attributes do
     uuid_primary_key :id
+
     attribute :owner, :boolean do
       allow_nil? false
       default false
@@ -21,6 +22,7 @@ defmodule Pointex.Europoints.Participant do
 
   relationships do
     belongs_to :account, Europoints.Account do
+      private? false
       allow_nil? false
     end
 
@@ -48,12 +50,26 @@ defmodule Pointex.Europoints.Participant do
                on_lookup: :relate
              )
     end
+
+    read :for_account do
+      argument :account_id, :uuid do
+        allow_nil? false
+      end
+
+      prepare build(load: [:watch_party, :account])
+
+      prepare fn query, _ ->
+        require Ash.Query
+        Ash.Query.filter(query, account.id == arg(:account_id))
+      end
+    end
   end
 
   code_interface do
     define_for Pointex.Europoints
 
     define :new, args: [:account_id, :watch_party_id]
+    define :for_account, args: [:account_id], action: :for_account
   end
 
   postgres do

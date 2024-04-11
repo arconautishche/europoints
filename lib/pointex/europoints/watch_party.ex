@@ -5,6 +5,7 @@ defmodule Pointex.Europoints.WatchParty do
 
   require Ash.Resource.Change.Builtins
   alias Pointex.Europoints
+  alias Pointex.Europoints.WatchParty
 
   attributes do
     uuid_primary_key :id
@@ -19,8 +20,7 @@ defmodule Pointex.Europoints.WatchParty do
       allow_nil? false
     end
 
-    has_many :participants, Europoints.Participant do
-    end
+    has_many :participants, Europoints.Participant
   end
 
   actions do
@@ -66,6 +66,14 @@ defmodule Pointex.Europoints.WatchParty do
     define_for Pointex.Europoints
 
     define :start, args: [:name, :owner_account_id, :show_id]
+  end
+
+  def for_account(account_id) do
+    require Ash.Query
+
+    WatchParty
+    |> Ash.Query.filter(participants.account.id == ^account_id)
+    |> Europoints.read!(load: [:show, participants: :account])
   end
 
   postgres do
