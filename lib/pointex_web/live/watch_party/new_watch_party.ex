@@ -136,8 +136,13 @@ defmodule PointexWeb.WatchParty.New do
   defp show_label(:semi_final_2), do: "Semi-final 2"
   defp show_label(:final), do: "Final"
 
+  @show_order %{
+    semi_final_1: 1,
+    semi_final_2: 2,
+    final: 3
+  }
+
   defp sort_shows(shows) do
-    # TODO
-    Enum.sort_by(shows, & &1.kind)
+    Enum.sort_by(shows, & @show_order[&1.kind])
   end
 end
