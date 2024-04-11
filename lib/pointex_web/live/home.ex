@@ -1,16 +1,23 @@
 defmodule PointexWeb.Home do
   use PointexWeb, :live_view
-  alias Pointex.Model.ReadModels.MyWatchParties
+  alias Pointex.Europoints.WatchParty
   alias PointexWeb.Components.ShowLabel
 
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
     <div class={"flex flex-col md:gap-8 p-4 #{if length(@my_watch_parties) > 0, do: "gap-8", else: "gap-4"}"}>
-      <.my_watch_parties :if={@user} my_watch_parties={@my_watch_parties} />
+      <.my_watch_parties
+        :if={length(@my_watch_parties) > 0}
+        my_watch_parties={@my_watch_parties}
+        current_user={@user}
+      />
 
-      <div class={"flex flex-col gap-2 w-full #{if length(@my_watch_parties) > 0, do: "opacity-50 hover:opacity-100", else: ""}"}>
-        <h1 class="uppercase text-gray-400">No watch party yet?</h1>
+      <div class={[
+        "flex flex-col gap-2 w-full",
+        if(length(@my_watch_parties) > 0, do: "opacity-50 hover:opacity-100")
+      ]}>
+        <h1 class="uppercase text-gray-400">Start or join a watch party to begin</h1>
         <div class={[
           "w-full flex flex-col gap-4 max-w-lg bg-white shadow rounded p-4 sm:p-6 md:p-8",
           if(@user, do: "", else: "mx-auto")
@@ -27,7 +34,9 @@ defmodule PointexWeb.Home do
 
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, my_watch_parties: MyWatchParties.for(user(socket).id))}
+    account_id = user(socket).id
+
+    {:ok, assign(socket, my_watch_parties: WatchParty.for_account(account_id))}
   end
 
   defp my_watch_parties(assigns) do
@@ -36,7 +45,7 @@ defmodule PointexWeb.Home do
       <h1 class="uppercase text-gray-400">My Watch Parties</h1>
 
       <div :for={wp <- @my_watch_parties}>
-        <.watch_party_card watch_party={wp} />
+        <.watch_party_card watch_party={wp} current_user={@current_user} />
       </div>
     </div>
     """
@@ -52,12 +61,12 @@ defmodule PointexWeb.Home do
         <.icon name="hero-user-group" class="text-sky-700 h-8 w-8 mt-1" />
         <div class="flex flex-col gap-2">
           <h2><%= @watch_party.name %></h2>
-          <ShowLabel.show_label year={@watch_party.year} show_name={@watch_party.show} />
+          <ShowLabel.show_label year={@watch_party.show.year} show_name={@watch_party.show.kind} />
 
           <div class="flex gap-2 flex-wrap text-gray-500 mt-4">
             <.participant
-              :for={participant <- @watch_party.other_participants}
-              name={participant.name}
+              :for={participant <- other_participants(@watch_party.participants, @current_user)}
+              name={participant.account.name}
             />
           </div>
         </div>
@@ -73,5 +82,9 @@ defmodule PointexWeb.Home do
       <span><%= @name %></span>
     </div>
     """
+  end
+
+  defp other_participants(participants, current_user) do
+    Enum.reject(participants, &(&1.account_id == current_user.id))
   end
 end
