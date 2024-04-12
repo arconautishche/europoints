@@ -83,8 +83,8 @@ defmodule PointexWeb.WatchParty.New do
   @impl Phoenix.LiveView
   def handle_event("submit", %{"watch_party" => params}, socket) do
     case AshPhoenix.Form.submit(socket.assigns.watch_party, params: params) do
-      {:ok, _wp} ->
-        {:noreply, push_navigate(socket, to: ~p"/")}
+      {:ok, wp} ->
+        {:noreply, push_navigate(socket, to: ~p"/wp/#{wp.id}")}
 
       {:error, form} ->
         {:noreply, assign(socket, watch_party: form)}
