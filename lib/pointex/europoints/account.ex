@@ -25,7 +25,6 @@ defmodule Pointex.Europoints.Account do
     has_many :participants, Participant
   end
 
-
   actions do
     defaults [:create, :read, :update, :destroy]
 

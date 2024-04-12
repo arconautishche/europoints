@@ -12,13 +12,6 @@ defmodule Pointex.Model.Aggregates.WatchPartyTest do
 
     initial_state =
       %WatchParty{}
-      |> WatchParty.apply(%Events.WatchPartyStarted{
-        id: wp_id,
-        name: "test party",
-        owner_id: owner_id,
-        year: 2023,
-        show: :final
-      })
       |> WatchParty.apply(%Events.ParticipantJoinedWatchParty{
         id: wp_id,
         participant_id: participant_1_id,

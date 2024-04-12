@@ -88,5 +88,4 @@ defmodule Pointex.Europoints.Season do
       type: :create
     )
   end
-
 end

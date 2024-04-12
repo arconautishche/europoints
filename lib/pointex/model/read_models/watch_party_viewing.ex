@@ -30,16 +30,6 @@ defmodule Pointex.Model.ReadModels.WatchPartyViewing do
     alias Pointex.Model.ReadModels.WatchPartyViewing
     alias Pointex.Model.ReadModels.Shows
 
-    project(%Events.WatchPartyStarted{} = event, fn multi ->
-      %{id: id, owner_id: participant_id, year: year, show: show} = event
-
-      Ecto.Multi.insert(multi, :watch_party_viewing, %WatchPartyViewing.Schema{
-        id: id,
-        participant_id: participant_id,
-        songs: all_songs(year, String.to_atom(show))
-      })
-    end)
-
     project(%Events.ParticipantJoinedWatchParty{} = event, fn multi ->
       %{id: id, participant_id: participant_id, year: year, show: show} = event
 
