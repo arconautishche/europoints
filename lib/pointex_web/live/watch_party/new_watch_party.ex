@@ -143,6 +143,6 @@ defmodule PointexWeb.WatchParty.New do
   }
 
   defp sort_shows(shows) do
-    Enum.sort_by(shows, & @show_order[&1.kind])
+    Enum.sort_by(shows, &@show_order[&1.kind])
   end
 end

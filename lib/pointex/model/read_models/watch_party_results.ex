@@ -34,17 +34,6 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
     alias Ecto.Changeset
     alias Pointex.Model.Events
     alias Pointex.Model.ReadModels.WatchPartyResults
-    alias Pointex.Model.ReadModels.Shows
-
-    project(%Events.WatchPartyStarted{} = event, fn multi ->
-      %{id: id, owner_id: participant_id, year: year, show: show} = event
-
-      Ecto.Multi.insert(multi, :watch_party_results, %WatchPartyResults.Schema{
-        id: id,
-        songs: all_songs(year, String.to_atom(show)),
-        predictions_top: [new_participant(participant_id)]
-      })
-    end)
 
     project(%Events.ParticipantJoinedWatchParty{} = event, fn multi ->
       %{id: id, participant_id: participant_id} = event
@@ -114,18 +103,6 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
     def after_update(event, _metadata, _changes) do
       Endpoint.broadcast("watch_party_results:#{event.watch_party_id}", "updated", %{})
       :ok
-    end
-
-    defp all_songs(year, show) do
-      year
-      |> Shows.songs(show)
-      |> Enum.map(fn song_details ->
-        %{
-          id: song_details.country,
-          details: song_details,
-          points: 0
-        }
-      end)
     end
 
     defp new_participant(id) do

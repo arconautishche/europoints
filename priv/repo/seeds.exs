@@ -32,4 +32,4 @@ alias Pointex.Europoints
 #   |> Europoints.get!(country: country, year: 2023)
 #   |> Ash.Changeset.for_update(:update, %{order_in_final: ro})
 #   |> Europoints.update!()
-#miend)
+# miend)

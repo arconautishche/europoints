@@ -27,24 +27,6 @@ defmodule Pointex.Model.ReadModels.MyWatchParties do
     alias Pointex.Model.ReadModels.MyWatchParties
     alias Ecto.Changeset
 
-    project(%Events.WatchPartyStarted{} = event, fn multi ->
-      Ecto.Multi.insert(
-        multi,
-        :my_watch_parties,
-        %MyWatchParties.Schema{}
-        |> Changeset.cast(
-          %{
-            id: event.id,
-            participant_id: event.owner_id,
-            name: event.name,
-            year: event.year,
-            show: event.show
-          },
-          [:id, :participant_id, :name, :year, :show]
-        )
-      )
-    end)
-
     project(%Events.ParticipantJoinedWatchParty{} = event, fn multi ->
       Ecto.Multi.insert(
         multi,
