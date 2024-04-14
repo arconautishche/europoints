@@ -96,7 +96,7 @@ defmodule Pointex.Model.ReadModels.Shows do
       languages: ["English"],
       song: "Unicorn"
     },
-    "Czech Republic" => %{
+    "Czechia" => %{
       artist: "Vesna",
       flag: "🇨🇿",
       img:

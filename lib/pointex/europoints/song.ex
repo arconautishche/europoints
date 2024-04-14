@@ -12,10 +12,6 @@ defmodule Pointex.Europoints.Song do
       allow_nil? false
     end
 
-    attribute :flag, :string do
-      allow_nil? false
-    end
-
     attribute :artist, :string do
       allow_nil? false
     end
@@ -55,6 +51,10 @@ defmodule Pointex.Europoints.Song do
     end
   end
 
+  calculations do
+    calculate :flag, :string, Europoints.Song.FlagForSongCountry
+  end
+
   identities do
     identity :song_in_season, [:year, :country]
   end
@@ -65,7 +65,7 @@ defmodule Pointex.Europoints.Song do
     create :register do
       primary? true
 
-      accept [:country, :flag, :artist, :name, :img]
+      accept [:country, :artist, :name, :img]
 
       argument :season, :integer do
         allow_nil? false
