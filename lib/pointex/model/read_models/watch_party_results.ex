@@ -35,22 +35,6 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
     alias Pointex.Model.Events
     alias Pointex.Model.ReadModels.WatchPartyResults
 
-    project(%Events.ParticipantJoinedWatchParty{} = event, fn multi ->
-      %{id: id, participant_id: participant_id} = event
-
-      results = Repo.get(WatchPartyResults.Schema, id)
-
-      update =
-        results
-        |> Changeset.change()
-        |> Changeset.put_embed(
-          :predictions_top,
-          results.predictions_top ++ [new_participant(participant_id)]
-        )
-
-      Ecto.Multi.update(multi, :watch_party_results, update)
-    end)
-
     project(%Events.WatchPartyTotalsUpdated{} = event, fn multi ->
       %{watch_party_id: id, totals: totals} = event
 
@@ -103,10 +87,6 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
     def after_update(event, _metadata, _changes) do
       Endpoint.broadcast("watch_party_results:#{event.watch_party_id}", "updated", %{})
       :ok
-    end
-
-    defp new_participant(id) do
-      %{participant_id: id, done_voting: false, score: 0}
     end
 
     defp replace_totals(songs, totals) do
