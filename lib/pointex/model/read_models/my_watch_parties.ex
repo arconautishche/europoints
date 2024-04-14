@@ -47,16 +47,13 @@ defmodule Pointex.Model.ReadModels.MyWatchParties do
   end
 
   import Ecto.Query
-  alias Pointex.Model.ReadModels.Participants
   alias Pointex.Repo
 
   def for(participant_id) do
-    names = Participants.all_names()
-
     __MODULE__.Schema
     |> where(participant_id: ^participant_id)
     |> Repo.all()
-    |> Enum.map(fn wp -> with_names_of_participants(wp, names) end)
+    |> Enum.map(fn wp -> with_names_of_participants(wp) end)
   end
 
   def by_id(id_str) do
@@ -73,11 +70,11 @@ defmodule Pointex.Model.ReadModels.MyWatchParties do
     end
   end
 
-  defp with_names_of_participants(wp, names \\ nil)
-  defp with_names_of_participants(nil, _names), do: nil
+  defp with_names_of_participants(wp)
+  defp with_names_of_participants(nil), do: nil
 
-  defp with_names_of_participants(%__MODULE__.Schema{id: wp_id} = wp, names) do
-    names = names || Participants.all_names()
+  defp with_names_of_participants(%__MODULE__.Schema{id: wp_id} = wp) do
+    names = []
 
     other_participants =
       __MODULE__.Schema
