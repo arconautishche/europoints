@@ -46,7 +46,6 @@ defmodule PointexWeb.WatchParty.New do
      socket
      |> assign(page_title: "New party")
      |> assign(seasons: seasons)
-     # |> assign(watch_party: Phoenix.Component.to_form(%{"name" => "#{user_name}'s party"}))
      |> assign(
        :watch_party,
        AshPhoenix.Form.for_create(WatchParty, :start,

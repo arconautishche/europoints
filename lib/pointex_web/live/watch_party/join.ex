@@ -1,8 +1,8 @@
 defmodule PointexWeb.WatchParty.Join do
   use PointexWeb, :live_view
+  alias Pointex.Europoints.WatchParty
+  alias Pointex.Europoints
   alias PointexWeb.Components.ShowLabel
-  alias Pointex.Model.ReadModels.MyWatchParties
-  alias Pointex.Model.Commands
 
   @impl Phoenix.LiveView
   def render(assigns) do
@@ -16,7 +16,11 @@ defmodule PointexWeb.WatchParty.Join do
           <span :if={@watch_party_details}>You're about to join</span>
         </div>
 
-        <.watch_party_card :if={@watch_party_details} watch_party={@watch_party_details} />
+        <.watch_party_card
+          :if={@watch_party_details}
+          watch_party={@watch_party_details}
+          current_user={@user}
+        />
 
         <.simple_form
           :let={f}
@@ -62,53 +66,36 @@ defmodule PointexWeb.WatchParty.Join do
   end
 
   @impl Phoenix.LiveView
-  def handle_event("validate", user_input, socket) do
-    case Commands.JoinWatchParty.new(command_params_from(user_input, socket.assigns)) do
-      {:ok, command} ->
-        {:noreply, assign(socket, found_wp_details(command.id))}
-
-      {:errors, _} ->
-        {:noreply, assign(socket, valid?: false)}
-    end
+  def handle_event("validate", %{"watch_party" => params}, socket) do
+    {:noreply, assign(socket, found_wp_details(params["id"]))}
   end
 
   @impl Phoenix.LiveView
-  def handle_event("submit", user_input, socket) do
-    %{id: wp_id} = params = command_params_from(user_input, socket.assigns)
-
-    case Commands.JoinWatchParty.dispatch_new(params) do
-      :ok ->
-        {:noreply, push_navigate(socket, to: ~p"/wp/#{wp_id}/viewing")}
-
-      {:errors, _} ->
-        {:noreply, assign(socket, valid?: false)}
+  def handle_event("submit", %{"watch_party" => params}, socket) do
+    with %{watch_party_details: %WatchParty{} = watch_party} <- found_wp_details(params["id"]),
+         {:ok, %WatchParty{}} <- WatchParty.join(watch_party, user(socket).id) do
+      {:noreply, push_navigate(socket, to: ~p"/wp/#{watch_party.id}/viewing")}
+    else
+      _ -> {:noreply, assign(socket, valid?: false)}
     end
-  end
-
-  @impl Phoenix.LiveView
-  def handle_event("select_show", params, socket) do
-    show = String.to_existing_atom(params["show"])
-
-    {:noreply, assign(socket, selected_show: show)}
   end
 
   defp found_wp_details(wp_id) do
-    wp_by_id = MyWatchParties.by_id(wp_id)
+    case Europoints.get(WatchParty, wp_id, load: [:show, participants: :account]) do
+      {:ok, %WatchParty{} = wp} ->
+        %{
+          watch_party: %{"id" => wp.id},
+          watch_party_details: wp,
+          valid?: true
+        }
 
-    %{
-      watch_party: %{"id" => wp_id},
-      watch_party_details: wp_by_id,
-      valid?: wp_by_id != nil
-    }
-  end
-
-  defp command_params_from(user_input, assigns) do
-    %{"watch_party" => %{"id" => id}} = user_input
-
-    %{
-      id: id,
-      participant_id: user(assigns).id
-    }
+      _ ->
+        %{
+          watch_party: %{"id" => wp_id},
+          watch_party_details: nil,
+          valid?: false
+        }
+    end
   end
 
   defp watch_party_card(assigns) do
@@ -118,12 +105,12 @@ defmodule PointexWeb.WatchParty.Join do
         <.icon name="hero-user-group" class="text-sky-700 h-8 w-8 mt-1" />
         <div class="flex flex-col gap-2">
           <h2><%= @watch_party.name %></h2>
-          <ShowLabel.show_label year={@watch_party.year} show_name={@watch_party.show} />
+          <ShowLabel.show_label year={@watch_party.show.year} show_name={@watch_party.show.kind} />
 
           <div class="flex gap-2 flex-wrap text-gray-500 mt-4">
             <.participant
-              :for={participant <- @watch_party.other_participants}
-              name={participant.name}
+              :for={participant <- other_participants(@watch_party.participants, @current_user)}
+              name={participant.account.name}
             />
           </div>
         </div>
@@ -139,5 +126,9 @@ defmodule PointexWeb.WatchParty.Join do
       <span><%= @name %></span>
     </div>
     """
+  end
+
+  defp other_participants(participants, current_user) do
+    Enum.reject(participants, &(&1.account_id == current_user.id))
   end
 end
