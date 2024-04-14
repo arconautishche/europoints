@@ -116,11 +116,10 @@ defmodule Pointex.Model.ReadModels.WatchPartyResults do
     end
   end
 
-  alias Pointex.Model.ReadModels.Participants
   alias Pointex.Repo
 
   def get(id) do
-    names = Participants.all_names()
+    names = []
 
     __MODULE__.Schema
     |> Repo.get(id)
