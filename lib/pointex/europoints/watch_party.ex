@@ -60,12 +60,31 @@ defmodule Pointex.Europoints.WatchParty do
         )
       end
     end
+
+    update :join do
+      argument :account_id, :uuid do
+        allow_nil? false
+      end
+
+      change fn changeset, _opts ->
+        Ash.Changeset.manage_relationship(
+          changeset,
+          :participants,
+          %{
+            account_id: changeset.arguments[:account_id],
+            owner: false
+          },
+          type: :create
+        )
+      end
+    end
   end
 
   code_interface do
     define_for Pointex.Europoints
 
     define :start, args: [:name, :owner_account_id, :show_id]
+    define :join, args: [:account_id]
   end
 
   def for_account(account_id) do
