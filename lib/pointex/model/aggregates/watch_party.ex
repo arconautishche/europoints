@@ -5,25 +5,6 @@ defmodule Pointex.Model.Aggregates.WatchParty do
   alias Pointex.Model.Commands
   alias Pointex.Model.Events
 
-  def execute(%__MODULE__{id: nil}, %Commands.JoinWatchParty{}) do
-    {:error, :does_not_exist}
-  end
-
-  def execute(%__MODULE__{} = watch_party, %Commands.JoinWatchParty{} = command) do
-    if command.participant_id in ([watch_party.owner_id] ++ Map.keys(watch_party.participants)) do
-      []
-    else
-      %Events.ParticipantJoinedWatchParty{
-        id: command.id,
-        participant_id: command.participant_id,
-        name: watch_party.name,
-        owner_id: watch_party.owner_id,
-        year: watch_party.year,
-        show: watch_party.show
-      }
-    end
-  end
-
   def execute(%__MODULE__{} = watch_party, %Commands.ToggleSongShortlisted{} = command) do
     with %{} = participant <- participant(watch_party, command.participant_id) do
       [
@@ -127,17 +108,6 @@ defmodule Pointex.Model.Aggregates.WatchParty do
 
   # state mutators
 
-  def apply(%__MODULE__{} = watch_party, %Events.ParticipantJoinedWatchParty{} = event) do
-    %__MODULE__{
-      watch_party
-      | participants:
-          watch_party.participants
-          |> Map.to_list()
-          |> Enum.concat([new_participant(event.participant_id)])
-          |> Enum.into(%{})
-    }
-  end
-
   def apply(%__MODULE__{} = watch_party, %Events.SongShortlistedChanged{} = event) do
     participant = participant(watch_party, event.participant_id)
 
@@ -184,16 +154,6 @@ defmodule Pointex.Model.Aggregates.WatchParty do
 
   def apply(%__MODULE__{} = watch_party, %Events.RealResultsPosted{}) do
     watch_party
-  end
-
-  defp new_participant(id) do
-    {id,
-     %{
-       shortlisted: [],
-       noped: [],
-       votes_final?: false,
-       top_ten: PossiblePoints.asc() |> Enum.map(&{&1, nil}) |> Enum.into(%{})
-     }}
   end
 
   defp participant(state, id) do
