@@ -162,13 +162,7 @@ defmodule PointexWeb.WatchParty.Voting do
     <section class="w-full">
       <.section_header label={@label} class={@header_class} />
       <div class="flex flex-col divide-y divide-gray-300">
-        <.song_with_no_points
-          :for={song <- @songs}
-          song={song}
-          selected={song.id == @selected_id}
-          used_points={@used_points}
-          unused_points={@unused_points}
-        />
+        <.song_with_no_points :for={song <- @songs} song={song} selected={song.id == @selected_id} used_points={@used_points} unused_points={@unused_points} />
       </div>
     </section>
     """
@@ -242,11 +236,7 @@ defmodule PointexWeb.WatchParty.Voting do
   defp song_with_no_points(assigns) do
     ~H"""
     <div class={[if(@selected, do: "bg-white shadow", else: "")]}>
-      <div
-        phx-click="toggle_selected"
-        phx-value-id={@song.id}
-        class={["flex items-top justify-between gap-2 hover:bg-sky-100"]}
-      >
+      <div phx-click="toggle_selected" phx-value-id={@song.id} class={["flex items-top justify-between gap-2 hover:bg-sky-100"]}>
         <SongComponents.song_container song={@song}>
           <div class="flex px-2 sm:px-4 py-3">
             <SongComponents.ro song={@song} />
@@ -265,23 +255,13 @@ defmodule PointexWeb.WatchParty.Voting do
         class="flex flex-col overflow-x-auto bg-gradient-to-b from-gray-200 to-gray-100/50 shadow-inner text-2xl border-t border-gray-200 px-2 origin-top transition-all scale-y-0 py-0 opacity-50"
       >
         <div class="flex">
-          <.points_button
-            :for={points <- @unused_points}
-            points={points}
-            song_id={@song.id}
-            used={false}
-          />
+          <.points_button :for={points <- @unused_points} points={points} song_id={@song.id} used={false} />
         </div>
         <span :if={@used_points != []} class="mt-3 mb-1 mx-2 text-gray-400 text-xs">
           Already used
         </span>
         <div class="flex">
-          <.points_button
-            :for={points <- @used_points}
-            points={points}
-            song_id={@song.id}
-            used={true}
-          />
+          <.points_button :for={points <- @used_points} points={points} song_id={@song.id} used={true} />
         </div>
       </div>
     </div>
@@ -290,12 +270,7 @@ defmodule PointexWeb.WatchParty.Voting do
 
   defp points_button(assigns) do
     ~H"""
-    <div
-      class="px-2 bg-transparent cursor-pointer"
-      phx-click="give_points"
-      phx-value-id={@song_id}
-      phx-value-points={@points}
-    >
+    <div class="px-2 bg-transparent cursor-pointer" phx-click="give_points" phx-value-id={@song_id} phx-value-points={@points}>
       <div class={"flex justify-center rounded-full #{if @used, do: "bg-sky-100 border border-sky-600 py-2 text-sky-800", else: "bg-sky-600 py-3 text-white/80"}"}>
         <span class={"text-center #{if @used, do: "w-12 text-xl", else: "w-14"}"}>
           <%= @points %>

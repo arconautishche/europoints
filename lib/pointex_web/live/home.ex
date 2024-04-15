@@ -7,11 +7,7 @@ defmodule PointexWeb.Home do
   def render(assigns) do
     ~H"""
     <div class={"flex flex-col md:gap-8 p-4 #{if length(@my_watch_parties) > 0, do: "gap-8", else: "gap-4"}"}>
-      <.my_watch_parties
-        :if={length(@my_watch_parties) > 0}
-        my_watch_parties={@my_watch_parties}
-        current_user={@user}
-      />
+      <.my_watch_parties :if={length(@my_watch_parties) > 0} my_watch_parties={@my_watch_parties} current_user={@user} />
 
       <div class={[
         "flex flex-col gap-2 w-full",
@@ -64,10 +60,7 @@ defmodule PointexWeb.Home do
           <ShowLabel.show_label year={@watch_party.show.year} show_name={@watch_party.show.kind} />
 
           <div class="flex gap-2 flex-wrap text-gray-500 mt-4">
-            <.participant
-              :for={participant <- other_participants(@watch_party.participants, @current_user)}
-              name={participant.account.name}
-            />
+            <.participant :for={participant <- other_participants(@watch_party.participants, @current_user)} name={participant.account.name} />
           </div>
         </div>
       </div>

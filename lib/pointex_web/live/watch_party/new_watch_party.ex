@@ -118,8 +118,7 @@ defmodule PointexWeb.WatchParty.New do
       "transition",
       "hover:bg-sky-300",
       if(@selected,
-        do:
-          "bg-gradient-to-br from-amber-500 to-amber-400 border-amber-600 text-amber-900 shadow-none hover:bg-amber-400",
+        do: "bg-gradient-to-br from-amber-500 to-amber-400 border-amber-600 text-amber-900 shadow-none hover:bg-amber-400",
         else: "border-sky-600 text-sky-900"
       )
     ]}>

@@ -27,10 +27,7 @@ defmodule PointexWeb.WatchParty.Results do
         </div>
       </div>
       <div :if={@results_visible} class="flex flex-col sm:flex-row gap-4 my-2">
-        <.still_voting
-          :if={@still_voting_participants != []}
-          participants={@still_voting_participants}
-        />
+        <.still_voting :if={@still_voting_participants != []} participants={@still_voting_participants} />
         <.wp_totals songs={@wp_totals} />
       </div>
     </Nav.layout>
@@ -93,10 +90,7 @@ defmodule PointexWeb.WatchParty.Results do
     ~H"""
     <div class="flex">
       <div class="grow flex w-72 transition-all">
-        <div
-          :if={@place > 0}
-          class={"w-8 font-bold text-black/25 text-2xl text-center " <> song_bg(@place)}
-        >
+        <div :if={@place > 0} class={"w-8 font-bold text-black/25 text-2xl text-center " <> song_bg(@place)}>
           <%= @place %>
         </div>
         <SongComponents.description song={@song} class={song_bg(@place)} />

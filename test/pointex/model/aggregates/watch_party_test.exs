@@ -13,12 +13,7 @@ defmodule Pointex.Model.Aggregates.WatchPartyTest do
     initial_state =
       %WatchParty{}
 
-    {:ok,
-     started_wp: initial_state,
-     owner_id: owner_id,
-     wp_id: wp_id,
-     participant_1_id: participant_1_id,
-     participant_2_id: participant_2_id}
+    {:ok, started_wp: initial_state, owner_id: owner_id, wp_id: wp_id, participant_1_id: participant_1_id, participant_2_id: participant_2_id}
   end
 
   describe "execute GivePointsToSong, top 10 by participant events" do
