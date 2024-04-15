@@ -4,7 +4,6 @@ defmodule PointexWeb.WatchParty.Viewing do
   alias Pointex.Europoints.Participant
   alias Pointex.Europoints.WatchParty
   alias Pointex.Europoints.Song
-  alias Pointex.Model.Commands
   alias PointexWeb.Endpoint
   alias PointexWeb.WatchParty.Nav
   alias PointexWeb.WatchParty.SongComponents
@@ -49,16 +48,10 @@ defmodule PointexWeb.WatchParty.Viewing do
   end
 
   def handle_event("nope", %{"id" => song_id}, socket) do
-    %{wp_id: wp_id} = socket.assigns
+    %{participant: participant} = socket.assigns
 
-    :ok =
-      Commands.ToggleSongNoped.dispatch_new(%{
-        watch_party_id: wp_id,
-        participant_id: user(socket).id,
-        song_id: song_id
-      })
-
-    {:noreply, socket}
+    {:ok, participant} = Participant.toggle_noped(participant, song_id)
+    {:noreply, assign(socket, participant: participant)}
   end
 
   @impl Phoenix.LiveView

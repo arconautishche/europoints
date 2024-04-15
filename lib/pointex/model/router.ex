@@ -3,8 +3,6 @@ defmodule Pointex.Model.Router do
   alias Pointex.Model.Aggregates
   alias Pointex.Model.Commands
 
-  dispatch(Commands.ToggleSongShortlisted, to: Aggregates.WatchParty, identity: :watch_party_id)
-  dispatch(Commands.ToggleSongNoped, to: Aggregates.WatchParty, identity: :watch_party_id)
   dispatch(Commands.GivePointsToSong, to: Aggregates.WatchParty, identity: :watch_party_id)
 
   dispatch(Commands.FinalizeParticipantsVote,
