@@ -1,8 +1,9 @@
 defmodule PointexWeb.WatchParty.SongComponents do
   use PointexWeb, :html
   alias Pointex.Europoints.Song
+  alias Pointex.Europoints.Participant
 
-  def prepare(%Song{} = song, show_kind) do
+  def prepare(%Song{} = song, show_kind, %Participant{} = participant) do
     song
     |> Map.take([:year, :country, :flag, :img, :name, :artist])
     |> Map.put(:id, song.country)
@@ -14,7 +15,7 @@ defmodule PointexWeb.WatchParty.SongComponents do
         :final -> song.order_in_final
       end
     )
-    |> Map.put(:shortlisted, false)
+    |> Map.put(:shortlisted, song.country in participant.shortlist)
     |> Map.put(:noped, false)
   end
 
