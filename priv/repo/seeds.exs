@@ -99,7 +99,11 @@ alias Pointex.Europoints.Song
     img: "https://eurovision.tv" <> image_url
   }
 end)
-|> Europoints.bulk_create!(Song, :register, return_records?: true, upsert?: true, upsert_fields: [:artist, :name, :img])
+|> Europoints.bulk_create!(Song, :register,
+  return_records?: true,
+  upsert?: true,
+  upsert_fields: [:artist, :name, :img]
+)
 
 sf1_2024 = %{
   1 => "Cyprus",

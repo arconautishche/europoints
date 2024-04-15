@@ -6,13 +6,15 @@ defmodule Pointex.Europoints.Show do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAdmin.Resource]
 
+  @kinds [:semi_final_1, :semi_final_2, :final]
+
   attributes do
     uuid_primary_key :id
 
     attribute :kind, :atom do
       allow_nil? false
 
-      constraints one_of: [:semi_final_1, :semi_final_2, :final]
+      constraints one_of: @kinds
     end
   end
 
@@ -62,4 +64,6 @@ defmodule Pointex.Europoints.Show do
     table "ash_shows"
     repo Pointex.Repo
   end
+
+  def kinds(), do: @kinds
 end

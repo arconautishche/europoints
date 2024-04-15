@@ -7,13 +7,7 @@ defmodule PointexWeb.Login do
     <section class="rounded bg-white/50 border border-gray-200 pb-10 px-4 sm:px-6 md:px-8 w-full sm:w-3/4 md:w-2/3 mx-auto">
       <p class="mt-4 opacity-75 font-light text-xl text-center">👋 Welcome back!</p>
 
-      <.simple_form
-        :let={f}
-        for={@login_params}
-        as={:login_params}
-        phx-change="validate"
-        action={~p"/login?return_to=#{@return_to}"}
-      >
+      <.simple_form :let={f} for={@login_params} as={:login_params} phx-change="validate" action={~p"/login?return_to=#{@return_to}"}>
         <.input field={f[:user_id]} placeholder="Your unique ID?" />
         <:actions>
           <.button class="grow" disabled={!@valid?} type="submit">Let me in</.button>

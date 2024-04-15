@@ -4,6 +4,7 @@ defmodule Pointex.Europoints.Song do
     extensions: [AshAdmin.Resource],
     fragments: []
 
+  require Ash.Query
   alias Pointex.Europoints
 
   attributes do
@@ -77,15 +78,49 @@ defmodule Pointex.Europoints.Song do
              )
     end
 
-    read :songs_in_season do
+    read :songs_in_show do
       argument :year, :integer do
         allow_nil? false
       end
 
-      prepare build(sort: [country: :asc])
+      @show_kinds Europoints.Show.kinds()
+      argument :kind, :atom do
+        constraints one_of: @show_kinds
+      end
 
-      filter expr(year == ^arg(:year))
+      prepare fn query, _context ->
+        year_arg = Ash.Query.get_argument(query, :year)
+        kind_arg = Ash.Query.get_argument(query, :kind)
+
+        filtered_on_year =
+          query
+          |> Ash.Query.filter(year == ^year_arg)
+          |> Ash.Query.load([:flag])
+
+        case kind_arg do
+          :semi_final_1 ->
+            filtered_on_year
+            |> Ash.Query.filter(not is_nil(order_in_sf1))
+            |> Ash.Query.sort([:order_in_sf1])
+
+          :semi_final_2 ->
+            filtered_on_year
+            |> Ash.Query.filter(not is_nil(order_in_sf2))
+            |> Ash.Query.sort([:order_in_sf2])
+
+          :final ->
+            filtered_on_year
+            |> Ash.Query.filter(not is_nil(final))
+            |> Ash.Query.sort([:final])
+        end
+      end
     end
+  end
+
+  code_interface do
+    define_for Europoints
+
+    define :songs_in_show, args: [:year, :kind]
   end
 
   postgres do

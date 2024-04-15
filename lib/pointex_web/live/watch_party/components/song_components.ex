@@ -1,12 +1,28 @@
 defmodule PointexWeb.WatchParty.SongComponents do
   use PointexWeb, :html
-  import Pointex.Model.ReadModels.Shows
+  alias Pointex.Europoints.Song
+
+  def prepare(%Song{} = song, show_kind) do
+    song
+    |> Map.take([:year, :country, :flag, :img, :name, :artist])
+    |> Map.put(:id, song.country)
+    |> Map.put(
+      :order,
+      case show_kind do
+        :semi_final_1 -> song.order_in_sf1
+        :semi_final_2 -> song.order_in_sf2
+        :final -> song.order_in_final
+      end
+    )
+    |> Map.put(:shortlisted, false)
+    |> Map.put(:noped, false)
+  end
 
   def song_container(assigns) do
     ~H"""
     <div class="relative h-36 grow flex flex-col">
       <div class="absolute w-full h-full opacity-50 overflow-clip">
-        <img src={song_details(@song.id)[:img]} class="object-cover w-full sm:max-w-sm" />
+        <img src={@song.img} class="object-cover w-full sm:max-w-sm md:ml-12" />
       </div>
       <div class="absolute w-full h-full bg-gradient-to-b from-white/70 via-white/30 to-white/50" />
       <div class="relative grow">
@@ -25,7 +41,7 @@ defmodule PointexWeb.WatchParty.SongComponents do
       <div class="relative flex flex-col gap-2">
         <div class="flex gap-2">
           <div class="text-4xl">
-            <%= song_details(@song.id).flag %>
+            <%= @song.flag %>
           </div>
           <div class="text-xl pt-1">
             <%= @song.id %>
@@ -34,11 +50,11 @@ defmodule PointexWeb.WatchParty.SongComponents do
         <div class="flex flex-col gap-2 ml-6">
           <div class="flex gap-2 items-center text-black/80">
             <.icon name="hero-microphone" class="text-sky-400 w-4 h-4" />
-            <%= song_details(@song.id).artist %>
+            <%= @song.artist %>
           </div>
           <div class="flex gap-2 items-center text-black/80">
             <.icon name="hero-musical-note" class="text-sky-400 w-4 h-4" />
-            <%= song_details(@song.id).song %>
+            <%= @song.name %>
           </div>
         </div>
       </div>
@@ -49,7 +65,7 @@ defmodule PointexWeb.WatchParty.SongComponents do
   def ro(assigns) do
     ~H"""
     <div class="w-8 font-bold text-black/25 text-3xl">
-      <%= @song.details["ro"] %>
+      <%= @song.order %>
     </div>
     """
   end

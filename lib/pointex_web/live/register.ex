@@ -8,13 +8,7 @@ defmodule PointexWeb.Register do
     <section class="rounded bg-white/50 border border-gray-200 pb-10 px-4 sm:px-6 md:px-8 w-full sm:w-3/4 md:w-2/3 mx-auto">
       <p class="mt-4 opacity-75 font-light text-xl text-center">👋 Hey there!</p>
 
-      <.simple_form
-        :let={f}
-        for={@register_params}
-        as={:register_params}
-        phx-change="validate"
-        action={~p"/register?return_to=#{@return_to}"}
-      >
+      <.simple_form :let={f} for={@register_params} as={:register_params} phx-change="validate" action={~p"/register?return_to=#{@return_to}"}>
         <.input field={f[:user_id]} type="hidden" />
         <.input field={f[:user_name]} placeholder="What's your name?" />
         <:actions>

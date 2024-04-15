@@ -16,25 +16,10 @@ defmodule PointexWeb.WatchParty.Join do
           <span :if={@watch_party_details}>You're about to join</span>
         </div>
 
-        <.watch_party_card
-          :if={@watch_party_details}
-          watch_party={@watch_party_details}
-          current_user={@user}
-        />
+        <.watch_party_card :if={@watch_party_details} watch_party={@watch_party_details} current_user={@user} />
 
-        <.simple_form
-          :let={f}
-          for={@watch_party}
-          as={:watch_party}
-          phx-change="validate"
-          phx-submit="submit"
-        >
-          <.input
-            field={f[:id]}
-            placeholder="Enter the ID you've received"
-            autocomplete="off"
-            input_class={if @watch_party_details, do: "bg-green-100 !text-xs", else: ""}
-          />
+        <.simple_form :let={f} for={@watch_party} as={:watch_party} phx-change="validate" phx-submit="submit">
+          <.input field={f[:id]} placeholder="Enter the ID you've received" autocomplete="off" input_class={if @watch_party_details, do: "bg-green-100 !text-xs", else: ""} />
 
           <:actions>
             <.button class="grow" disabled={!@valid?} type="submit">Let's do this!</.button>
@@ -108,10 +93,7 @@ defmodule PointexWeb.WatchParty.Join do
           <ShowLabel.show_label year={@watch_party.show.year} show_name={@watch_party.show.kind} />
 
           <div class="flex gap-2 flex-wrap text-gray-500 mt-4">
-            <.participant
-              :for={participant <- other_participants(@watch_party.participants, @current_user)}
-              name={participant.account.name}
-            />
+            <.participant :for={participant <- other_participants(@watch_party.participants, @current_user)} name={participant.account.name} />
           </div>
         </div>
       </div>

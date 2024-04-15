@@ -1,7 +1,9 @@
 defmodule PointexWeb.WatchParty.Viewing do
+  alias Pointex.Europoints
+  alias Pointex.Europoints.WatchParty
   use PointexWeb, :live_view
   alias PointexWeb.Endpoint
-  alias Pointex.Model.ReadModels.WatchPartyViewing
+  alias Pointex.Europoints.Song
   alias Pointex.Model.Commands
   alias PointexWeb.WatchParty.Nav
   alias PointexWeb.WatchParty.SongComponents
@@ -67,9 +69,14 @@ defmodule PointexWeb.WatchParty.Viewing do
   end
 
   defp load_data(wp_id, user_id) do
-    read_model = WatchPartyViewing.get(wp_id, user_id) || %{songs: []}
-
-    %{wp_id: wp_id, songs: read_model.songs}
+    with {:ok, %{show: show, participants: participants}} <- Europoints.get(WatchParty, wp_id, load: [:show, :participants]),
+         %{} = participant <- Enum.find(participants, &(&1.account_id == user_id)),
+         {:ok, songs} <- Song.songs_in_show(show.year, show.kind) do
+      dbg(participant)
+      %{wp_id: wp_id, songs: Enum.map(songs, &SongComponents.prepare(&1, show.kind))}
+    else
+      _ -> %{wp_id: wp_id, songs: []}
+    end
   end
 
   defp song_viewing(assigns) do
