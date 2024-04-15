@@ -18,6 +18,8 @@ defmodule Pointex.Europoints.Participant do
       allow_nil? false
       default false
     end
+
+    attribute :shortlist, {:array, :string}, default: []
   end
 
   relationships do
@@ -63,6 +65,26 @@ defmodule Pointex.Europoints.Participant do
         Ash.Query.filter(query, account.id == arg(:account_id))
       end
     end
+
+    update :toggle_shortlisted do
+      argument :country, :string do
+        allow_nil? false
+      end
+
+      change fn changeset, _ ->
+        current_shortlist = Ash.Changeset.get_attribute(changeset, :shortlist) || []
+        toggled_country = Ash.Changeset.get_argument(changeset, :country)
+
+        updated_shortlist =
+          if toggled_country in current_shortlist do
+            Enum.reject(current_shortlist, &(&1 == toggled_country))
+          else
+            Enum.concat(current_shortlist, [toggled_country])
+          end
+
+        Ash.Changeset.change_attribute(changeset, :shortlist, updated_shortlist)
+      end
+    end
   end
 
   code_interface do
@@ -70,6 +92,7 @@ defmodule Pointex.Europoints.Participant do
 
     define :new, args: [:account_id, :watch_party_id]
     define :for_account, args: [:account_id], action: :for_account
+    define :toggle_shortlisted, args: [:country]
   end
 
   postgres do

@@ -120,6 +120,7 @@ defmodule Pointex.Europoints.Song do
   code_interface do
     define_for Europoints
 
+    define :register
     define :songs_in_show, args: [:year, :kind]
   end
 

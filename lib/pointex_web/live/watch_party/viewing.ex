@@ -1,15 +1,19 @@
 defmodule PointexWeb.WatchParty.Viewing do
-  alias Pointex.Europoints
-  alias Pointex.Europoints.WatchParty
   use PointexWeb, :live_view
-  alias PointexWeb.Endpoint
+  alias Pointex.Europoints
+  alias Pointex.Europoints.Participant
+  alias Pointex.Europoints.WatchParty
   alias Pointex.Europoints.Song
   alias Pointex.Model.Commands
+  alias PointexWeb.Endpoint
   alias PointexWeb.WatchParty.Nav
   alias PointexWeb.WatchParty.SongComponents
 
   @impl Phoenix.LiveView
   def render(assigns) do
+    %{show: show, songs: songs, participant: participant} = assigns
+    assigns = assign(assigns, songs: Enum.map(songs, &SongComponents.prepare(&1, show.kind, participant)))
+
     ~H"""
     <Nav.layout wp_id={@wp_id} active={:viewing}>
       <div class="flex flex-col divide-y divide-gray-300 my-2">
@@ -38,16 +42,10 @@ defmodule PointexWeb.WatchParty.Viewing do
 
   @impl Phoenix.LiveView
   def handle_event("shortlist", %{"id" => song_id}, socket) do
-    %{wp_id: wp_id} = socket.assigns
+    %{participant: participant} = socket.assigns
 
-    :ok =
-      Commands.ToggleSongShortlisted.dispatch_new(%{
-        watch_party_id: wp_id,
-        participant_id: user(socket).id,
-        song_id: song_id
-      })
-
-    {:noreply, socket}
+    {:ok, participant} = Participant.toggle_shortlisted(participant, song_id)
+    {:noreply, assign(socket, participant: participant)}
   end
 
   def handle_event("nope", %{"id" => song_id}, socket) do
@@ -72,8 +70,7 @@ defmodule PointexWeb.WatchParty.Viewing do
     with {:ok, %{show: show, participants: participants}} <- Europoints.get(WatchParty, wp_id, load: [:show, :participants]),
          %{} = participant <- Enum.find(participants, &(&1.account_id == user_id)),
          {:ok, songs} <- Song.songs_in_show(show.year, show.kind) do
-      dbg(participant)
-      %{wp_id: wp_id, songs: Enum.map(songs, &SongComponents.prepare(&1, show.kind))}
+      %{wp_id: wp_id, show: show, participant: participant, songs: songs}
     else
       _ -> %{wp_id: wp_id, songs: []}
     end
