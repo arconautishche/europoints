@@ -16,7 +16,7 @@ defmodule PointexWeb.WatchParty.SongComponents do
       end
     )
     |> Map.put(:shortlisted, song.country in participant.shortlist)
-    |> Map.put(:noped, false)
+    |> Map.put(:noped, song.country in participant.noped)
   end
 
   def song_container(assigns) do

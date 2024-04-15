@@ -20,6 +20,7 @@ defmodule Pointex.Europoints.Participant do
     end
 
     attribute :shortlist, {:array, :string}, default: []
+    attribute :noped, {:array, :string}, default: []
   end
 
   relationships do
@@ -72,17 +73,21 @@ defmodule Pointex.Europoints.Participant do
       end
 
       change fn changeset, _ ->
-        current_shortlist = Ash.Changeset.get_attribute(changeset, :shortlist) || []
-        toggled_country = Ash.Changeset.get_argument(changeset, :country)
+        changeset
+        |> toggle_country_in_list(:shortlist)
+        |> remove_country_from_list(:noped)
+      end
+    end
 
-        updated_shortlist =
-          if toggled_country in current_shortlist do
-            Enum.reject(current_shortlist, &(&1 == toggled_country))
-          else
-            Enum.concat(current_shortlist, [toggled_country])
-          end
+    update :toggle_noped do
+      argument :country, :string do
+        allow_nil? false
+      end
 
-        Ash.Changeset.change_attribute(changeset, :shortlist, updated_shortlist)
+      change fn changeset, _ ->
+        changeset
+        |> toggle_country_in_list(:noped)
+        |> remove_country_from_list(:shortlist)
       end
     end
   end
@@ -93,10 +98,36 @@ defmodule Pointex.Europoints.Participant do
     define :new, args: [:account_id, :watch_party_id]
     define :for_account, args: [:account_id], action: :for_account
     define :toggle_shortlisted, args: [:country]
+    define :toggle_noped, args: [:country]
   end
 
   postgres do
     table "ash_participants"
     repo Pointex.Repo
+  end
+
+  defp toggle_country_in_list(changeset, list_attr) do
+    current_list = Ash.Changeset.get_attribute(changeset, list_attr) || []
+    toggled_country = Ash.Changeset.get_argument(changeset, :country)
+
+    updated_list =
+      if toggled_country in current_list do
+        Enum.reject(current_list, &(&1 == toggled_country))
+      else
+        Enum.concat(current_list, [toggled_country])
+      end
+
+    Ash.Changeset.change_attribute(changeset, list_attr, updated_list)
+  end
+
+  defp remove_country_from_list(changeset, list_attr) do
+    toggled_country = Ash.Changeset.get_argument(changeset, :country)
+
+    updated_list =
+      changeset
+      |> Ash.Changeset.get_attribute(list_attr)
+      |> Enum.reject(&(&1 == toggled_country))
+
+    Ash.Changeset.change_attribute(changeset, list_attr, updated_list)
   end
 end

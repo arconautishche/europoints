@@ -5,48 +5,6 @@ defmodule Pointex.Model.Aggregates.WatchParty do
   alias Pointex.Model.Commands
   alias Pointex.Model.Events
 
-  def execute(%__MODULE__{} = watch_party, %Commands.ToggleSongShortlisted{} = command) do
-    with %{} = participant <- participant(watch_party, command.participant_id) do
-      [
-        %Events.SongShortlistedChanged{
-          watch_party_id: command.watch_party_id,
-          participant_id: command.participant_id,
-          song_id: command.song_id,
-          shortlisted: !Enum.any?(participant.shortlisted, &(&1 == command.song_id))
-        },
-        %Events.SongNopedChanged{
-          watch_party_id: command.watch_party_id,
-          participant_id: command.participant_id,
-          song_id: command.song_id,
-          noped: false
-        }
-      ]
-    else
-      nil -> {:error, :unknown_participant}
-    end
-  end
-
-  def execute(%__MODULE__{} = watch_party, %Commands.ToggleSongNoped{} = command) do
-    with %{} = participant <- participant(watch_party, command.participant_id) do
-      [
-        %Events.SongNopedChanged{
-          watch_party_id: command.watch_party_id,
-          participant_id: command.participant_id,
-          song_id: command.song_id,
-          noped: !Enum.any?(participant.noped, &(&1 == command.song_id))
-        },
-        %Events.SongShortlistedChanged{
-          watch_party_id: command.watch_party_id,
-          participant_id: command.participant_id,
-          song_id: command.song_id,
-          shortlisted: false
-        }
-      ]
-    else
-      nil -> {:error, :unknown_participant}
-    end
-  end
-
   def execute(%__MODULE__{} = watch_party, %Commands.FinalizeParticipantsVote{} = command) do
     with %{} = participant <- participant(watch_party, command.participant_id) do
       participants_top_ten = participant.top_ten

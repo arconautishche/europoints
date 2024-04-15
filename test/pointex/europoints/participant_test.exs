@@ -41,5 +41,34 @@ defmodule Pointex.Europoints.ParticipantTest do
       participant = Participant.toggle_shortlisted!(participant, "Belgium")
       assert {:ok, %{shortlist: ["Belgium", "Ukraine"]}} = Participant.toggle_shortlisted(participant, "Ukraine")
     end
+
+    test "removes from the 'noped' when shortlisting", %{particpant: participant} do
+      participant =
+        participant
+        |> Participant.toggle_noped!("Belgium")
+        |> Participant.toggle_noped!("Ukraine")
+
+      assert {:ok, %{shortlist: ["Ukraine"], noped: ["Belgium"]}} = Participant.toggle_shortlisted(participant, "Ukraine")
+    end
+  end
+
+  describe "toggle_noped" do
+    test "first nope", %{particpant: participant} do
+      assert {:ok, %{noped: ["Ukraine"]}} = Participant.toggle_noped(participant, "Ukraine")
+    end
+
+    test "seconds nope", %{particpant: participant} do
+      participant = Participant.toggle_noped!(participant, "Belgium")
+      assert {:ok, %{noped: ["Belgium", "Ukraine"]}} = Participant.toggle_noped(participant, "Ukraine")
+    end
+
+    test "removes from the 'shortlist' when noped", %{particpant: participant} do
+      participant =
+        participant
+        |> Participant.toggle_shortlisted!("Belgium")
+        |> Participant.toggle_shortlisted!("Ukraine")
+
+      assert {:ok, %{shortlist: ["Belgium"], noped: ["Ukraine"]}} = Participant.toggle_noped(participant, "Ukraine")
+    end
   end
 end
