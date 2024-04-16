@@ -1,7 +1,10 @@
 defmodule PointexWeb.WatchParty.Voting do
+  alias Pointex.Europoints.Participant
   use PointexWeb, :live_view
+  alias Pointex.Europoints.Song
+  alias Pointex.Europoints.WatchParty
+  alias Pointex.Europoints
   alias Pointex.Model.PossiblePoints
-  alias Pointex.Model.ReadModels.WatchPartyVoting
   alias Pointex.Model.Commands
   alias PointexWeb.Endpoint
   alias PointexWeb.WatchParty.Nav
@@ -9,6 +12,9 @@ defmodule PointexWeb.WatchParty.Voting do
 
   @impl Phoenix.LiveView
   def render(assigns) do
+    %{show: show, songs: songs, participant: participant} = assigns
+    assigns = assign(assigns, songs: Enum.map(songs, &SongComponents.prepare(&1, show.kind, participant)))
+
     ~H"""
     <Nav.layout wp_id={@wp_id} active={:voting}>
       <div class="flex flex-col sm:flex-row gap-4 my-2">
@@ -30,24 +36,24 @@ defmodule PointexWeb.WatchParty.Voting do
             songs={unvoted_subset(@songs, :shortlisted)}
             selected_id={@selected_id}
             header_class="bg-gradient-to-r from-green-100"
-            used_points={@used_points}
-            unused_points={@unused_points}
+            used_points={@participant.used_points}
+            unused_points={@participant.unused_points}
           />
           <.unvoted_section
             label="🫤 Undecided"
             songs={unvoted_subset(@songs, :meh)}
             selected_id={@selected_id}
             header_class="bg-gradient-to-r from-gray-200"
-            used_points={@used_points}
-            unused_points={@unused_points}
+            used_points={@participant.used_points}
+            unused_points={@participant.unused_points}
           />
           <.unvoted_section
             label="💩 Noped"
             songs={unvoted_subset(@songs, :noped)}
             selected_id={@selected_id}
             header_class="bg-gradient-to-r from-red-100"
-            used_points={@used_points}
-            unused_points={@unused_points}
+            used_points={@participant.used_points}
+            unused_points={@participant.unused_points}
           />
         </div>
       </div>
@@ -58,12 +64,14 @@ defmodule PointexWeb.WatchParty.Voting do
   @impl Phoenix.LiveView
   def handle_params(%{"id" => wp_id}, _uri, socket) do
     user_id = user(socket).id
-    if connected?(socket), do: Endpoint.subscribe("watch_party_voting:#{wp_id}:#{user_id}")
+    data = load_data(wp_id, user_id)
+
+    if connected?(socket), do: Endpoint.subscribe("Participant:#{data.participant.id}")
 
     {:noreply,
      socket
      |> assign(page_title: "Voting")
-     |> assign(load_data(wp_id, user_id))
+     |> assign(data)
      |> assign(selected_id: nil)}
   end
 
@@ -76,21 +84,12 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   def handle_event("give_points", params, socket) do
-    {song_id, points} =
-      case params do
-        %{"id" => song_id, "points" => points} -> {song_id, points}
-        %{"id" => song_id} -> {song_id, nil}
-      end
+    song_id = params["id"]
+    points = params["points"]
+    participant = socket.assigns.participant
 
-    :ok =
-      Commands.GivePointsToSong.dispatch_new(%{
-        watch_party_id: socket.assigns.wp_id,
-        participant_id: user(socket).id,
-        song_id: song_id,
-        points: points
-      })
-
-    {:noreply, assign(socket, selected_id: nil)}
+    {:ok, participant} = Participant.give_points(participant, song_id, points)
+    {:noreply, assign(socket, participant: participant)}
   end
 
   def handle_event("submit_vote", _params, socket) do
@@ -106,36 +105,44 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   @impl Phoenix.LiveView
-  def handle_info(%{event: "updated"}, socket) do
-    {:noreply, assign(socket, load_data(socket.assigns.wp_id, user(socket).id))}
+  def handle_info(%{payload: %{data: updated_participant}}, socket) do
+    {:noreply, assign(socket, participant: updated_participant)}
   end
 
   defp load_data(wp_id, user_id) do
-    read_model = WatchPartyVoting.get(wp_id, user_id) || %{songs: []}
-
-    used_points =
-      read_model.songs
-      |> Enum.map(& &1.points)
-      |> Enum.reject(&(&1 == 0))
-      |> Enum.sort(:desc)
-
-    unused_points = Enum.reject(PossiblePoints.desc(), fn p -> p in used_points end)
-
-    %{
-      wp_id: wp_id,
-      vote_submitted: read_model.vote_submitted,
-      can_submit: unused_points == [] && !read_model.vote_submitted,
-      songs: read_model.songs,
-      used_points: used_points,
-      unused_points: unused_points
-    }
+    with {:ok, %{show: show, participants: participants}} <- Europoints.get(WatchParty, wp_id, load: [:show, :participants]),
+         %{} = participant <- Enum.find(participants, &(&1.account_id == user_id)),
+         {:ok, songs} <- Song.songs_in_show(show.year, show.kind) do
+      %{
+        wp_id: wp_id,
+        show: show,
+        participant: participant,
+        # participant.vote_submitted,
+        songs: songs,
+        # participant.unused_points == [] && !participant.vote_submitted,
+        vote_submitted: false,
+        can_submit: false
+      }
+    else
+      _ -> %{wp_id: wp_id, songs: []}
+    end
   end
 
-  defp unvoted_subset(songs, viewing_result) do
-    Enum.filter(songs, &(&1.points < 1 && &1.viewing_result == viewing_result))
+  defp unvoted_subset(songs, :shortlisted) do
+    Enum.filter(songs, &(&1.points == nil && &1.shortlisted))
   end
 
-  defp voted(songs, points) do
+  defp unvoted_subset(songs, :noped) do
+    Enum.filter(songs, &(&1.points == nil && &1.noped))
+  end
+
+  defp unvoted_subset(songs, _) do
+    Enum.filter(songs, &(&1.points == nil && !&1.shortlisted && !&1.noped))
+  end
+
+  defp song_with_points(_songs, nil), do: nil
+
+  defp song_with_points(songs, points) do
     Enum.find(songs, &(&1.points == points))
   end
 
@@ -148,9 +155,9 @@ defmodule PointexWeb.WatchParty.Voting do
           :for={points <- PossiblePoints.desc()}
           points={points}
           readonly={@readonly}
-          song={voted(@songs, points)}
-          song_above={voted(@songs, PossiblePoints.inc(points))}
-          song_below={voted(@songs, PossiblePoints.dec(points))}
+          song={song_with_points(@songs, points)}
+          song_above={song_with_points(@songs, PossiblePoints.inc(points))}
+          song_below={song_with_points(@songs, PossiblePoints.dec(points))}
         />
       </div>
     </section>

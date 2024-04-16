@@ -17,6 +17,13 @@ defmodule PointexWeb.WatchParty.SongComponents do
     )
     |> Map.put(:shortlisted, song.country in participant.shortlist)
     |> Map.put(:noped, song.country in participant.noped)
+    |> Map.put(
+      :points,
+      participant.top_10_with_points
+      |> Enum.filter(fn {_points, country} -> country == song.country end)
+      |> Enum.map(fn {points, _country} -> points end)
+      |> List.first()
+    )
   end
 
   def song_container(assigns) do

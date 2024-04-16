@@ -1,10 +1,12 @@
 defmodule Pointex.Europoints.Participant do
-  alias Pointex.Europoints
-
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAdmin.Resource],
     notifiers: [Ash.Notifier.PubSub]
+
+  import Ash.Changeset, only: [get_argument: 2, get_attribute: 2, change_attribute: 3]
+  alias Pointex.Europoints
+  alias Pointex.Europoints.Participant.Voting
 
   resource do
     description """
@@ -22,6 +24,14 @@ defmodule Pointex.Europoints.Participant do
 
     attribute :shortlist, {:array, :string}, default: []
     attribute :noped, {:array, :string}, default: []
+
+    attribute :top_10, {:array, :string} do
+      constraints nil_items?: true,
+                  min_length: 10,
+                  max_length: 10
+
+      default 0..9 |> Enum.map(fn _ -> nil end)
+    end
   end
 
   relationships do
@@ -37,7 +47,7 @@ defmodule Pointex.Europoints.Participant do
   end
 
   actions do
-    defaults [:read, :update, :destroy]
+    defaults [:update, :destroy]
 
     create :new do
       primary? true
@@ -53,6 +63,11 @@ defmodule Pointex.Europoints.Participant do
                value_is_key: :id,
                on_lookup: :relate
              )
+    end
+
+    read :read do
+      primary? true
+      prepare build(load: [:watch_party, :account])
     end
 
     read :for_account do
@@ -91,11 +106,50 @@ defmodule Pointex.Europoints.Participant do
         |> remove_country_from_list(:shortlist)
       end
     end
+
+    update :give_points do
+      argument :points, :integer do
+        allow_nil? true
+      end
+
+      argument :country, :string do
+        allow_nil? false
+      end
+
+      validate argument_in(:points, [nil | Voting.all_points()])
+
+      change fn changeset, _ ->
+        if changeset.valid? do
+          change_attribute(
+            changeset,
+            :top_10,
+            Voting.give_points(
+              get_attribute(changeset, :top_10),
+              get_argument(changeset, :country),
+              get_argument(changeset, :points)
+            )
+          )
+        else
+          changeset
+        end
+      end
+    end
   end
 
-  pub_sub do
-    module PointexWeb.Endpoint
-    publish_all :update, ["Participant", :id]
+  calculations do
+    calculate :top_10_with_points, :map, Europoints.Participant.Top10WithPoints
+    calculate :used_points, {:array, :integer}, Europoints.Participant.UsedPoints
+    calculate :unused_points, {:array, :integer}, Europoints.Participant.UnusedPoints
+  end
+
+  @top_10_derivatives [:top_10_with_points, :used_points, :unused_points]
+
+  preparations do
+    prepare build(load: @top_10_derivatives)
+  end
+
+  changes do
+    change load(@top_10_derivatives)
   end
 
   code_interface do
@@ -105,6 +159,12 @@ defmodule Pointex.Europoints.Participant do
     define :for_account, args: [:account_id], action: :for_account
     define :toggle_shortlisted, args: [:country]
     define :toggle_noped, args: [:country]
+    define :give_points, args: [:country, :points]
+  end
+
+  pub_sub do
+    module PointexWeb.Endpoint
+    publish_all :update, ["Participant", :id]
   end
 
   postgres do
@@ -113,8 +173,8 @@ defmodule Pointex.Europoints.Participant do
   end
 
   defp toggle_country_in_list(changeset, list_attr) do
-    current_list = Ash.Changeset.get_attribute(changeset, list_attr) || []
-    toggled_country = Ash.Changeset.get_argument(changeset, :country)
+    current_list = get_attribute(changeset, list_attr) || []
+    toggled_country = get_argument(changeset, :country)
 
     updated_list =
       if toggled_country in current_list do
@@ -123,17 +183,17 @@ defmodule Pointex.Europoints.Participant do
         Enum.concat(current_list, [toggled_country])
       end
 
-    Ash.Changeset.change_attribute(changeset, list_attr, updated_list)
+    change_attribute(changeset, list_attr, updated_list)
   end
 
   defp remove_country_from_list(changeset, list_attr) do
-    toggled_country = Ash.Changeset.get_argument(changeset, :country)
+    toggled_country = get_argument(changeset, :country)
 
     updated_list =
       changeset
-      |> Ash.Changeset.get_attribute(list_attr)
+      |> get_attribute(list_attr)
       |> Enum.reject(&(&1 == toggled_country))
 
-    Ash.Changeset.change_attribute(changeset, list_attr, updated_list)
+    change_attribute(changeset, list_attr, updated_list)
   end
 end
