@@ -3,7 +3,8 @@ defmodule Pointex.Europoints.Participant do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAdmin.Resource]
+    extensions: [AshAdmin.Resource],
+    notifiers: [Ash.Notifier.PubSub]
 
   resource do
     description """
@@ -90,6 +91,11 @@ defmodule Pointex.Europoints.Participant do
         |> remove_country_from_list(:shortlist)
       end
     end
+  end
+
+  pub_sub do
+    module PointexWeb.Endpoint
+    publish_all :update, ["Participant", :id]
   end
 
   code_interface do

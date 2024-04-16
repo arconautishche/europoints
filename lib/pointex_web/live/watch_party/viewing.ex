@@ -31,12 +31,14 @@ defmodule PointexWeb.WatchParty.Viewing do
   @impl Phoenix.LiveView
   def handle_params(%{"id" => wp_id}, _uri, socket) do
     user_id = user(socket).id
-    if connected?(socket), do: Endpoint.subscribe("watch_party_viewing:#{wp_id}:#{user_id}")
+    data = load_data(wp_id, user_id)
+
+    if connected?(socket), do: Endpoint.subscribe("Participant:#{data.participant.id}")
 
     {:noreply,
      socket
      |> assign(page_title: "Watching")
-     |> assign(load_data(wp_id, user_id))}
+     |> assign(data)}
   end
 
   @impl Phoenix.LiveView
@@ -55,8 +57,8 @@ defmodule PointexWeb.WatchParty.Viewing do
   end
 
   @impl Phoenix.LiveView
-  def handle_info(%{event: "updated"}, socket) do
-    {:noreply, assign(socket, load_data(socket.assigns.wp_id, user(socket).id))}
+  def handle_info(%{payload: %{data: updated_participant}}, socket) do
+    {:noreply, assign(socket, participant: updated_participant)}
   end
 
   defp load_data(wp_id, user_id) do
