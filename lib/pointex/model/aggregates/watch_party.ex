@@ -1,7 +1,6 @@
 defmodule Pointex.Model.Aggregates.WatchParty do
   defstruct [:id, :name, :owner_id, :year, :show, :participants]
 
-  alias Pointex.Model.PossiblePoints
   alias Pointex.Model.Commands
   alias Pointex.Model.Events
 
@@ -38,23 +37,6 @@ defmodule Pointex.Model.Aggregates.WatchParty do
       else
         {:error, :vote_incomplete}
       end
-    else
-      nil -> {:error, :unknown_participant}
-    end
-  end
-
-  def execute(%__MODULE__{} = watch_party, %Commands.GivePointsToSong{} = command) do
-    with %{} = participant <- participant(watch_party, command.participant_id) do
-      participants_top_ten = insert_vote(participant.top_ten, command.points, command.song_id)
-
-      [
-        %Events.TopTenByParticipantUpdated{
-          watch_party_id: command.watch_party_id,
-          participant_id: command.participant_id,
-          final?: false,
-          top_ten: participants_top_ten
-        }
-      ]
     else
       nil -> {:error, :unknown_participant}
     end
@@ -127,43 +109,6 @@ defmodule Pointex.Model.Aggregates.WatchParty do
 
   defp toggle_song(list, song_id, false) do
     Enum.reject(list, &(&1 == song_id))
-  end
-
-  defp insert_vote(top_ten, points, song_id) do
-    top_ten =
-      top_ten
-      |> Enum.find(fn {_, song} -> song == song_id end)
-      |> case do
-        nil -> top_ten
-        {prev_points, _} -> Map.replace(top_ten, prev_points, nil)
-      end
-
-    case Map.get(top_ten, points) do
-      nil ->
-        Map.replace(top_ten, points, song_id)
-
-      _points_already_taken ->
-        top_ten = Enum.reverse(top_ten)
-        song_index = Enum.find_index(top_ten, fn {p, _s} -> p == points end)
-
-        {songs_above, songs_with} = Enum.split(top_ten, song_index)
-        stop_index = Enum.find_index(songs_with, fn {_p, s} -> s == nil end) || 9
-
-        songs_with
-        |> Enum.with_index()
-        |> Enum.map(fn {{p, s}, idx} ->
-          if p > points || idx >= stop_index do
-            {p, s}
-          else
-            {PossiblePoints.dec(p), s}
-          end
-        end)
-        |> Enum.reject(fn {p, _} -> p < 1 || p == nil end)
-        |> Enum.concat([{points, song_id}])
-        |> Enum.concat(songs_above)
-        |> Enum.sort()
-        |> Enum.into(%{})
-    end
   end
 
   defp complete_top_ten?(top_ten) do
