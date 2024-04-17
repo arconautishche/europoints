@@ -192,11 +192,20 @@ defmodule Pointex.Europoints.ParticipantTest do
                Participant.give_points(participant, "Current8", 8)
     end
 
-    test "validates 'points' to be valid", %{participant: participant} do
-      assert {:error, _} = Participant.give_points(participant, "Something", 11)
+    test "cannot give points after submission", %{participant: participant} do
+      participant =
+        participant
+        |> Ash.Changeset.for_update(:update, %{final_vote_submitted: true})
+        |> Europoints.update!()
+
+      assert {:error, %{errors: [%{field: :final_vote_submitted}]}} = Participant.give_points(participant, "TheWinner", 12)
     end
 
+    test "validates 'points' to be valid", %{participant: participant} do
+      assert {:error, %{errors: [%{field: :points}]}} = Participant.give_points(participant, "TheWinner", 11)
+    end
+
+    @tag :skip
     test "validates 'country' to be from the WatchParty's show"
-    test "cannot give points after submission"
   end
 end

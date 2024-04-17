@@ -6,6 +6,7 @@ defmodule Pointex.Europoints.Participant do
 
   import Ash.Changeset, only: [get_argument: 2, get_attribute: 2, change_attribute: 3]
   alias Pointex.Europoints
+  alias Pointex.Europoints.Participant
   alias Pointex.Europoints.Participant.Voting
 
   resource do
@@ -31,6 +32,11 @@ defmodule Pointex.Europoints.Participant do
                   max_length: 10
 
       default 0..9 |> Enum.map(fn _ -> nil end)
+    end
+
+    attribute :final_vote_submitted, :boolean do
+      allow_nil? false
+      default false
     end
   end
 
@@ -117,6 +123,7 @@ defmodule Pointex.Europoints.Participant do
       end
 
       validate argument_in(:points, [nil | Voting.all_points()])
+      validate attribute_equals(:final_vote_submitted, false)
 
       change fn changeset, _ ->
         if changeset.valid? do
@@ -134,15 +141,22 @@ defmodule Pointex.Europoints.Participant do
         end
       end
     end
+
+    update :finalize_top_10 do
+      validate attribute_equals(:can_submit_final_vote, true)
+
+      change set_attribute(:final_vote_submitted, true)
+    end
   end
 
   calculations do
-    calculate :top_10_with_points, :map, Europoints.Participant.Top10WithPoints
-    calculate :used_points, {:array, :integer}, Europoints.Participant.UsedPoints
-    calculate :unused_points, {:array, :integer}, Europoints.Participant.UnusedPoints
+    calculate :top_10_with_points, :map, Participant.Top10WithPoints
+    calculate :used_points, {:array, :integer}, Participant.UsedPoints
+    calculate :unused_points, {:array, :integer}, Participant.UnusedPoints
+    calculate :can_submit_final_vote, :boolean, Participant.CanSubmitFinalVote
   end
 
-  @top_10_derivatives [:top_10_with_points, :used_points, :unused_points]
+  @top_10_derivatives [:top_10_with_points, :used_points, :unused_points, :can_submit_final_vote]
 
   preparations do
     prepare build(load: @top_10_derivatives)
@@ -160,6 +174,7 @@ defmodule Pointex.Europoints.Participant do
     define :toggle_shortlisted, args: [:country]
     define :toggle_noped, args: [:country]
     define :give_points, args: [:country, :points]
+    define :finalize_top_10
   end
 
   pub_sub do
