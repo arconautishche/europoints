@@ -85,7 +85,8 @@ defmodule Pointex.Europoints.Participant do
 
       prepare fn query, _ ->
         require Ash.Query
-        Ash.Query.filter(query, account.id == arg(:account_id))
+        account_id = Ash.Query.get_argument(query, :account_id)
+        Ash.Query.filter(query, account.id == account_id)
       end
     end
 
@@ -144,7 +145,6 @@ defmodule Pointex.Europoints.Participant do
 
     update :finalize_top_10 do
       validate attribute_equals(:can_submit_final_vote, true)
-
       change set_attribute(:final_vote_submitted, true)
     end
   end
@@ -179,7 +179,9 @@ defmodule Pointex.Europoints.Participant do
 
   pub_sub do
     module PointexWeb.Endpoint
-    publish_all :update, ["Participant", :id]
+    publish_all :update, ["participant", :id]
+    publish_all :create, ["watch_party", :watch_party_id]
+    publish_all :update, ["watch_party", :watch_party_id]
   end
 
   postgres do

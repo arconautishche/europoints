@@ -23,6 +23,10 @@ defmodule Pointex.Europoints.WatchParty do
     has_many :participants, Europoints.Participant
   end
 
+  calculations do
+    calculate :total_points_by_participants, {:array, :map}, WatchParty.TotalPointsCalculation
+  end
+
   actions do
     defaults [:read, :update, :destroy]
 
@@ -78,6 +82,11 @@ defmodule Pointex.Europoints.WatchParty do
         )
       end
     end
+
+    read :results do
+      primary? false
+      prepare build(load: [:participants, :total_points_by_participants])
+    end
   end
 
   code_interface do
@@ -85,6 +94,7 @@ defmodule Pointex.Europoints.WatchParty do
 
     define :start, args: [:name, :owner_account_id, :show_id]
     define :join, args: [:account_id]
+    define :results
   end
 
   def for_account(account_id) do

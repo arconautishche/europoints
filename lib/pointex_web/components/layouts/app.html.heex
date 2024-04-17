@@ -7,11 +7,18 @@
     </.link>
     <div :if={@user} class="flex items-center gap-2">
       <%= @user.name %>
-      <.link navigate={~p"/logout"} class="p-1 my-1 text-slate-600 font-bold flex items-center gap-2 border-b border-transparent hover:border-slate-600/20">
+      <.link
+        navigate={~p"/logout"}
+        class="p-1 my-1 text-slate-600 font-bold flex items-center gap-2 border-b border-transparent hover:border-slate-600/20"
+      >
         <.icon name="hero-arrow-right-on-rectangle" class="w-4 h-4 opacity-50" />
       </.link>
     </div>
-    <.link :if={!@user} navigate={~p"/login"} class="p-1 my-1 text-slate-600 flex items-center gap-2 border-b border-transparent hover:border-slate-600/20">
+    <.link
+      :if={!@user}
+      navigate={~p"/login"}
+      class="p-1 my-1 text-slate-600 flex items-center gap-2 border-b border-transparent hover:border-slate-600/20"
+    >
       Log in <.icon name="hero-arrow-left-on-rectangle" class="w-4 h-4 opacity-50" />
     </.link>
   </nav>
