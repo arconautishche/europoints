@@ -19,7 +19,12 @@ defmodule PointexWeb.WatchParty.Join do
         <.watch_party_card :if={@watch_party_details} watch_party={@watch_party_details} current_user={@user} />
 
         <.simple_form :let={f} for={@watch_party} as={:watch_party} phx-change="validate" phx-submit="submit">
-          <.input field={f[:id]} placeholder="Enter the ID you've received" autocomplete="off" input_class={if @watch_party_details, do: "bg-green-100 !text-xs", else: ""} />
+          <.input
+            field={f[:id]}
+            placeholder="Enter the ID you've received"
+            autocomplete="off"
+            input_class={if @watch_party_details, do: "bg-green-100 !text-xs", else: ""}
+          />
 
           <:actions>
             <.button class="grow" disabled={!@valid?} type="submit">Let's do this!</.button>

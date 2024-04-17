@@ -33,7 +33,7 @@ defmodule PointexWeb.WatchParty.Viewing do
     user_id = user(socket).id
     data = load_data(wp_id, user_id)
 
-    if connected?(socket), do: Endpoint.subscribe("Participant:#{data.participant.id}")
+    if connected?(socket), do: Endpoint.subscribe("participant:#{data.participant.id}")
 
     {:noreply,
      socket
@@ -78,8 +78,8 @@ defmodule PointexWeb.WatchParty.Viewing do
         <SongComponents.ro song={@song} />
         <SongComponents.description song={@song} />
         <div class="flex gap-1 sm:gap-4 items-center">
-          <.shortlist_button id={@song.id} active={@song.shortlisted} />
-          <.nope_button id={@song.id} active={@song.noped} />
+          <.shortlist_button id={@song.country} active={@song.shortlisted} />
+          <.nope_button id={@song.country} active={@song.noped} />
         </div>
       </div>
     </SongComponents.song_container>

@@ -1,9 +1,8 @@
 defmodule PointexWeb.WatchParty.Results do
   use PointexWeb, :live_view
-
-  alias Pointex.Model.ReadModels.WatchPartyVoting
+  alias Pointex.Europoints
+  alias Pointex.Europoints.WatchParty
   alias PointexWeb.WatchParty.SongComponents
-  alias Pointex.Model.ReadModels.WatchPartyResults
   alias PointexWeb.Endpoint
   alias PointexWeb.WatchParty.Nav
 
@@ -36,31 +35,32 @@ defmodule PointexWeb.WatchParty.Results do
 
   @impl Phoenix.LiveView
   def handle_params(%{"id" => wp_id}, _uri, socket) do
-    if connected?(socket), do: Endpoint.subscribe("watch_party_results:#{wp_id}")
+    data = load_data(wp_id, user(socket).id)
+    if connected?(socket), do: Endpoint.subscribe("watch_party:#{wp_id}")
 
     {:noreply,
      socket
      |> assign(page_title: "Results")
-     |> assign(load_data(wp_id, user(socket).id))}
+     |> assign(data)}
   end
 
   @impl Phoenix.LiveView
-  def handle_info(%{event: "updated"}, socket) do
+  def handle_info(_, socket) do
     {:noreply, assign(socket, load_data(socket.assigns.wp_id, user(socket).id))}
   end
 
   defp load_data(wp_id, user_id) do
-    read_model = WatchPartyResults.get(wp_id)
-    any_results? = Enum.any?(read_model.songs, &(&1.points > 0))
+    watch_party = Europoints.get!(WatchParty, wp_id, action: :results)
+    participant = Enum.find(watch_party.participants, &(&1.account_id == user_id))
 
     %{
       wp_id: wp_id,
-      results_visible: WatchPartyVoting.get(wp_id, user_id).vote_submitted,
+      results_visible: participant.final_vote_submitted,
       wp_totals:
-        read_model.songs
+        watch_party.total_points_by_participants
         |> Enum.sort_by(& &1.points, :desc)
-        |> Enum.with_index(if any_results?, do: 1, else: -100),
-      still_voting_participants: Enum.reject(read_model.predictions_top, & &1.done_voting)
+        |> Enum.with_index(1),
+      still_voting_participants: Enum.reject(watch_party.participants, & &1.final_vote_submitted)
     }
   end
 
@@ -69,7 +69,7 @@ defmodule PointexWeb.WatchParty.Results do
     <section class="w-full">
       <.section_header label="⏳ Still Voting..." class="mb-4" />
       <div class="flex flex-wrap gap-4 place-items-start ml-4">
-        <.participant :for={participant <- @participants} name={participant.name} />
+        <.participant :for={participant <- @participants} name={participant.account.name} />
       </div>
     </section>
     """
@@ -80,7 +80,7 @@ defmodule PointexWeb.WatchParty.Results do
     <section class="w-full">
       <.section_header label="🏅 Our Results" class="" />
       <div class="flex flex-col divide-y divide-gray-200 bg-white shadow-lg border border-gray-200">
-        <.song :for={{song, place} <- @songs} song={song} place={place} />
+        <.song :for={{%{song: song, points: points}, place} <- @songs} song={song} points={points} place={place} />
       </div>
     </section>
     """
@@ -95,7 +95,7 @@ defmodule PointexWeb.WatchParty.Results do
         </div>
         <SongComponents.description song={@song} class={song_bg(@place)} />
       </div>
-      <.points_label points={@song.points} place={@place} />
+      <.points_label points={@points} place={@place} />
     </div>
     """
   end

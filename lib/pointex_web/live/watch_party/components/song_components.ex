@@ -6,7 +6,6 @@ defmodule PointexWeb.WatchParty.SongComponents do
   def prepare(%Song{} = song, show_kind, %Participant{} = participant) do
     song
     |> Map.take([:year, :country, :flag, :img, :name, :artist])
-    |> Map.put(:id, song.country)
     |> Map.put(
       :order,
       case show_kind do
@@ -52,7 +51,7 @@ defmodule PointexWeb.WatchParty.SongComponents do
             <%= @song.flag %>
           </div>
           <div class="text-xl pt-1">
-            <%= @song.id %>
+            <%= @song.country %>
           </div>
         </div>
         <div class="flex flex-col gap-2 ml-6">

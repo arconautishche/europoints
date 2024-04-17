@@ -65,7 +65,7 @@ defmodule PointexWeb.WatchParty.Voting do
     user_id = user(socket).id
     data = load_data(wp_id, user_id)
 
-    if connected?(socket), do: Endpoint.subscribe("Participant:#{data.participant.id}")
+    if connected?(socket), do: Endpoint.subscribe("participant:#{data.participant.id}")
 
     {:noreply,
      socket
@@ -157,7 +157,13 @@ defmodule PointexWeb.WatchParty.Voting do
     <section class="w-full">
       <.section_header label={@label} class={@header_class} />
       <div class="flex flex-col divide-y divide-gray-300">
-        <.song_with_no_points :for={song <- @songs} song={song} selected={song.id == @selected_id} used_points={@used_points} unused_points={@unused_points} />
+        <.song_with_no_points
+          :for={song <- @songs}
+          song={song}
+          selected={song.country == @selected_id}
+          used_points={@used_points}
+          unused_points={@unused_points}
+        />
       </div>
     </section>
     """
@@ -180,9 +186,9 @@ defmodule PointexWeb.WatchParty.Voting do
         down_button_params:
           song &&
             if(song_below,
-              do: %{"phx-value-id" => song_below.id, "phx-value-points" => points},
+              do: %{"phx-value-id" => song_below.country, "phx-value-points" => points},
               else: %{
-                "phx-value-id" => assigns.song.id,
+                "phx-value-id" => assigns.song.country,
                 "phx-value-points" => PossiblePoints.dec(points)
               }
             )
@@ -197,7 +203,7 @@ defmodule PointexWeb.WatchParty.Voting do
         <div :if={!@readonly} class="flex gap-1 sm:gap-4 items-center">
           <button
             phx-click="give_points"
-            phx-value-id={@song.id}
+            phx-value-id={@song.country}
             phx-value-points={PossiblePoints.inc(@points)}
             class={"#{if @points == 12, do: "invisible"} border border-transparent rounded-lg text-green-600 bg-white/30 backdrop-blur-sm shadow-lg py-2 px-3 hover:bg-transparent sm:hover:bg-green-200 sm:hover:border-green-500 sm:hover:text-green-600 active:text-green-600"}
           >
@@ -231,7 +237,7 @@ defmodule PointexWeb.WatchParty.Voting do
   defp song_with_no_points(assigns) do
     ~H"""
     <div class={[if(@selected, do: "bg-white shadow", else: "")]}>
-      <div phx-click="toggle_selected" phx-value-id={@song.id} class={["flex items-top justify-between gap-2 hover:bg-sky-100"]}>
+      <div phx-click="toggle_selected" phx-value-id={@song.country} class={["flex items-top justify-between gap-2 hover:bg-sky-100"]}>
         <SongComponents.song_container song={@song}>
           <div class="flex px-2 sm:px-4 py-3">
             <SongComponents.ro song={@song} />
@@ -250,13 +256,13 @@ defmodule PointexWeb.WatchParty.Voting do
         class="flex flex-col overflow-x-auto bg-gradient-to-b from-gray-200 to-gray-100/50 shadow-inner text-2xl border-t border-gray-200 px-2 origin-top transition-all scale-y-0 py-0 opacity-50"
       >
         <div class="flex">
-          <.points_button :for={points <- @unused_points} points={points} song_id={@song.id} used={false} />
+          <.points_button :for={points <- @unused_points} points={points} song_id={@song.country} used={false} />
         </div>
         <span :if={@used_points != []} class="mt-3 mb-1 mx-2 text-gray-400 text-xs">
           Already used
         </span>
         <div class="flex">
-          <.points_button :for={points <- @used_points} points={points} song_id={@song.id} used={true} />
+          <.points_button :for={points <- @used_points} points={points} song_id={@song.country} used={true} />
         </div>
       </div>
     </div>

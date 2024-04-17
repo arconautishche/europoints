@@ -27,24 +27,21 @@ defmodule Pointex.Europoints.Show do
       attribute_writable? true
     end
 
-    # has_many :songs, Europoints.Song do
-    #   no_attributes? true
+    has_many :songs, Europoints.Song do
+      no_attributes? true
 
-    #   filter expr(year == year and not is_nil(order_in_final))
-    # end
-
-    # has_many :songs_manual, Europoints.Song do
-    #   no_attributes? true
-
-    #   manual fn shows, %{query: query} = _context ->
-    #     years = shows |> Enum.map(& &1.year) |> Enum.uniq()
-
-    #      query
-    #      |> Ash.Query.for_read(:read)
-    #      |> Ash.Query.filter(year in ^years)
-    #      |> Europoints.read()
-    #   end
-    # end
+      manual fn shows, %{query: query} = _context ->
+        {:ok,
+         shows
+         |> Enum.map(fn show ->
+           songs = Europoints.Song.songs_in_show!(show.year, show.kind)
+           %{show_id: show.id, songs: songs}
+         end)
+         |> Enum.group_by(& &1.show_id)
+         |> Enum.map(fn {show_id, songs_wrapped} -> {show_id, Enum.flat_map(songs_wrapped, & &1.songs)} end)
+         |> Map.new()}
+      end
+    end
   end
 
   actions do
