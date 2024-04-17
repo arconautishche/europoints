@@ -5,7 +5,6 @@ defmodule PointexWeb.WatchParty.Voting do
   alias Pointex.Europoints.WatchParty
   alias Pointex.Europoints
   alias Pointex.Model.PossiblePoints
-  alias Pointex.Model.Commands
   alias PointexWeb.Endpoint
   alias PointexWeb.WatchParty.Nav
   alias PointexWeb.WatchParty.SongComponents
@@ -20,17 +19,17 @@ defmodule PointexWeb.WatchParty.Voting do
       <div class="flex flex-col sm:flex-row gap-4 my-2">
         <div class="w-full flex flex-col items-center">
           <.button
-            :if={@can_submit}
+            :if={@participant.can_submit_final_vote}
             phx-click="submit_vote"
-            class="flex w-fit gap-2 mt-2 bg-gradient-to-br from-red-200 to-red-300 border border-red-400 shadow-lg text-red-800 uppercase hover:from-red-300 hover:to-red-300 active:from-red-200 active:to-red-200"
+            class="flex w-fit gap-2 mt-2 bg-gradient-to-br from-red-300 to-red-400 border border-red-400 shadow-lg text-red-800 uppercase hover:from-red-300 hover:to-red-300 active:from-red-200 active:to-red-200"
           >
             <span>🚨</span>
-            <span>This is my final decision</span>
+            <span>This is my definitive top 10</span>
             <span>🚀</span>
           </.button>
-          <.top_10 songs={@songs} readonly={@vote_submitted} />
+          <.top_10 songs={@songs} readonly={@participant.final_vote_submitted} />
         </div>
-        <div :if={!@vote_submitted} class="flex flex-col gap-4 w-full overflow-x-hidden">
+        <div :if={!@participant.final_vote_submitted} class="flex flex-col gap-4 w-full overflow-x-hidden">
           <.unvoted_section
             label="👍 Shortlisted"
             songs={unvoted_subset(@songs, :shortlisted)}
@@ -93,15 +92,8 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   def handle_event("submit_vote", _params, socket) do
-    %{wp_id: wp_id} = socket.assigns
-
-    :ok =
-      Commands.FinalizeParticipantsVote.dispatch_new(%{
-        watch_party_id: wp_id,
-        participant_id: user(socket).id
-      })
-
-    {:noreply, push_navigate(socket, to: ~p"/wp/#{wp_id}/results")}
+    {:ok, _} = Participant.finalize_top_10(socket.assigns.participant)
+    {:noreply, push_navigate(socket, to: ~p"/wp/#{socket.assigns.wp_id}/results")}
   end
 
   @impl Phoenix.LiveView
@@ -117,11 +109,7 @@ defmodule PointexWeb.WatchParty.Voting do
         wp_id: wp_id,
         show: show,
         participant: participant,
-        # participant.vote_submitted,
-        songs: songs,
-        # participant.unused_points == [] && !participant.vote_submitted,
-        vote_submitted: false,
-        can_submit: false
+        songs: songs
       }
     else
       _ -> %{wp_id: wp_id, songs: []}
