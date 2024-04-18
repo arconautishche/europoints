@@ -45,10 +45,13 @@ defmodule PointexWeb.Router do
           live "/join/:id", WatchParty.Join
           live "/:id/viewing", WatchParty.Viewing
           live "/:id/voting", WatchParty.Voting
-          live "/:id/results", WatchParty.Results
+          live "/:id/results", WatchParty.Results, :wp_totals, as: :action
+          live "/:id/results/predictions", WatchParty.Results, :predictions, as: :action
           live "/:id/real-results", WatchParty.RealResults
           live "/:id", WatchParty.Overview
         end
+
+        live "/show/:year/:kind", ShowOverview
       end
     end
   end

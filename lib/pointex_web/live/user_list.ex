@@ -1,7 +1,7 @@
 defmodule PointexWeb.UserList do
   use PointexWeb, :live_view
   alias Pointex.Repo
-  alias Pointex.Model.ReadModels.Participants
+  alias Pointex.Europoints.Account
 
   @impl Phoenix.LiveView
   def render(assigns) do
@@ -17,6 +17,6 @@ defmodule PointexWeb.UserList do
 
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, all_users: Repo.all(Participants.Schema))}
+    {:ok, assign(socket, all_users: Repo.all(Account))}
   end
 end
