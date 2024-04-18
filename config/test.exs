@@ -20,14 +20,6 @@ config :pointex, PointexWeb.Endpoint,
   secret_key_base: "+W9GcNzwbHX2VWS5WQiy0A1r0PxULulR0CjjuBQ12G+8Du+YCKt3ABPME3lYXBPs",
   server: false
 
-config :pointex, Pointex.Commanded.EventStore,
-  serializer: Commanded.Serialization.JsonSerializer,
-  username: "postgres",
-  password: "postgres",
-  database: "pointex_eventstore_test",
-  hostname: "localhost",
-  pool_size: 10
-
 # In test we don't send emails.
 config :pointex, Pointex.Mailer, adapter: Swoosh.Adapters.Test
 

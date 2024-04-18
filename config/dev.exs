@@ -29,14 +29,6 @@ config :pointex, PointexWeb.Endpoint,
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
-config :pointex, Pointex.Commanded.EventStore,
-  serializer: Commanded.Serialization.JsonSerializer,
-  username: "postgres",
-  password: "postgres",
-  database: "pointex_eventstore_dev",
-  hostname: "localhost",
-  pool_size: 10
-
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
