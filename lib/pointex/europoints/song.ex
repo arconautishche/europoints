@@ -37,8 +37,14 @@ defmodule Pointex.Europoints.Song do
       constraints min: 1, max: 100
     end
 
-    attribute :final_place, :integer do
+    attribute :actual_place_in_final, :integer do
+      allow_nil? true
       constraints min: 1, max: 100
+    end
+
+    attribute :went_to_final, :boolean do
+      allow_nil? false
+      default false
     end
   end
 
@@ -115,6 +121,14 @@ defmodule Pointex.Europoints.Song do
         end
       end
     end
+
+    update :went_to_final do
+      accept [:went_to_final]
+    end
+  end
+
+  preparations do
+    prepare build(load: [:flag])
   end
 
   code_interface do
@@ -122,6 +136,7 @@ defmodule Pointex.Europoints.Song do
 
     define :register
     define :songs_in_show, args: [:year, :kind]
+    define :went_to_final, args: [:went_to_final]
   end
 
   postgres do

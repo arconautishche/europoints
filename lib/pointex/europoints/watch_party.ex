@@ -25,6 +25,7 @@ defmodule Pointex.Europoints.WatchParty do
 
   calculations do
     calculate :total_points_by_participants, {:array, :map}, WatchParty.TotalPointsCalculation
+    calculate :prediction_scores, :map, WatchParty.PredictionScoresCalculation
   end
 
   actions do
@@ -85,7 +86,7 @@ defmodule Pointex.Europoints.WatchParty do
 
     read :results do
       primary? false
-      prepare build(load: [:participants, :total_points_by_participants])
+      prepare build(load: [:participants, :total_points_by_participants, :prediction_scores])
     end
   end
 
