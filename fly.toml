@@ -1,6 +1,6 @@
 # fly.toml file generated for pointex on 2023-04-20T20:09:26+02:00
 
-app = "pointex"
+app = "europoints"
 kill_signal = "SIGTERM"
 kill_timeout = 5
 processes = []
@@ -9,11 +9,15 @@ processes = []
   release_command = "/app/bin/migrate"
 
 [env]
-  PHX_HOST = "pointex.fly.dev"
+  PHX_HOST = "europoints.fly.dev"
   PORT = "8080"
 
 [experimental]
   auto_rollback = true
+
+[[vm]]
+  size = "shared-cpu-2x"
+  memory = "1gb"
 
 [[services]]
   http_checks = []
