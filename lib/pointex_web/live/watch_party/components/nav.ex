@@ -3,7 +3,7 @@ defmodule PointexWeb.WatchParty.Nav do
 
   def layout(assigns) do
     ~H"""
-    <div class="relative">
+    <div class="relative h-full">
       <.nav wp_id={@wp_id} mobile={false} active={@active} />
       <%= render_slot(@inner_block) %>
       <.nav wp_id={@wp_id} mobile={true} active={@active} />
