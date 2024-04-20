@@ -27,6 +27,7 @@ defmodule Pointex.Europoints.WatchParty.PredictionScoresCalculation do
     countries_in_final = wp.show.songs |> Enum.filter(& &1.went_to_final) |> Enum.map(& &1.country) |> MapSet.new()
 
     wp.participants
+    |> Enum.filter(& &1.final_vote_submitted)
     |> Enum.map(fn participant ->
       {participant,
        participant.top_10
