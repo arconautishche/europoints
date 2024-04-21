@@ -116,14 +116,18 @@ defmodule Pointex.Europoints.Song do
 
           :final ->
             filtered_on_year
-            |> Ash.Query.filter(not is_nil(final))
-            |> Ash.Query.sort([:final])
+            |> Ash.Query.filter(not is_nil(order_in_final))
+            |> Ash.Query.sort([:order_in_final])
         end
       end
     end
 
     update :went_to_final do
       accept [:went_to_final]
+    end
+
+    update :set_actual_place_in_final do
+      accept [:actual_place_in_final]
     end
   end
 
