@@ -12,11 +12,14 @@ defmodule PointexWeb.WatchParty.Voting do
   @impl Phoenix.LiveView
   def render(assigns) do
     %{show: show, songs: songs, participant: participant} = assigns
-    assigns = assign(assigns, songs: Enum.map(songs, &SongComponents.prepare(&1, show.kind, participant)))
+    rendered_songs = Enum.map(songs, &SongComponents.prepare(&1, show.kind, participant))
+    show_hint = Enum.all?(rendered_songs, &(&1.points == nil))
+
+    assigns = assign(assigns, songs: rendered_songs, show_hint: show_hint)
 
     ~H"""
     <Nav.layout wp_id={@wp_id} active={:voting}>
-      <div class="flex flex-col sm:flex-row gap-4 my-2">
+      <div class="flex flex-col sm:flex-row gap-6 my-2">
         <div class="w-full flex flex-col items-center">
           <.button
             :if={@participant.can_submit_final_vote}
@@ -27,14 +30,19 @@ defmodule PointexWeb.WatchParty.Voting do
             <span>This is my definitive top 10</span>
             <span>🚀</span>
           </.button>
+          <div :if={@show_hint} class="sm:hidden flex gap-4 items-center mx-8 px-4 py-2 bg-blue-300 text-blue-900/75 shadow">
+            <.icon name="hero-information-circle" class="bg-no-repeat" />
+            <span>Scroll down to give points to your favorite songs</span>
+          </div>
           <.top_10 songs={@songs} readonly={@participant.final_vote_submitted} />
         </div>
         <div :if={!@participant.final_vote_submitted} class="flex flex-col gap-4 w-full overflow-x-hidden">
+          <h3 class="text-sm uppercase text-center text-slate-500">My watching experience</h3>
           <.unvoted_section
             label="👍 Shortlisted"
             songs={unvoted_subset(@songs, :shortlisted)}
             selected_id={@selected_id}
-            header_class="bg-gradient-to-r from-green-100"
+            header_class="bg-gradient-to-tl from-green-200 border-b border-green-400"
             used_points={@participant.used_points}
             unused_points={@participant.unused_points}
           />
@@ -42,7 +50,7 @@ defmodule PointexWeb.WatchParty.Voting do
             label="🫤 Undecided"
             songs={unvoted_subset(@songs, :meh)}
             selected_id={@selected_id}
-            header_class="bg-gradient-to-r from-gray-200"
+            header_class="bg-gradient-to-tl from-amber-200 border-b border-amber-400"
             used_points={@participant.used_points}
             unused_points={@participant.unused_points}
           />
@@ -50,7 +58,7 @@ defmodule PointexWeb.WatchParty.Voting do
             label="💩 Noped"
             songs={unvoted_subset(@songs, :noped)}
             selected_id={@selected_id}
-            header_class="bg-gradient-to-r from-red-100"
+            header_class="bg-gradient-to-tl from-red-300 border-b border-red-400"
             used_points={@participant.used_points}
             unused_points={@participant.unused_points}
           />
@@ -154,7 +162,7 @@ defmodule PointexWeb.WatchParty.Voting do
 
   defp unvoted_section(assigns) do
     ~H"""
-    <section class="w-full">
+    <section :if={Enum.any?(@songs)} class="w-full">
       <.section_header label={@label} class={@header_class} />
       <div class="flex flex-col divide-y divide-gray-300">
         <.song_with_no_points
@@ -205,14 +213,14 @@ defmodule PointexWeb.WatchParty.Voting do
             phx-click="give_points"
             phx-value-id={@song.country}
             phx-value-points={PossiblePoints.inc(@points)}
-            class={"#{if @points == 12, do: "invisible"} border border-transparent rounded-lg text-green-600 bg-white/30 backdrop-blur-sm shadow-lg py-2 px-3 hover:bg-transparent sm:hover:bg-green-200 sm:hover:border-green-500 sm:hover:text-green-600 active:text-green-600"}
+            class={"#{if @points == 12, do: "invisible"} border border-transparent rounded-lg text-green-600 bg-white/50 backdrop-blur-sm shadow-lg py-2 px-3 hover:bg-transparent sm:hover:bg-green-200 sm:hover:border-green-500 sm:hover:text-green-600 active:text-green-600"}
           >
             <.icon name="hero-arrow-small-up" class="w-8 h-8" />
           </button>
           <button
             phx-click="give_points"
             {@down_button_params}
-            class="border border-transparent text-red-600 bg-white/30 backdrop-blur-sm shadow-lg rounded-lg py-2 px-3 hover:bg-transparent sm:hover:bg-red-200 sm:hover:border-red-700 sm:hover:text-red-600 active:text-red-600"
+            class="border border-transparent text-red-600 bg-white/50 backdrop-blur-sm shadow-lg rounded-lg py-2 px-3 hover:bg-transparent sm:hover:bg-red-200 sm:hover:border-red-700 sm:hover:text-red-600 active:text-red-600"
           >
             <.icon name="hero-arrow-small-down" class="w-8 h-8" />
           </button>

@@ -95,7 +95,7 @@ defmodule PointexWeb.WatchParty.Viewing do
         "border border-transparent rounded-lg py-2 px-3 hover:border-green-500 hover:text-green-600 active:text-green-600 shadow-lg",
         if(@active,
           do: "bg-green-300 text-green-700 hover:bg-green-300",
-          else: "text-green-500 bg-white/30 backdrop-blur-sm hover:bg-transparent"
+          else: "text-green-500 bg-white/50 backdrop-blur-sm hover:bg-transparent"
         )
       ]}
     >
@@ -113,7 +113,7 @@ defmodule PointexWeb.WatchParty.Viewing do
         "border border-transparent rounded-lg py-2 px-3 hover:border-red-700 hover:text-red-600 active:text-red-600 shadow-lg",
         if(@active,
           do: "bg-red-200 text-red-700 hover:bg-red-200",
-          else: "text-red-600 bg-white/30 backdrop-blur-sm hover:bg-transparent"
+          else: "text-red-600 bg-white/50 backdrop-blur-sm hover:bg-transparent"
         )
       ]}
     >
