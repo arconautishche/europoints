@@ -19,16 +19,22 @@ defmodule PointexWeb.ShowOverview do
     ~H"""
     <div>
       <h1 class="text-center text-2xl text-slate-800"><%= @show_name %></h1>
-      <div class="flex flex-col divide-y divide-slate-200 mt-4 mx-4 sm:mx-10">
+      <div class="mx-4 sm:mx-10">
         <%= if @final do %>
           <span class="my-2 text-slate-600">The actual TOP 10</span>
-          <.simple_form :for={form <- @song_forms} for={form} phx-change="update" class="">
-            <div class="grid grid-cols-12 text-lg my-2 items-center">
-              <div class="col-span-2"><.input type="number" field={form[:actual_place_in_final]} phx-debounce="blur" /></div>
-              <div class="col-span-1 mx-4 justify-self-end"><%= form[:flag].value %></div>
-              <div class="col-span-9"><%= form[:country].value %></div>
-            </div>
-          </.simple_form>
+          <div class="grid grid-cols-12 text-sm items-center mt-8 mb-0">
+            <span class="col-span-2 w-12">Place</span>
+            <span class="col-span-10 mx-4">Country</span>
+          </div>
+          <div class="flex flex-col divide-y divide-slate-200">
+            <.simple_form :for={form <- @song_forms} for={form} phx-change="update" class="even:bg-slate-100">
+              <div class="grid grid-cols-12 text-lg my-2 items-center">
+                <div class="col-span-2 w-16"><.input field={form[:actual_place_in_final]} type="number" min="1" max="10" phx-debounce="blur" class="!py-1 !px-2" /></div>
+                <div class="col-span-1 mx-4 justify-self-start"><%= form[:flag].value %></div>
+                <div class="col-span-9"><%= form[:country].value %></div>
+              </div>
+            </.simple_form>
+          </div>
         <% else %>
           <span class="my-2 text-slate-600">Who's actually going to the Final?</span>
           <.simple_form :for={form <- @song_forms} for={form} phx-change="update">
