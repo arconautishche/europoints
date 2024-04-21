@@ -17,5 +17,21 @@ config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Pointex.Finch
 # Do not print debug messages in production
 config :logger, level: :info
 
+config :sentry,
+  environment_name: Mix.env(),
+  enable_source_code_context: true,
+  root_source_code_paths: [File.cwd!()]
+
+config :pointex, :logger, [
+  {:handler, :sentry_handler, Sentry.LoggerHandler,
+   %{
+     config: %{
+       metadata: [:file, :line],
+       rate_limiting: [max_events: 2, interval: _1_second = 1_000],
+       capture_log_messages: true
+     }
+   }}
+]
+
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.

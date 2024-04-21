@@ -11,9 +11,9 @@
 #   - https://pkgs.org/ - resource for finding needed packages
 #   - Ex: hexpm/elixir:1.14.2-erlang-25.1.1-debian-bullseye-20220801-slim
 #
-ARG ELIXIR_VERSION=1.14.2
-ARG OTP_VERSION=25.1.1
-ARG DEBIAN_VERSION=bullseye-20220801-slim
+ARG ELIXIR_VERSION=1.16.2
+ARG OTP_VERSION=26.1.2
+ARG DEBIAN_VERSION=bullseye-20240130-slim
 
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
@@ -56,6 +56,8 @@ RUN mix assets.deploy
 
 # Compile the release
 RUN mix compile
+
+RUN mix sentry.package_source_code
 
 # Changes to config/runtime.exs don't require recompiling the code
 COPY config/runtime.exs config/
