@@ -142,6 +142,29 @@ sf2_2024 = %{
   16 => "Netherlands"
 }
 
+final_2024 = %{
+  1 => "Belgium",
+  2 => "France",
+  3 => "Greece",
+  4 => "Switzerland",
+  5 => "Czechia",
+  6 => "Austria",
+  7 => "Denmark",
+  8 => "Armenia",
+  9 => "Latvia",
+  10 => "San Marino",
+  11 => "United Kingdom",
+  12 => "Italy",
+  13 => "Estonia",
+  14 => "Israel",
+  15 => "Norway",
+  16 => "Netherlands",
+  17 => "Ukraine",
+  18 => "Croatia",
+  19 => "Lithuania",
+  20 => "Luxembourg"
+}
+
 Enum.map(sf1_2024, fn {place, country} ->
   Song
   |> Europoints.get!(year: 2024, country: country)
@@ -153,5 +176,12 @@ Enum.map(sf2_2024, fn {place, country} ->
   Song
   |> Europoints.get!(year: 2024, country: country)
   |> Ash.Changeset.for_update(:update, %{order_in_sf2: place})
+  |> Europoints.update!()
+end)
+
+Enum.map(final_2024, fn {place, country} ->
+  Song
+  |> Europoints.get!(year: 2024, country: country)
+  |> Ash.Changeset.for_update(:update, %{order_in_final: place})
   |> Europoints.update!()
 end)
