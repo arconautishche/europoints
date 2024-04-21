@@ -79,3 +79,14 @@ config :phoenix, :plug_init_mode, :runtime
 config :swoosh, :api_client, false
 
 config :ash, :pub_sub, debug?: false
+
+config :pointex, :logger, [
+  {:handler, :sentry_handler, Sentry.LoggerHandler,
+   %{
+     config: %{
+       metadata: [:file, :line],
+       rate_limiting: [max_events: 2, duration: _1_second = 1_000],
+       capture_log_messages: true
+     }
+   }}
+]

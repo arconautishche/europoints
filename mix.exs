@@ -54,7 +54,10 @@ defmodule Pointex.MixProject do
       {:ash, "~> 2.20"},
       {:ash_postgres, "~> 1.5"},
       {:ash_admin, "~> 0.10.7"},
-      {:ash_phoenix, "~> 1.3"}
+      {:ash_phoenix, "~> 1.3"},
+      {:sentry, "~> 10.4.0"},
+      # sentry requires hackney
+      {:hackney, "~> 1.19"}
     ]
   end
 
