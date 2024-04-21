@@ -102,8 +102,8 @@ defmodule PointexWeb.WatchParty.Results do
         <.section_header label="🔮 Our Predictions" />
       </div>
       <.scores_container>
-        <.semi_final_prediction_scores :if={@wp.show.kind in [:semi_final_1, :semi_final_2]} prediction_scores={@wp.prediction_scores} />
-        <.final_prediction_scores :if={@wp.show.kind == :final} />
+        <.semi_final_prediction_scores :if={@wp.show.kind in [:semi_final_1, :semi_final_2]} scores={@wp.prediction_scores} />
+        <.final_prediction_scores :if={@wp.show.kind == :final} scores={@wp.prediction_scores} />
       </.scores_container>
     </section>
     """
@@ -124,10 +124,49 @@ defmodule PointexWeb.WatchParty.Results do
   end
 
   defp semi_final_prediction_scores(assigns) do
+    ~H"""
+    <.prediction_scores_visualization scores={@scores}>
+      <:score_explanation>
+        <p class="text-sm text-slate-500">
+          You get 1 <span class="rounded border border-slate-200 px-2 mx-1">📺</span> for each song from your Top 10 that's actually going to the Final
+        </p>
+      </:score_explanation>
+    </.prediction_scores_visualization>
+    """
+  end
+
+  defp final_prediction_scores(assigns) do
+    ~H"""
+    <.prediction_scores_visualization scores={@scores}>
+      <:score_explanation>
+        <p class="text-xs font-mono text-slate-500">
+          You get points depending on how your Top 10 corresponds to the actual Top 10:
+          <ul class="text-xs font-mono text-slate-500">
+            <li>• 10 📺 for having the same winner</li>
+            <li>•  3 📺 for having any other song at the same place</li>
+            <li>•  2 📺 for having any song 1 place higher or lower</li>
+            <li>•  1 📺 for having any song 2 places higher or lower</li>
+          </ul>
+        </p>
+      </:score_explanation>
+    </.prediction_scores_visualization>
+    """
+  end
+
+  defp prediction_scores_visualization(%{scores: %{error: _}} = assigns) do
+    ~H"""
+    <div class="flex items-center gap-4 m-12 text-slate-600 animate-bounce">
+      <.icon name="hero-clock" />
+      Actual results are not available yet...
+    </div>
+    """
+  end
+
+  defp prediction_scores_visualization(assigns) do
     assigns =
       assign(assigns,
         scores:
-          assigns.prediction_scores
+          assigns.scores
           |> Enum.map(fn {participant, score} -> %{name: participant.account.name, score: score} end)
           |> Enum.sort_by(& &1.score, :desc)
       )
@@ -136,9 +175,7 @@ defmodule PointexWeb.WatchParty.Results do
     <div class="flex flex-col gap-6 mx-6 my-4 min-w-96">
       <div class="space-y-2 pb-4 mb-2 border-b border-slate-200">
         <h3 class="text-slate-600">Who's got the same taste as Europe?</h3>
-        <p class="text-sm text-slate-500">
-          You get 1 <span class="rounded border border-slate-200 px-2 mx-1">📺</span> for each song from your Top 10 that's actually going to the Final
-        </p>
+        <%= render_slot(@score_explanation) %>
       </div>
       <div class="flex flex-col gap-4 justify-items-start items-top">
         <%= for entry <- @scores do %>
@@ -157,12 +194,6 @@ defmodule PointexWeb.WatchParty.Results do
         <% end %>
       </div>
     </div>
-    """
-  end
-
-  defp final_prediction_scores(assigns) do
-    ~H"""
-
     """
   end
 
