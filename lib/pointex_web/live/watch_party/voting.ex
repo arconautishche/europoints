@@ -1,11 +1,12 @@
 defmodule PointexWeb.WatchParty.Voting do
-  alias Pointex.Europoints.Participant
   use PointexWeb, :live_view
-  alias Pointex.Europoints.Song
-  alias Pointex.Europoints.WatchParty
   alias Pointex.Europoints
+  alias Pointex.Europoints.Song
+  alias Pointex.Europoints.Participant
+  alias Pointex.Europoints.WatchParty
   alias Pointex.Model.PossiblePoints
   alias PointexWeb.Endpoint
+  alias PointexWeb.WatchParty.NotFound
   alias PointexWeb.WatchParty.Nav
   alias PointexWeb.WatchParty.SongComponents
 
@@ -120,7 +121,7 @@ defmodule PointexWeb.WatchParty.Voting do
         songs: songs
       }
     else
-      _ -> %{wp_id: wp_id, songs: []}
+      _ -> raise NotFound
     end
   end
 

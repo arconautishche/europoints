@@ -2,6 +2,7 @@ defmodule PointexWeb.WatchParty.Results do
   use PointexWeb, :live_view
   alias Pointex.Europoints
   alias Pointex.Europoints.WatchParty
+  alias PointexWeb.WatchParty.NotFound
   alias PointexWeb.WatchParty.SongComponents
   alias PointexWeb.Endpoint
   alias PointexWeb.WatchParty.Nav
@@ -51,18 +52,21 @@ defmodule PointexWeb.WatchParty.Results do
   end
 
   defp load_data(wp_id, user_id) do
-    watch_party = Europoints.get!(WatchParty, wp_id, action: :results)
-    participant = Enum.find(watch_party.participants, &(&1.account_id == user_id))
+    with {:ok, watch_party} <- Europoints.get(WatchParty, wp_id, action: :results) do
+      participant = Enum.find(watch_party.participants, &(&1.account_id == user_id))
 
-    %{
-      wp: watch_party,
-      results_visible: participant.final_vote_submitted,
-      wp_totals:
-        watch_party.total_points_by_participants
-        |> Enum.sort_by(& &1.points, :desc)
-        |> Enum.with_index(1),
-      still_voting_participants: Enum.reject(watch_party.participants, & &1.final_vote_submitted)
-    }
+      %{
+        wp: watch_party,
+        results_visible: participant.final_vote_submitted,
+        wp_totals:
+          watch_party.total_points_by_participants
+          |> Enum.sort_by(& &1.points, :desc)
+          |> Enum.with_index(1),
+        still_voting_participants: Enum.reject(watch_party.participants, & &1.final_vote_submitted)
+      }
+    else
+      _ -> raise NotFound
+    end
   end
 
   defp still_voting(assigns) do
@@ -156,8 +160,7 @@ defmodule PointexWeb.WatchParty.Results do
   defp prediction_scores_visualization(%{scores: %{error: _}} = assigns) do
     ~H"""
     <div class="flex items-center gap-4 m-12 text-slate-600 animate-bounce">
-      <.icon name="hero-clock" />
-      Actual results are not available yet...
+      <.icon name="hero-clock" /> Actual results are not available yet...
     </div>
     """
   end

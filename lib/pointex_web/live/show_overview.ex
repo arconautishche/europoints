@@ -29,7 +29,9 @@ defmodule PointexWeb.ShowOverview do
           <div class="flex flex-col divide-y divide-slate-200">
             <.simple_form :for={form <- @song_forms} for={form} phx-change="update" class="even:bg-slate-100">
               <div class="grid grid-cols-12 text-lg my-2 items-center">
-                <div class="col-span-2 w-16"><.input field={form[:actual_place_in_final]} type="number" min="1" max="10" phx-debounce="blur" class="!py-1 !px-2" /></div>
+                <div class="col-span-2 w-16">
+                  <.input field={form[:actual_place_in_final]} type="number" min="1" max="10" phx-debounce="blur" class="!py-1 !px-2" />
+                </div>
                 <div class="col-span-1 mx-4 justify-self-start"><%= form[:flag].value %></div>
                 <div class="col-span-9"><%= form[:country].value %></div>
               </div>
@@ -63,7 +65,7 @@ defmodule PointexWeb.ShowOverview do
   def handle_event("update", %{"_target" => [country, _]} = params, socket) do
     form = Enum.find(socket.assigns.song_forms, &(&1.name == country))
 
-    {:ok, _} = AshPhoenix.Form.submit(form, params: params[country] |> dbg())
+    {:ok, _} = AshPhoenix.Form.submit(form, params: params[country])
 
     {:noreply, assign(socket, load_data(socket.assigns.year, socket.assigns.kind))}
   end
