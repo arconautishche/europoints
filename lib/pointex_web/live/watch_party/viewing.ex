@@ -5,6 +5,7 @@ defmodule PointexWeb.WatchParty.Viewing do
   alias Pointex.Europoints.WatchParty
   alias Pointex.Europoints.Song
   alias PointexWeb.Endpoint
+  alias PointexWeb.WatchParty.NotFound
   alias PointexWeb.WatchParty.Nav
   alias PointexWeb.WatchParty.SongComponents
 
@@ -67,7 +68,7 @@ defmodule PointexWeb.WatchParty.Viewing do
          {:ok, songs} <- Song.songs_in_show(show.year, show.kind) do
       %{wp_id: wp_id, show: show, participant: participant, songs: songs}
     else
-      _ -> %{wp_id: wp_id, songs: []}
+      _ -> raise NotFound
     end
   end
 

@@ -45,11 +45,12 @@ defmodule Pointex.Europoints.WatchParty.PredictionScoresCalculation do
   @points_for_placing_2_removed 1
 
   defp final_prediction_scores(%WatchParty{} = wp) do
-    actual_top_10 = wp.show.songs
-    |> Enum.filter(& &1.actual_place_in_final != nil)
-    |> Enum.sort_by(& &1.actual_place_in_final, :asc)
-    |> Enum.map(& {&1.country, &1.actual_place_in_final})
-    |> Map.new()
+    actual_top_10 =
+      wp.show.songs
+      |> Enum.filter(&(&1.actual_place_in_final != nil))
+      |> Enum.sort_by(& &1.actual_place_in_final, :asc)
+      |> Enum.map(&{&1.country, &1.actual_place_in_final})
+      |> Map.new()
 
     if Enum.count(actual_top_10) == 10 do
       wp.participants
@@ -73,6 +74,7 @@ defmodule Pointex.Europoints.WatchParty.PredictionScoresCalculation do
 
   defp points_for_place(_, :not_in_top_10), do: 0
   defp points_for_place(1, 1), do: @points_for_correct_winner
+
   defp points_for_place(participant, actual) do
     case abs(participant - actual) do
       0 -> @points_for_correct_placing
@@ -81,5 +83,4 @@ defmodule Pointex.Europoints.WatchParty.PredictionScoresCalculation do
       _ -> 0
     end
   end
-
 end

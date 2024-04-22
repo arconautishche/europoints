@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title suffix=" · Europoints">
+      <%= assigns[:page_title] || "Error" %>
+    </.live_title>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+    </script>
+  </head>
+
+  <body class="bg-gray-100/50 antialiased">
+    <div class="bg-red-100 text-red-800 text-xl flex flex-col items-center gap-8 m-8 p-8 rounded-md">
+      <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExYmp0MG5vdTJqMnhocTZqN2JoNG8zM25zM3U5ZHNzNGpqMWF6ajlrMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/czgwo5ol3qJfCr5Mxk/giphy.gif" />
+      <div class="flex flex-col items-center space-y-2">
+        <%= case @reason do %>
+          <% %PointexWeb.WatchParty.NotFound{} -> %>
+            <span>Whoops, we don't have a Watch Party with this ID...</span>
+          <% _ -> %>
+            <span>Whoops</span>
+        <% end %>
+        <span>How did you even get here?!</span>
+      </div>
+    </div>
+  </body>
+</html>
