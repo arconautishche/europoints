@@ -10,24 +10,27 @@ defmodule PointexWeb.WatchParty.Join do
     <section class="bg-gradient-to-br from-white to-sky-100/50 sm:rounded sm:border border-gray-200 sm:shadow max-w-md mx-auto overflow-clip">
       <div class="h-[6px] w-full bg-sky-600" />
       <div class="flex flex-col gap-4 p-4 sm:p-6 md:p-8 ">
-        <div class="flex items-baseline gap-4 opacity-75 font-light text-xl text-center">
-          <span>📺</span>
-          <span :if={!@watch_party_details}>Join a watch party</span>
-          <span :if={@watch_party_details}>You're about to join</span>
-        </div>
-
-        <.watch_party_card :if={@watch_party_details} watch_party={@watch_party_details} current_user={@user} />
-
         <.simple_form :let={f} for={@watch_party} as={:watch_party} phx-change="validate" phx-submit="submit">
+          <div class="flex items-baseline gap-4 opacity-75 font-light text-xl text-center">
+            <span>📺</span>
+            <span :if={!@watch_party_details}>Join a watch party</span>
+            <span :if={@watch_party_details}>You're about to join</span>
+          </div>
+
           <.input
             field={f[:id]}
             placeholder="Enter the ID you've received"
             autocomplete="off"
-            input_class={if @watch_party_details, do: "bg-green-100 !text-xs", else: ""}
+            input_class={if @watch_party_details, do: "bg-green-100 !border-green-200 !text-xs", else: ""}
           />
 
           <:actions>
-            <.button class="grow" disabled={!@valid?} type="submit">Let's do this!</.button>
+            <.button class="grow !text-slate-800 !p-[1px] !pb-2" disabled={!@valid?} type="submit">
+              <div class="flex flex-col gap-2">
+                <.watch_party_card :if={@watch_party_details} watch_party={@watch_party_details} current_user={@user} />
+                <span class="text-white/90">Let's do this!</span>
+              </div>
+            </.button>
           </:actions>
         </.simple_form>
       </div>
@@ -90,11 +93,11 @@ defmodule PointexWeb.WatchParty.Join do
 
   defp watch_party_card(assigns) do
     ~H"""
-    <div class="w-full flex flex-col gap-4 max-w-lg bg-white shadow rounded p-3 sm:py-4 sm:px-6 cursor-pointer transition">
+    <div class="w-full flex flex-col gap-4 max-w-lg bg-white rounded-t-lg p-3 sm:py-4 sm:px-6 cursor-pointer transition">
       <div class="flex gap-2 sm:gap-4 items-top">
         <.icon name="hero-user-group" class="text-sky-700 h-8 w-8 mt-1" />
         <div class="flex flex-col gap-2">
-          <h2><%= @watch_party.name %></h2>
+          <h2 class="text-start text-lg font-normal"><%= @watch_party.name %></h2>
           <ShowLabel.show_label year={@watch_party.show.year} show_name={@watch_party.show.kind} />
 
           <div class="flex gap-2 flex-wrap text-gray-500 mt-4">
