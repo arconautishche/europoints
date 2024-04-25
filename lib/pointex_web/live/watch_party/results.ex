@@ -189,7 +189,7 @@ defmodule PointexWeb.WatchParty.Results do
             </div>
             <div class="grow flex items-center gap-2">
               <span class="text-slate-500 bg-slate-100 px-2 rounded"><%= entry.score %></span>
-              <div class="flex gap-1 flex-wrap">
+              <div :if={entry.score > 0} class="flex gap-1 flex-wrap">
                 <span :for={_ <- 1..entry.score}>📺</span>
               </div>
             </div>
