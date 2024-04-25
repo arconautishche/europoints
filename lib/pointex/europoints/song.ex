@@ -141,6 +141,7 @@ defmodule Pointex.Europoints.Song do
     define :register
     define :songs_in_show, args: [:year, :kind]
     define :went_to_final, args: [:went_to_final]
+    define :set_actual_place_in_final, args: [:actual_place_in_final]
   end
 
   postgres do
