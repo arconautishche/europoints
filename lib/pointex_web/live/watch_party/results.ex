@@ -83,10 +83,10 @@ defmodule PointexWeb.WatchParty.Results do
   defp wp_results(assigns) do
     ~H"""
     <section class="w-full">
-      <div class="flex justify-between">
-        <.section_header label="🏅 Our Results" />
+      <div class="flex justify-between items-end px-2">
+        <.section_header label="🏅 Our Top" class="bg-amber-200 text-amber-900/80 pl-4 pr-8 py-2 mb-0 rounded-t-md" />
         <.link navigate={~p"/wp/#{@wp_id}/results/predictions"}>
-          <.section_header label="🔮 Our Predictions" class="text-blue-700 border-b border-blue-700/50" />
+          <.section_header label="🔮 Our Predictions" class="text-blue-700" />
         </.link>
       </div>
       <.scores_container>
@@ -99,11 +99,11 @@ defmodule PointexWeb.WatchParty.Results do
   defp predictions(assigns) do
     ~H"""
     <section class="w-full">
-      <div class="flex justify-between">
+      <div class="flex justify-between items-end px-2">
         <.link navigate={~p"/wp/#{@wp.id}/results"} class="pr-4">
-          <.section_header label="🏅 Our Results" class="text-blue-700 border-b border-blue-700/50" />
+          <.section_header label="🏅 Our Top" class="text-blue-700" />
         </.link>
-        <.section_header label="🔮 Our Predictions" />
+        <.section_header label="🔮 Our Predictions" class="bg-amber-200 text-amber-900/80 pl-8 pr-4 py-2 mb-0 rounded-t-md" />
       </div>
       <.scores_container>
         <.semi_final_prediction_scores :if={@wp.show.kind in [:semi_final_1, :semi_final_2]} scores={@wp.prediction_scores} />
@@ -213,7 +213,7 @@ defmodule PointexWeb.WatchParty.Results do
 
   defp scores_container(assigns) do
     ~H"""
-    <div class="flex flex-col divide-y divide-gray-200 bg-white shadow-lg border border-gray-200">
+    <div class="flex flex-col divide-y divide-gray-200 bg-white shadow-lg border-t border-amber-200">
       <%= render_slot(@inner_block) %>
     </div>
     """
