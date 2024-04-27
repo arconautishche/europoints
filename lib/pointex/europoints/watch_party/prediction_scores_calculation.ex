@@ -26,17 +26,21 @@ defmodule Pointex.Europoints.WatchParty.PredictionScoresCalculation do
   defp semi_final_prediction_scores(%WatchParty{} = wp) do
     countries_in_final = wp.show.songs |> Enum.filter(& &1.went_to_final) |> Enum.map(& &1.country) |> MapSet.new()
 
-    wp.participants
-    |> Enum.filter(& &1.final_vote_submitted)
-    |> Enum.map(fn participant ->
-      {participant,
-       participant.top_10
-       |> MapSet.new()
-       |> MapSet.intersection(countries_in_final)
-       |> Enum.count()
-       |> Kernel.*(@points_for_sf_prefiction)}
-    end)
-    |> Map.new()
+    if Enum.count(countries_in_final) > 0 do
+      wp.participants
+      |> Enum.filter(& &1.final_vote_submitted)
+      |> Enum.map(fn participant ->
+        {participant,
+         participant.top_10
+         |> MapSet.new()
+         |> MapSet.intersection(countries_in_final)
+         |> Enum.count()
+         |> Kernel.*(@points_for_sf_prefiction)}
+      end)
+      |> Map.new()
+    else
+      %{error: "Actual results incomplete or incorrect"}
+    end
   end
 
   @points_for_correct_winner 10
