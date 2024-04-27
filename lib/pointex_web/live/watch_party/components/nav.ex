@@ -3,7 +3,7 @@ defmodule PointexWeb.WatchParty.Nav do
 
   def layout(assigns) do
     ~H"""
-    <div class="relative h-full">
+    <div class="relative pb-12">
       <.nav wp_id={@wp_id} mobile={false} active={@active} />
       <%= render_slot(@inner_block) %>
       <.nav wp_id={@wp_id} mobile={true} active={@active} />
@@ -23,10 +23,10 @@ defmodule PointexWeb.WatchParty.Nav do
       </.link>
     </div>
     <div class={[
-      "sticky z-10",
+      "z-10",
       if(@mobile,
-        do: "sm:hidden bottom-0 shadow-[0px_-8px_18px_0px_rgba(0,0,0,0.1)]",
-        else: "hidden sm:block top-0 shadow-lg"
+        do: "sm:hidden fixed w-full bottom-0 shadow-[0px_-8px_18px_0px_rgba(0,0,0,0.1)]",
+        else: "hidden sm:block sticky top-0 shadow-lg"
       )
     ]}>
       <div class="grid grid-cols-3 divide-x divide-gray-300 border border-gray-300 backdrop-blur-sm">
