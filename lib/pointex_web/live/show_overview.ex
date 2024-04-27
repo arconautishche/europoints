@@ -19,10 +19,10 @@ defmodule PointexWeb.ShowOverview do
     ~H"""
     <div>
       <h1 class="text-center text-2xl text-slate-800"><%= @show_name %></h1>
-      <div class="mx-4 sm:mx-10">
+      <div class="mx-1 sm:mx-8">
         <%= if @final do %>
           <span class="my-2 text-slate-600">The actual TOP 10</span>
-          <div class="flex divide-x divide-slate-200">
+          <div class="flex divide-x divide-slate-200 flex-wrap">
             <div :for={place <- 1..10} class="flex flex-col gap-4">
               <div class="sticky top-0 flex justify-center gap-2 items-center border-b-4 border-sky-700 text-sky-800 px-2 py-1 text-xl font-bold bg-slate-100">
                 <.icon name="hero-check" class={["-ml-6 text-green-600", unless(place_filled(@songs, place), do: "invisible")]} />
