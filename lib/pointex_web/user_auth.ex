@@ -25,6 +25,7 @@ defmodule PointexWeb.UserAuth do
         %{"user" => %{user_id: user_id, user_name: user_name}},
         socket
       ) do
+    Sentry.Context.set_user_context(%{id: user_id, name: user_name})
     {:cont, assign(socket, user: %{id: user_id, name: user_name})}
   end
 
