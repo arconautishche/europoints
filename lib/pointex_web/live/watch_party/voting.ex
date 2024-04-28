@@ -31,10 +31,6 @@ defmodule PointexWeb.WatchParty.Voting do
             <span>This is my definitive top 10</span>
             <span>🚀</span>
           </.button>
-          <div :if={@show_hint} class="sm:hidden flex gap-4 items-center mx-8 px-4 py-2 bg-blue-300 text-blue-900/75 shadow">
-            <.icon name="hero-information-circle" class="bg-no-repeat" />
-            <span>Scroll down to give points to your favorite songs</span>
-          </div>
           <.top_10 songs={@songs} readonly={@participant.final_vote_submitted} />
         </div>
         <div :if={!@participant.final_vote_submitted} class="flex flex-col gap-4 w-full overflow-x-hidden">
@@ -144,10 +140,26 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   defp top_10(assigns) do
+    assigns = assign(assigns, empty: Enum.all?(assigns.songs, &(&1.points == nil)))
+
     ~H"""
     <section class="w-full">
       <.section_header label="🏅 My TOP 10" class="" />
-      <div class="grid grid-cols-[48px_auto] divide-y divide-gray-200 bg-white shadow-lg border border-gray-200">
+      <div :if={@empty} class="sm:hidden flex gap-4 items-center mx-8 px-4 py-2 bg-blue-300 text-blue-900/75 shadow animate-bounce">
+        <.icon name="hero-information-circle" class="bg-no-repeat" />
+        <span>Scroll down to give points to your favorite songs</span>
+      </div>
+      <div
+        class={[
+          "grid grid-cols-[48px_auto] divide-y divide-gray-200 bg-white shadow-lg border border-gray-200 transition transition-all",
+          if(@empty, do: "-mt-12 -mb-24")
+        ]}
+        style={
+          if @empty,
+            do: "transform: perspective(1cm) rotateX(-10deg) translate3d(0, 0, -100px) ",
+            else: ""
+        }
+      >
         <.points_given
           :for={points <- PossiblePoints.desc()}
           points={points}
@@ -228,14 +240,14 @@ defmodule PointexWeb.WatchParty.Voting do
         </div>
       </div>
     </SongComponents.song_container>
-    <div :if={!@song} class="text-gray-300 px-2 py-2 w-72 transition-all">No song here (yet)</div>
+    <div :if={!@song} class="text-xs text-gray-300 px-2 py-1 w-72 transition-all">No song here (yet)</div>
     """
   end
 
   defp points_label(assigns) do
     ~H"""
     <div class={[
-      if(@active, do: "bg-sky-600 text-sky-100", else: "bg-gray-400 text-gray-100 animate-pulse"),
+      if(@active, do: "bg-sky-600 text-sky-100", else: "bg-gray-400 text-gray-100 animate-pulse text-xs"),
       "font-bold text-2xl flex items-center justify-center transition-all"
     ]}>
       <%= @points %>
@@ -267,8 +279,8 @@ defmodule PointexWeb.WatchParty.Voting do
         <div class="flex">
           <.points_button :for={points <- @unused_points} points={points} song_id={@song.country} used={false} />
         </div>
-        <span :if={@used_points != []} class="mt-3 mb-1 mx-2 text-gray-400 text-xs">
-          Already used
+        <span :if={@used_points != []} class="mt-4 mb-1 mx-2 text-gray-400 text-xs">
+          Points already given, but you can give these to <%= @song.country %> instead
         </span>
         <div class="flex">
           <.points_button :for={points <- @used_points} points={points} song_id={@song.country} used={true} />
