@@ -14,7 +14,7 @@ defmodule PointexWeb.WatchParty.Results do
       <div :if={!@results_visible} class="flex h-full w-full justify-center py-32">
         <div class="max-w-lg mb-32 flex flex-col items-center bg-red-100 rounded-lg shadow-xl border border-red-200 overflow-clip">
           <div class="h-[6px] w-full bg-red-300" />
-          <div class="px-16 py-8 flex flex-col gap-4">
+          <div class="px-12 py-8 flex flex-col gap-4">
             <h2 class="font-bold text-red-800">🙈 Hey hey!</h2>
             <p>
               <span class="text-black/50">No peeking! </span>
