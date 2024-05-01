@@ -60,5 +60,17 @@ defmodule Pointex.Europoints.WatchPartyTest do
 
       assert length(participants) == 3
     end
+
+    test "cannot join multiple times with the same account", %{
+      season: season,
+      owner_account: owner_account,
+      participant_1: participant_1
+    } do
+      show = Enum.find(season.shows, &(&1.kind == :final))
+      watch_party = WatchParty.start!("Test WP", owner_account.id, show.id)
+
+      {:ok, watch_party} = WatchParty.join(watch_party, participant_1.id)
+      assert {:error, _} = WatchParty.join(watch_party, participant_1.id)
+    end
   end
 end

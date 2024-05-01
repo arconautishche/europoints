@@ -14,7 +14,8 @@ defmodule PointexWeb.WatchParty.Join do
           <div class="flex items-baseline gap-4 opacity-75 font-light text-xl text-center">
             <span>📺</span>
             <span :if={!@watch_party_details}>Join a watch party</span>
-            <span :if={@watch_party_details}>You're about to join</span>
+            <span :if={@watch_party_details && !@already_joined?}>You're about to join</span>
+            <span :if={@watch_party_details && @already_joined?}>You've already joined this watch party</span>
           </div>
 
           <.input
@@ -25,12 +26,23 @@ defmodule PointexWeb.WatchParty.Join do
           />
 
           <:actions>
-            <.button class="grow !text-slate-800 !p-[1px] !pb-2" disabled={!@valid?} type="submit">
+            <.button :if={!@already_joined?} class="grow !text-slate-800 !p-[1px] !pb-2" disabled={!@valid?} type="submit">
               <div class="flex flex-col gap-2">
                 <.watch_party_card :if={@watch_party_details} watch_party={@watch_party_details} current_user={@user} />
                 <span class="text-white/90">Let's do this!</span>
               </div>
             </.button>
+
+            <.link
+              :if={@already_joined?}
+              class="grow bg-sky-600 rounded-lg !text-slate-800 !p-[1px] !pb-2"
+              href={~p"/wp/#{@watch_party_details.id}/viewing"}
+            >
+              <div class="flex flex-col gap-2">
+                <.watch_party_card :if={@watch_party_details} watch_party={@watch_party_details} current_user={@user} />
+                <span class="text-white/90 px-4">Already joined! Go there →</span>
+              </div>
+            </.link>
           </:actions>
         </.simple_form>
       </div>
@@ -51,21 +63,21 @@ defmodule PointexWeb.WatchParty.Join do
   def handle_params(params, _uri, socket) do
     case params do
       %{"id" => wp_id} ->
-        {:noreply, assign(socket, found_wp_details(wp_id))}
+        {:noreply, assign(socket, found_wp_details(wp_id, user(socket).id))}
 
       _ ->
-        {:noreply, assign(socket, found_wp_details(nil))}
+        {:noreply, assign(socket, found_wp_details(nil, user(socket).id))}
     end
   end
 
   @impl Phoenix.LiveView
   def handle_event("validate", %{"watch_party" => params}, socket) do
-    {:noreply, assign(socket, found_wp_details(params["id"]))}
+    {:noreply, assign(socket, found_wp_details(params["id"], user(socket).id))}
   end
 
   @impl Phoenix.LiveView
   def handle_event("submit", %{"watch_party" => params}, socket) do
-    with %{watch_party_details: %WatchParty{} = watch_party} <- found_wp_details(params["id"]),
+    with %{watch_party_details: %WatchParty{} = watch_party} <- found_wp_details(params["id"], user(socket).id),
          {:ok, %WatchParty{}} <- WatchParty.join(watch_party, user(socket).id) do
       {:noreply, push_navigate(socket, to: ~p"/wp/#{watch_party.id}/viewing")}
     else
@@ -73,12 +85,13 @@ defmodule PointexWeb.WatchParty.Join do
     end
   end
 
-  defp found_wp_details(wp_id) do
+  defp found_wp_details(wp_id, account_id) do
     case Europoints.get(WatchParty, wp_id, load: [:show, participants: :account]) do
       {:ok, %WatchParty{} = wp} ->
         %{
           watch_party: %{"id" => wp.id},
           watch_party_details: wp,
+          already_joined?: Enum.any?(wp.participants, &(&1.account_id == account_id)),
           valid?: true
         }
 
@@ -86,6 +99,7 @@ defmodule PointexWeb.WatchParty.Join do
         %{
           watch_party: %{"id" => wp_id},
           watch_party_details: nil,
+          already_joined?: false,
           valid?: false
         }
     end
