@@ -56,7 +56,6 @@ defmodule Pointex.Europoints.Participant do
     identity :one_participant_per_account_per_wp, [:account_id, :watch_party_id]
   end
 
-
   actions do
     defaults [:update, :destroy]
 

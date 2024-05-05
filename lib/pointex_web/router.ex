@@ -37,6 +37,7 @@ defmodule PointexWeb.Router do
           {PointexWeb.UserAuth, :ensure_logged_in}
         ] do
         live "/", Home
+        live "/login_instructions", Home, :show_login_instructions, as: :home
         live "/felicitoshka", UserList
 
         scope "/wp" do
