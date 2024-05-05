@@ -84,6 +84,10 @@ defmodule Pointex.Europoints.WatchParty do
       end
     end
 
+    update :rename do
+      accept [:name]
+    end
+
     read :results do
       primary? false
       prepare build(load: [:participants, :total_points_by_participants, :prediction_scores])
@@ -95,6 +99,7 @@ defmodule Pointex.Europoints.WatchParty do
 
     define :start, args: [:name, :owner_account_id, :show_id]
     define :join, args: [:account_id]
+    define :rename, args: [:name]
     define :results
   end
 
