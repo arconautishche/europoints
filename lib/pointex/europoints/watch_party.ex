@@ -85,11 +85,6 @@ defmodule Pointex.Europoints.WatchParty do
     update :leave do
       argument :participant_id, :uuid, allow_nil?: false
 
-      # change manage_relationship(:participant_id, :participants,
-      #          type: :remove,
-      #          value_is_key: :id
-      #        )
-
       change fn changeset, _opts ->
         Ash.Changeset.manage_relationship(
           changeset,

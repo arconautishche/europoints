@@ -50,6 +50,7 @@ defmodule PointexWeb.Router do
           live "/:id/results/predictions", WatchParty.Results, :predictions, as: :action
           live "/:id/real-results", WatchParty.RealResults
           live "/:id", WatchParty.Overview
+          live "/:id/admin", WatchParty.Admin
         end
 
         live "/show/:year/:kind", ShowOverview
