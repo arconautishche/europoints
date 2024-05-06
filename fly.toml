@@ -29,7 +29,7 @@ processes = []
   auto_start_machines = true
   min_machines_running = 1
   [services.concurrency]
-    hard_limit = 25
+    hard_limit = 60
     soft_limit = 20
     type = "connections"
 
