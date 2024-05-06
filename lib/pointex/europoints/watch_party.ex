@@ -58,7 +58,7 @@ defmodule Pointex.Europoints.WatchParty do
           changeset,
           :participants,
           %{
-            account_id: changeset.arguments[:owner_account_id],
+            account_id: Ash.Changeset.get_argument(changeset, :owner_account_id),
             owner: true
           },
           type: :create
@@ -67,19 +67,37 @@ defmodule Pointex.Europoints.WatchParty do
     end
 
     update :join do
-      argument :account_id, :uuid do
-        allow_nil? false
-      end
+      argument :account_id, :uuid, allow_nil?: false
 
       change fn changeset, _opts ->
         Ash.Changeset.manage_relationship(
           changeset,
           :participants,
           %{
-            account_id: changeset.arguments[:account_id],
+            account_id: Ash.Changeset.get_argument(changeset, :account_id),
             owner: false
           },
           type: :create
+        )
+      end
+    end
+
+    update :leave do
+      argument :participant_id, :uuid, allow_nil?: false
+
+      # change manage_relationship(:participant_id, :participants,
+      #          type: :remove,
+      #          value_is_key: :id
+      #        )
+
+      change fn changeset, _opts ->
+        Ash.Changeset.manage_relationship(
+          changeset,
+          :participants,
+          [Ash.Changeset.get_argument(changeset, :participant_id)],
+          value_is_key: :id,
+          on_match: :destroy,
+          on_no_match: :error
         )
       end
     end
@@ -99,6 +117,7 @@ defmodule Pointex.Europoints.WatchParty do
 
     define :start, args: [:name, :owner_account_id, :show_id]
     define :join, args: [:account_id]
+    define :leave, args: [:participant_id]
     define :rename, args: [:name]
     define :results
   end
