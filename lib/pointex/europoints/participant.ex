@@ -52,6 +52,13 @@ defmodule Pointex.Europoints.Participant do
     end
   end
 
+  calculations do
+    calculate :top_10_with_points, :map, Participant.Top10WithPoints
+    calculate :used_points, {:array, :integer}, Participant.UsedPoints
+    calculate :unused_points, {:array, :integer}, Participant.UnusedPoints
+    calculate :can_submit_final_vote, :boolean, Participant.CanSubmitFinalVote
+  end
+
   identities do
     identity :one_participant_per_account_per_wp, [:account_id, :watch_party_id]
   end
@@ -151,13 +158,6 @@ defmodule Pointex.Europoints.Participant do
       validate attribute_equals(:can_submit_final_vote, true)
       change set_attribute(:final_vote_submitted, true)
     end
-  end
-
-  calculations do
-    calculate :top_10_with_points, :map, Participant.Top10WithPoints
-    calculate :used_points, {:array, :integer}, Participant.UsedPoints
-    calculate :unused_points, {:array, :integer}, Participant.UnusedPoints
-    calculate :can_submit_final_vote, :boolean, Participant.CanSubmitFinalVote
   end
 
   @top_10_derivatives [:top_10_with_points, :used_points, :unused_points, :can_submit_final_vote]
