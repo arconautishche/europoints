@@ -1,6 +1,7 @@
 # fly.toml file generated for pointex on 2023-04-20T20:09:26+02:00
 
 app = "europoints"
+primary_region = 'ams'
 kill_signal = "SIGTERM"
 kill_timeout = 5
 processes = []
