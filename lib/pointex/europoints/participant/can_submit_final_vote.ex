@@ -1,6 +1,6 @@
 defmodule Pointex.Europoints.Participant.CanSubmitFinalVote do
+  use Ash.Resource.Resource.Calculation
   alias Pointex.Europoints.Participant
-  use Ash.Resource.Calculation
 
   @impl true
   def load(_query, _opts, _context) do

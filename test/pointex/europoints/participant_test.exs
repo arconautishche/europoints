@@ -10,17 +10,15 @@ defmodule Pointex.Europoints.ParticipantTest do
     owner_account = Europoints.Account.register!("Euro Papa")
     show = Enum.find(season.shows, &(&1.kind == :semi_final_1))
 
-    generate_songs(season.year)
+    %{season: season.year, country: "Ukraine", artist: "Who Knows", name: "Trololo", img: "ua.png"}
+    |> Song.register!()
+    |> Ash.Changeset.for_update(:update, %{order_in_sf1: 1})
+    |> Ash.update!()
 
-    # %{season: season.year, country: "Ukraine", artist: "Who Knows", name: "Trololo", img: "ua.png"}
-    # |> Song.register!()
-    # |> Ash.Changeset.for_update(:update, %{order_in_sf1: 1})
-    # |> Ash.update!()
-
-    # %{season: season.year, country: "Belgium", artist: "Wie Weet", name: "Tralala", img: "be.png"}
-    # |> Song.register!()
-    # |> Ash.Changeset.for_update(:update, %{order_in_sf1: 2})
-    # |> Ash.update!()
+    %{season: season.year, country: "Belgium", artist: "Wie Weet", name: "Tralala", img: "be.png"}
+    |> Song.register!()
+    |> Ash.Changeset.for_update(:update, %{order_in_sf1: 2})
+    |> Ash.update!()
 
     %{participants: [participant]} = WatchParty.start!("Test WP", owner_account.id, show.id)
 
@@ -209,7 +207,8 @@ defmodule Pointex.Europoints.ParticipantTest do
     test "cannot give points after submission", %{participant: participant} do
       participant =
         participant
-        |> Ash.update!(%{final_vote_submitted: true})
+        |> Ash.Changeset.for_update(:update, %{final_vote_submitted: true})
+        |> Ash.update!()
 
       assert {:error, %{errors: [%{field: :final_vote_submitted}]}} = Participant.give_points(participant, "Ukraine", 12)
     end

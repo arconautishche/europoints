@@ -28,15 +28,18 @@ defmodule Pointex.Europoints.Song do
 
     attribute :order_in_sf1, :integer do
       public? true
+      public? true
       constraints min: 1, max: 100
     end
 
     attribute :order_in_sf2, :integer do
       public? true
+      public? true
       constraints min: 1, max: 100
     end
 
     attribute :order_in_final, :integer do
+      public? true
       public? true
       constraints min: 1, max: 100
     end
@@ -48,6 +51,7 @@ defmodule Pointex.Europoints.Song do
     end
 
     attribute :went_to_final, :boolean do
+      public? true
       public? true
       allow_nil? false
       default false
@@ -150,6 +154,15 @@ defmodule Pointex.Europoints.Song do
             |> Ash.Query.sort([:order_in_final])
         end
       end
+    end
+
+    update :went_to_final do
+      accept [:went_to_final]
+    end
+
+    update :set_actual_place_in_final do
+      require_atomic? false
+      accept [:actual_place_in_final]
     end
   end
 
