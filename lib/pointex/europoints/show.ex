@@ -14,6 +14,7 @@ defmodule Pointex.Europoints.Show do
 
     attribute :kind, :atom do
       allow_nil? false
+      always_select? true
 
       constraints one_of: @kinds
     end
