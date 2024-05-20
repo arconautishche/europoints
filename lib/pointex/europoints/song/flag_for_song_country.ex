@@ -1,5 +1,5 @@
 defmodule Pointex.Europoints.Song.FlagForSongCountry do
-  use Ash.Resource.Resource.Calculation
+  use Ash.Resource.Calculation
   alias Pointex.Europoints.Country
 
   @impl true

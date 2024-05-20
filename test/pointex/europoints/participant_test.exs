@@ -1,7 +1,7 @@
 defmodule Pointex.Europoints.ParticipantTest do
   use Pointex.DataCase, async: true
-  import Pointex.Test.SeasonFixtures
   alias Pointex.Europoints
+  alias Pointex.Europoints.Song
   alias Pointex.Europoints.WatchParty
   alias Pointex.Europoints.Participant
 

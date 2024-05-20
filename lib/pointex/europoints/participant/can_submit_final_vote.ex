@@ -1,5 +1,5 @@
 defmodule Pointex.Europoints.Participant.CanSubmitFinalVote do
-  use Ash.Resource.Resource.Calculation
+  use Ash.Resource.Calculation
   alias Pointex.Europoints.Participant
 
   @impl true

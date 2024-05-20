@@ -3,6 +3,7 @@ defmodule Pointex.Europoints.Country do
     "Albania" => "🇦🇱",
     "Armenia" => "🇦🇲",
     "Austria" => "🇦🇹",
+    "Bulgaria" => "🇧🇬",
     "Sweden" => "🇸🇪",
     "Greece" => "🇬🇷",
     "France" => "🇫🇷",

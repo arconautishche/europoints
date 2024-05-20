@@ -33,6 +33,27 @@ defmodule Pointex.Europoints.Season do
       sort kind: :asc
     end
 
+    has_one :semi_final_1_show, Show do
+      from_many? true
+      source_attribute :year
+      destination_attribute :year
+      filter kind: :semi_final_1
+    end
+
+    has_one :semi_final_2_show, Show do
+      from_many? true
+      source_attribute :year
+      destination_attribute :year
+      filter kind: :semi_final_2
+    end
+
+    has_one :final_show, Show do
+      from_many? true
+      source_attribute :year
+      destination_attribute :year
+      filter kind: :final
+    end
+
     has_many :songs, Song do
       source_attribute :year
       destination_attribute :year
@@ -71,6 +92,8 @@ defmodule Pointex.Europoints.Season do
   end
 
   code_interface do
+    define :new_year, action: :new, args: [:year]
+    define :get, action: :read, get_by: :year
     define :deactivate
     define :active
   end
