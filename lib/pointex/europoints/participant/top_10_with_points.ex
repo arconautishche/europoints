@@ -1,5 +1,5 @@
 defmodule Pointex.Europoints.Participant.Top10WithPoints do
-  use Ash.Calculation
+  use Ash.Resource.Calculation
   alias Pointex.Europoints.Participant
   alias Pointex.Europoints.Participant.Voting
 

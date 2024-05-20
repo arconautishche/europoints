@@ -3,6 +3,7 @@ defmodule Pointex.Europoints.Show do
   alias Pointex.Europoints
 
   use Ash.Resource,
+    domain: Pointex.Europoints,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAdmin.Resource]
 

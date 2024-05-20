@@ -1,6 +1,5 @@
 defmodule PointexWeb.WatchParty.Results do
   use PointexWeb, :live_view
-  alias Pointex.Europoints
   alias Pointex.Europoints.WatchParty
   alias PointexWeb.WatchParty.NotFound
   alias PointexWeb.WatchParty.SongComponents
@@ -52,7 +51,7 @@ defmodule PointexWeb.WatchParty.Results do
   end
 
   defp load_data(wp_id, user_id) do
-    with {:ok, watch_party} <- Europoints.get(WatchParty, wp_id, action: :results) do
+    with {:ok, watch_party} <- Ash.get(WatchParty, wp_id, action: :results) do
       participant = Enum.find(watch_party.participants, &(&1.account_id == user_id))
 
       %{

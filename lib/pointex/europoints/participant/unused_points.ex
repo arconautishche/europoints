@@ -1,5 +1,5 @@
 defmodule Pointex.Europoints.Participant.UnusedPoints do
-  use Ash.Calculation
+  use Ash.Resource.Calculation
   alias Pointex.Europoints.Participant.Voting
 
   @impl true

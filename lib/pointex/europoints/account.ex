@@ -2,6 +2,7 @@ defmodule Pointex.Europoints.Account do
   alias Pointex.Europoints.Participant
 
   use Ash.Resource,
+    domain: Pointex.Europoints,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAdmin.Resource]
 
@@ -34,8 +35,6 @@ defmodule Pointex.Europoints.Account do
   end
 
   code_interface do
-    define_for Pointex.Europoints
-
     define :register, args: [:name]
   end
 

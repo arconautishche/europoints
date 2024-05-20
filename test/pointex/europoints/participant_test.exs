@@ -13,18 +13,18 @@ defmodule Pointex.Europoints.ParticipantTest do
     %{season: season.year, country: "Ukraine", artist: "Who Knows", name: "Trololo", img: "ua.png"}
     |> Song.register!()
     |> Ash.Changeset.for_update(:update, %{order_in_sf1: 1})
-    |> Europoints.update!()
+    |> Ash.update!()
 
     %{season: season.year, country: "Belgium", artist: "Wie Weet", name: "Tralala", img: "be.png"}
     |> Song.register!()
     |> Ash.Changeset.for_update(:update, %{order_in_sf1: 2})
-    |> Europoints.update!()
+    |> Ash.update!()
 
     %{participants: [participant]} = WatchParty.start!("Test WP", owner_account.id, show.id)
 
     %{
       season: season,
-      participant: Europoints.get!(Participant, participant.id)
+      participant: Ash.get!(Participant, participant.id)
     }
   end
 
@@ -46,7 +46,7 @@ defmodule Pointex.Europoints.ParticipantTest do
              1 => nil
            }
 
-    participant = Europoints.load!(participant, [:used_points, :unused_points])
+    participant = Ash.load!(participant, [:used_points, :unused_points])
     assert participant.used_points == []
     assert participant.unused_points == [12, 10, 8, 7, 6, 5, 4, 3, 2, 1]
   end
@@ -196,7 +196,7 @@ defmodule Pointex.Europoints.ParticipantTest do
       participant =
         participant
         |> Ash.Changeset.for_update(:update, %{final_vote_submitted: true})
-        |> Europoints.update!()
+        |> Ash.update!()
 
       assert {:error, %{errors: [%{field: :final_vote_submitted}]}} = Participant.give_points(participant, "TheWinner", 12)
     end

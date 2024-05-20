@@ -1,6 +1,5 @@
 defmodule PointexWeb.LoginController do
   use PointexWeb, :controller
-  alias Pointex.Europoints
   alias Pointex.Europoints.Account
 
   def register(conn, %{"register_params" => register_params, "return_to" => return_to}) do
@@ -21,7 +20,7 @@ defmodule PointexWeb.LoginController do
   end
 
   def login(conn, %{"login_params" => login_params, "return_to" => return_to}) do
-    case Europoints.get(Account, login_params["user_id"]) do
+    case Ash.get(Account, login_params["user_id"]) do
       {:ok, %{id: id, name: name}} ->
         conn
         |> Plug.Conn.put_session("user", %{

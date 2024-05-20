@@ -1,6 +1,5 @@
 defmodule PointexWeb.UserList do
   use PointexWeb, :live_view
-  alias Pointex.Europoints
   alias Pointex.Europoints.Account
 
   @impl Phoenix.LiveView
@@ -20,7 +19,7 @@ defmodule PointexWeb.UserList do
     {:ok,
      assign(socket, %{
        page_title: "Accounts",
-       all_users: Europoints.read!(Account)
+       all_users: Ash.read!(Account)
      })}
   end
 end

@@ -1,5 +1,6 @@
 defmodule Pointex.Europoints.Participant do
   use Ash.Resource,
+    domain: Pointex.Europoints,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAdmin.Resource],
     notifiers: [Ash.Notifier.PubSub]
@@ -35,6 +36,7 @@ defmodule Pointex.Europoints.Participant do
     end
 
     attribute :final_vote_submitted, :boolean do
+      public? true
       allow_nil? false
       default false
     end
@@ -42,7 +44,6 @@ defmodule Pointex.Europoints.Participant do
 
   relationships do
     belongs_to :account, Europoints.Account do
-      private? false
       allow_nil? false
     end
 
@@ -64,7 +65,7 @@ defmodule Pointex.Europoints.Participant do
   end
 
   actions do
-    defaults [:update, :destroy]
+    defaults [:destroy, update: :*]
 
     create :new do
       primary? true
@@ -102,6 +103,8 @@ defmodule Pointex.Europoints.Participant do
     end
 
     update :toggle_shortlisted do
+      require_atomic? false
+
       argument :country, :string do
         allow_nil? false
       end
@@ -114,6 +117,8 @@ defmodule Pointex.Europoints.Participant do
     end
 
     update :toggle_noped do
+      require_atomic? false
+
       argument :country, :string do
         allow_nil? false
       end
@@ -126,6 +131,8 @@ defmodule Pointex.Europoints.Participant do
     end
 
     update :give_points do
+      require_atomic? false
+
       argument :points, :integer do
         allow_nil? true
       end
@@ -171,8 +178,6 @@ defmodule Pointex.Europoints.Participant do
   end
 
   code_interface do
-    define_for Pointex.Europoints
-
     define :new, args: [:account_id, :watch_party_id]
     define :for_account, args: [:account_id], action: :for_account
     define :toggle_shortlisted, args: [:country]

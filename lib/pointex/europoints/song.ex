@@ -1,48 +1,57 @@
 defmodule Pointex.Europoints.Song do
   use Ash.Resource,
+    domain: Pointex.Europoints,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAdmin.Resource],
-    fragments: []
+    extensions: [AshAdmin.Resource]
 
   require Ash.Query
   alias Pointex.Europoints
 
   attributes do
     attribute :country, :string do
+      public? true
       primary_key? true
       allow_nil? false
     end
 
     attribute :artist, :string do
+      public? true
       allow_nil? false
     end
 
     attribute :name, :string do
+      public? true
       allow_nil? false
     end
 
     attribute :img, :string do
+      public? true
       allow_nil? false
     end
 
     attribute :order_in_sf1, :integer do
+      public? true
       constraints min: 1, max: 100
     end
 
     attribute :order_in_sf2, :integer do
+      public? true
       constraints min: 1, max: 100
     end
 
     attribute :order_in_final, :integer do
+      public? true
       constraints min: 1, max: 100
     end
 
     attribute :actual_place_in_final, :integer do
+      public? true
       allow_nil? true
       constraints min: 1, max: 100
     end
 
     attribute :went_to_final, :boolean do
+      public? true
       allow_nil? false
       default false
     end
@@ -67,7 +76,7 @@ defmodule Pointex.Europoints.Song do
   end
 
   actions do
-    defaults [:read, :update, :destroy]
+    defaults [:read, :destroy, update: :*]
 
     create :register do
       primary? true
@@ -127,6 +136,7 @@ defmodule Pointex.Europoints.Song do
     end
 
     update :set_actual_place_in_final do
+      require_atomic? false
       accept [:actual_place_in_final]
     end
   end
@@ -136,8 +146,6 @@ defmodule Pointex.Europoints.Song do
   end
 
   code_interface do
-    define_for Europoints
-
     define :register
     define :songs_in_show, args: [:year, :kind]
     define :went_to_final, args: [:went_to_final]

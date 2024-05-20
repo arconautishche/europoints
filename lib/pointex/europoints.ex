@@ -1,8 +1,8 @@
 defmodule Pointex.Europoints do
   alias Pointex.Europoints
 
-  use Ash.Api,
-    extensions: [AshAdmin.Api]
+  use Ash.Domain,
+    extensions: [AshAdmin.Domain]
 
   resources do
     resource Europoints.Account

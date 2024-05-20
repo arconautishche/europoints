@@ -30,7 +30,7 @@ defmodule PointexWeb.WatchParty.Admin do
 
   @impl Phoenix.LiveView
   def handle_params(%{"id" => wp_id}, _uri, socket) do
-    watch_party = Europoints.get!(Europoints.WatchParty, wp_id, load: [:participants])
+    watch_party = Ash.get!(Europoints.WatchParty, wp_id, load: [:participants])
 
     {:noreply,
      socket
@@ -47,7 +47,7 @@ defmodule PointexWeb.WatchParty.Admin do
 
     {:noreply,
      assign(socket,
-       watch_party: Europoints.get!(Europoints.WatchParty, socket.assigns.wp_id, load: [:participants])
+       watch_party: Ash.get!(Europoints.WatchParty, socket.assigns.wp_id, load: [:participants])
      )}
   end
 end
