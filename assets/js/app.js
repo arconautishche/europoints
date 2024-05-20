@@ -22,9 +22,15 @@ import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import InitDragAndDrop from "./hooks/init_drag_and_drop"
+import autoAnimate from "@formkit/auto-animate"
 
 let Hooks = {}
 Hooks.InitDragAndDrop = InitDragAndDrop
+Hooks.AutoAnimate = {
+  mounted() {
+    autoAnimate(this.el)
+  }
+}
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
