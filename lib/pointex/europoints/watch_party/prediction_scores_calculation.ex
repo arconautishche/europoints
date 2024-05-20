@@ -1,5 +1,5 @@
 defmodule Pointex.Europoints.WatchParty.PredictionScoresCalculation do
-  use Ash.Calculation
+  use Ash.Resource.Calculation
   alias Pointex.Europoints.WatchParty
 
   @impl true

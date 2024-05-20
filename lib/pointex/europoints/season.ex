@@ -4,12 +4,11 @@ defmodule Pointex.Europoints.Season do
   alias Pointex.Europoints.Song
 
   use Ash.Resource,
+    domain: Pointex.Europoints,
     fragments: [Pointex.Europoints.Season.DataLayer],
     extensions: [AshAdmin.Resource]
 
   code_interface do
-    define_for Pointex.Europoints
-
     define :new, args: [:year]
   end
 
@@ -72,7 +71,6 @@ defmodule Pointex.Europoints.Season do
   end
 
   code_interface do
-    define_for Pointex.Europoints
     define :deactivate
     define :active
   end

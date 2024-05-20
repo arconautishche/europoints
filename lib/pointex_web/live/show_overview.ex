@@ -98,10 +98,7 @@ defmodule PointexWeb.ShowOverview do
   end
 
   defp load_data(year, kind) do
-    {:ok, %{songs: songs} = show} =
-      Show
-      |> Europoints.get(year: year, kind: kind)
-      |> Europoints.load(:songs)
+    {:ok, %{songs: songs} = show} = Ash.get(Show, [year: year, kind: kind], load: [:songs])
 
     action =
       if show.kind == :final do

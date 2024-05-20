@@ -33,27 +33,27 @@ alias Pointex.Europoints
 # |> Pointex.Model.ReadModels.Shows.songs(:semi_final_1)
 # |> Enum.map(fn %{ro: ro, country: country} ->
 #   Europoints.Song
-#   |> Europoints.get!(country: country, year: 2023)
+#   |> Ash.get!(country: country, year: 2023)
 #   |> Ash.Changeset.for_update(:update, %{order_in_sf1: ro})
-#   |> Europoints.update!()
+#   |> Ash.update!()
 # end)
 
 # 2023
 # |> Pointex.Model.ReadModels.Shows.songs(:semi_final_2)
 # |> Enum.map(fn %{ro: ro, country: country} ->
 #   Europoints.Song
-#   |> Europoints.get!(country: country, year: 2023)
+#   |> Ash.get!(country: country, year: 2023)
 #   |> Ash.Changeset.for_update(:update, %{order_in_sf2: ro})
-#   |> Europoints.update!()
+#   |> Ash.update!()
 # end)
 
 # 2023
 # |> Pointex.Model.ReadModels.Shows.songs(:final)
 # |> Enum.map(fn %{ro: ro, country: country} ->
 #   Europoints.Song
-#   |> Europoints.get!(country: country, year: 2023)
+#   |> Ash.get!(country: country, year: 2023)
 #   |> Ash.Changeset.for_update(:update, %{order_in_final: ro})
-#   |> Europoints.update!()
+#   |> Ash.update!()
 # end)
 
 # =======================================================================
@@ -173,21 +173,21 @@ final_2024 = %{
 
 Enum.map(sf1_2024, fn {place, country} ->
   Song
-  |> Europoints.get!(year: 2024, country: country)
+  |> Ash.get!(year: 2024, country: country)
   |> Ash.Changeset.for_update(:update, %{order_in_sf1: place})
-  |> Europoints.update!()
+  |> Ash.update!()
 end)
 
 Enum.map(sf2_2024, fn {place, country} ->
   Song
-  |> Europoints.get!(year: 2024, country: country)
+  |> Ash.get!(year: 2024, country: country)
   |> Ash.Changeset.for_update(:update, %{order_in_sf2: place})
-  |> Europoints.update!()
+  |> Ash.update!()
 end)
 
 Enum.map(final_2024, fn {place, country} ->
   Song
-  |> Europoints.get!(year: 2024, country: country)
+  |> Ash.get!(year: 2024, country: country)
   |> Ash.Changeset.for_update(:update, %{order_in_final: place})
-  |> Europoints.update!()
+  |> Ash.update!()
 end)

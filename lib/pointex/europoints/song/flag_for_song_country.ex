@@ -1,5 +1,5 @@
 defmodule Pointex.Europoints.Song.FlagForSongCountry do
-  use Ash.Calculation
+  use Ash.Resource.Calculation
 
   @flags %{
     "Sweden" => "🇸🇪",

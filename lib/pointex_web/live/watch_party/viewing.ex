@@ -1,6 +1,5 @@
 defmodule PointexWeb.WatchParty.Viewing do
   use PointexWeb, :live_view
-  alias Pointex.Europoints
   alias Pointex.Europoints.Participant
   alias Pointex.Europoints.WatchParty
   alias Pointex.Europoints.Song
@@ -63,7 +62,7 @@ defmodule PointexWeb.WatchParty.Viewing do
   end
 
   defp load_data(wp_id, user_id) do
-    with {:ok, %{show: show, participants: participants}} <- Europoints.get(WatchParty, wp_id, load: [:show, :participants]),
+    with {:ok, %{show: show, participants: participants}} <- Ash.get(WatchParty, wp_id, load: [:show, :participants]),
          %{} = participant <- Enum.find(participants, &(&1.account_id == user_id)),
          {:ok, songs} <- Song.songs_in_show(show.year, show.kind) do
       %{wp_id: wp_id, show: show, participant: participant, songs: songs}

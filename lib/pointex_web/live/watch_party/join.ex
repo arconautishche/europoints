@@ -1,7 +1,6 @@
 defmodule PointexWeb.WatchParty.Join do
   use PointexWeb, :live_view
   alias Pointex.Europoints.WatchParty
-  alias Pointex.Europoints
   alias PointexWeb.Components.ShowLabel
 
   @impl Phoenix.LiveView
@@ -86,7 +85,7 @@ defmodule PointexWeb.WatchParty.Join do
   end
 
   defp found_wp_details(wp_id, account_id) do
-    case Europoints.get(WatchParty, wp_id, load: [:show, participants: :account]) do
+    case Ash.get(WatchParty, wp_id, load: [:show, participants: :account]) do
       {:ok, %WatchParty{} = wp} ->
         %{
           watch_party: %{"id" => wp.id},

@@ -1,5 +1,6 @@
 defmodule Pointex.Europoints.WatchParty do
   use Ash.Resource,
+    domain: Pointex.Europoints,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAdmin.Resource]
 
@@ -67,6 +68,7 @@ defmodule Pointex.Europoints.WatchParty do
     end
 
     update :join do
+      require_atomic? false
       argument :account_id, :uuid, allow_nil?: false
 
       change fn changeset, _opts ->
@@ -83,6 +85,7 @@ defmodule Pointex.Europoints.WatchParty do
     end
 
     update :leave do
+      require_atomic? false
       argument :participant_id, :uuid, allow_nil?: false
 
       change fn changeset, _opts ->
@@ -108,8 +111,6 @@ defmodule Pointex.Europoints.WatchParty do
   end
 
   code_interface do
-    define_for Pointex.Europoints
-
     define :start, args: [:name, :owner_account_id, :show_id]
     define :join, args: [:account_id]
     define :leave, args: [:participant_id]
@@ -122,7 +123,7 @@ defmodule Pointex.Europoints.WatchParty do
 
     WatchParty
     |> Ash.Query.filter(participants.account.id == ^account_id)
-    |> Europoints.read!(load: [:show, participants: :account])
+    |> Ash.read!(load: [:show, participants: :account])
   end
 
   postgres do
