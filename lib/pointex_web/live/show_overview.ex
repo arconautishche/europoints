@@ -67,6 +67,7 @@ defmodule PointexWeb.ShowOverview do
   def handle_params(%{"year" => year, "kind" => kind}, _uri, socket) do
     {:noreply,
      socket
+     |> assign(page_title: "Show Admin")
      |> assign(year: year)
      |> assign(kind: kind)
      |> assign(load_data(year, kind))}
