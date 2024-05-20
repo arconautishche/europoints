@@ -3,7 +3,7 @@ defmodule Pointex.Europoints.WatchParty.TotalPointsCalculation do
 
   @impl true
   def load(_query, _opts, _context) do
-    [show: :songs, participants: :top_10_with_points]
+    [show: [:year, :songs], participants: :top_10_with_points]
   end
 
   @impl true

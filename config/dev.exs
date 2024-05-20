@@ -58,7 +58,7 @@ config :pointex, PointexWeb.Endpoint,
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/.*$"
+      ~r"lib/.*(ex)$"
     ]
   ]
 
