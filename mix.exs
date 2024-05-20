@@ -5,7 +5,7 @@ defmodule Pointex.MixProject do
     [
       app: :pointex,
       version: "0.1.0",
-      elixir: "~> 1.14",
+      elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -51,10 +51,10 @@ defmodule Pointex.MixProject do
       {:jason, "~> 1.4"},
       {:plug_cowboy, "~> 2.5"},
       {:eqrcode, "~> 0.1.10"},
-      {:ash, "~> 2.20"},
-      {:ash_postgres, "~> 1.5"},
-      {:ash_admin, "~> 0.10.7"},
-      {:ash_phoenix, "~> 1.3"},
+      {:ash, "~> 3.0"},
+      {:ash_postgres, "~> 2.0"},
+      {:ash_admin, "~> 0.10"},
+      {:ash_phoenix, "~> 2.0"},
       {:sentry, "~> 10.4.0"},
       # sentry requires hackney
       {:hackney, "~> 1.19"}
