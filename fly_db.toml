@@ -9,7 +9,6 @@ primary_region = 'ams'
 [env]
   PRIMARY_REGION = 'ams'
 
-
 [[vm]]
   size = "shared-cpu-1x"
   memory = "512mb"
@@ -22,6 +21,8 @@ primary_region = 'ams'
   protocol = 'tcp'
   internal_port = 5432
   auto_start_machines = true
+  auto_stop_machines = "stop"
+  min_machines_running = 0
 
   [[services.ports]]
     port = 5432
