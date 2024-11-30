@@ -264,7 +264,7 @@ defmodule PointexWeb.WatchParty.Voting do
     ~H"""
     <div class={[
       if(@active, do: "bg-sky-600 text-sky-100", else: "bg-gray-400 text-gray-100 animate-pulse text-xs"),
-      "w-12 font-bold text-2xl flex items-center justify-center transition-all drag-item:animate-pulse"
+      "w-12 shrink-0 font-bold text-2xl flex items-center justify-center transition-all drag-item:animate-pulse"
     ]}>
       <%= @points %>
     </div>
