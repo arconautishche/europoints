@@ -87,7 +87,7 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   def handle_event("give_points", params, socket) do
-    song_id = params["id"]
+    song_id = params["id"] |> dbg()
     points = params["points"]
     participant = socket.assigns.participant
 
@@ -101,8 +101,12 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   def handle_event("reposition", params, socket) do
-    dbg(params)
-    {:noreply, socket}
+    song_id = params["id"]
+    points = Enum.at(PossiblePoints.desc(), params["new"])
+    participant = socket.assigns.participant
+
+    participant = Participant.give_points!(participant, song_id, points)
+    {:noreply, assign(socket, participant: participant)}
   end
 
   @impl Phoenix.LiveView
@@ -224,7 +228,7 @@ defmodule PointexWeb.WatchParty.Voting do
     ~H"""
     <li
       data-id={@song && @song.country}
-      class={["drag-ghost:bg-zink-200 drag-ghost:py-4 drag-ghost:animate-pulse drag-item:scale-110", if(@readonly || !@song, do: "not-draggable")]}
+      class={["drag-ghost:bg-zinc-200 drag-ghost:py-4 drag-ghost:animate-pulse drag-item:scale-110", if(@readonly || !@song, do: "not-draggable")]}
     >
       <div class="flex drag-ghost:opacity-0">
         <.points_label points={@points} active={@song != nil} />
@@ -260,7 +264,7 @@ defmodule PointexWeb.WatchParty.Voting do
     ~H"""
     <div class={[
       if(@active, do: "bg-sky-600 text-sky-100", else: "bg-gray-400 text-gray-100 animate-pulse text-xs"),
-      "w-12 font-bold text-2xl flex items-center justify-center transition-all drag-item:opacity-50"
+      "w-12 font-bold text-2xl flex items-center justify-center transition-all drag-item:animate-pulse"
     ]}>
       <%= @points %>
     </div>
