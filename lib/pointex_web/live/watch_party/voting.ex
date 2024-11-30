@@ -87,7 +87,7 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   def handle_event("give_points", params, socket) do
-    song_id = params["id"]
+    song_id = params["id"] |> dbg()
     points = params["points"]
     participant = socket.assigns.participant
 
@@ -98,6 +98,15 @@ defmodule PointexWeb.WatchParty.Voting do
   def handle_event("submit_vote", _params, socket) do
     {:ok, _} = Participant.finalize_top_10(socket.assigns.participant)
     {:noreply, push_navigate(socket, to: ~p"/wp/#{socket.assigns.wp_id}/results")}
+  end
+
+  def handle_event("reposition", params, socket) do
+    song_id = params["id"]
+    points = Enum.at(PossiblePoints.desc(), params["new"])
+    participant = socket.assigns.participant
+
+    participant = Participant.give_points!(participant, song_id, points)
+    {:noreply, assign(socket, participant: participant)}
   end
 
   @impl Phoenix.LiveView
@@ -148,9 +157,11 @@ defmodule PointexWeb.WatchParty.Voting do
         <.icon name="hero-information-circle" class="bg-no-repeat" />
         <span>Scroll down to give points to your favorite songs</span>
       </div>
-      <div
+      <ul
+        id="top-10-list"
+        phx-hook="InitDragAndDrop"
         class={[
-          "grid grid-cols-[48px_auto] divide-y divide-gray-200 bg-white shadow-lg border border-gray-200 transition transition-all",
+          "flex flex-col divide-y divide-gray-200 bg-white shadow-lg border border-gray-200 transition transition-all",
           if(@empty, do: "-mt-12 -mb-24")
         ]}
         style={
@@ -167,7 +178,7 @@ defmodule PointexWeb.WatchParty.Voting do
           song_above={song_with_points(@songs, PossiblePoints.inc(points))}
           song_below={song_with_points(@songs, PossiblePoints.dec(points))}
         />
-      </div>
+      </ul>
     </section>
     """
   end
@@ -215,31 +226,37 @@ defmodule PointexWeb.WatchParty.Voting do
       )
 
     ~H"""
-    <.points_label points={@points} active={@song != nil} />
-    <SongComponents.song_container :if={@song} song={@song}>
-      <div class="h-full flex gap-4 px-2 py-2 transition-all">
-        <SongComponents.description song={@song} />
-
-        <div :if={!@readonly} class="flex gap-1 sm:gap-4 items-center">
-          <button
-            phx-click="give_points"
-            phx-value-id={@song.country}
-            phx-value-points={PossiblePoints.inc(@points)}
-            class={"#{if @points == 12, do: "invisible"} border border-transparent rounded-lg text-green-600 bg-white/50 backdrop-blur-sm shadow-lg py-2 px-3 hover:bg-transparent sm:hover:bg-green-200 sm:hover:border-green-500 sm:hover:text-green-600 active:text-green-600"}
-          >
-            <.icon name="hero-arrow-small-up" class="w-8 h-8" />
-          </button>
-          <button
-            phx-click="give_points"
-            {@down_button_params}
-            class="border border-transparent text-red-600 bg-white/50 backdrop-blur-sm shadow-lg rounded-lg py-2 px-3 hover:bg-transparent sm:hover:bg-red-200 sm:hover:border-red-700 sm:hover:text-red-600 active:text-red-600"
-          >
-            <.icon name="hero-arrow-small-down" class="w-8 h-8" />
-          </button>
-        </div>
+    <li
+      data-id={@song && @song.country}
+      class={["drag-ghost:bg-zinc-200 drag-ghost:py-4 drag-ghost:animate-pulse drag-item:scale-110", if(@readonly || !@song, do: "not-draggable")]}
+    >
+      <div class="flex drag-ghost:opacity-0">
+        <.points_label points={@points} active={@song != nil} />
+        <SongComponents.song_container :if={@song} song={@song}>
+          <div class="h-full flex gap-4 px-2 py-2 transition-all">
+            <SongComponents.description song={@song} />
+            <div :if={!@readonly} class="flex gap-1 sm:gap-4 items-center">
+              <button
+                phx-click="give_points"
+                phx-value-id={@song.country}
+                phx-value-points={PossiblePoints.inc(@points)}
+                class={"#{if @points == 12, do: "invisible"} border border-transparent rounded-lg text-green-600 bg-white/50 backdrop-blur-sm shadow-lg py-2 px-3 hover:bg-transparent sm:hover:bg-green-200 sm:hover:border-green-500 sm:hover:text-green-600 active:text-green-600"}
+              >
+                <.icon name="hero-arrow-small-up" class="w-8 h-8" />
+              </button>
+              <button
+                phx-click="give_points"
+                {@down_button_params}
+                class="border border-transparent text-red-600 bg-white/50 backdrop-blur-sm shadow-lg rounded-lg py-2 px-3 hover:bg-transparent sm:hover:bg-red-200 sm:hover:border-red-700 sm:hover:text-red-600 active:text-red-600"
+              >
+                <.icon name="hero-arrow-small-down" class="w-8 h-8" />
+              </button>
+            </div>
+          </div>
+        </SongComponents.song_container>
+        <div :if={!@song} class="text-gray-300 px-2 py-2 w-72 transition-all">No song here (yet)</div>
       </div>
-    </SongComponents.song_container>
-    <div :if={!@song} class="text-xs text-gray-300 px-2 py-1 w-72 transition-all">No song here (yet)</div>
+    </li>
     """
   end
 
@@ -247,7 +264,7 @@ defmodule PointexWeb.WatchParty.Voting do
     ~H"""
     <div class={[
       if(@active, do: "bg-sky-600 text-sky-100", else: "bg-gray-400 text-gray-100 animate-pulse text-xs"),
-      "font-bold text-2xl flex items-center justify-center transition-all"
+      "w-12 font-bold text-2xl flex items-center justify-center transition-all drag-item:animate-pulse"
     ]}>
       <%= @points %>
     </div>
