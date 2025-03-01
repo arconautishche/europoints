@@ -203,7 +203,7 @@ defmodule PointexWeb.WatchParty.Voting do
   defp section_header(assigns) do
     ~H"""
     <h2 class={["uppercase text-sm text-gray-500 px-2 py-2", @class]}>
-      <%= @label %>
+      {@label}
     </h2>
     """
   end
@@ -266,7 +266,7 @@ defmodule PointexWeb.WatchParty.Voting do
       if(@active, do: "bg-sky-600 text-sky-100", else: "bg-gray-400 text-gray-100 animate-pulse text-xs"),
       "w-12 shrink-0 font-bold text-2xl flex items-center justify-center transition-all drag-item:animate-pulse"
     ]}>
-      <%= @points %>
+      {@points}
     </div>
     """
   end
@@ -296,7 +296,7 @@ defmodule PointexWeb.WatchParty.Voting do
           <.points_button :for={points <- @unused_points} points={points} song_id={@song.country} used={false} />
         </div>
         <span :if={@used_points != []} class="mt-4 mb-1 mx-2 text-gray-400 text-xs">
-          Points already given, but you can give these to <%= @song.country %> instead
+          Points already given, but you can give these to {@song.country} instead
         </span>
         <div class="flex">
           <.points_button :for={points <- @used_points} points={points} song_id={@song.country} used={true} />
@@ -311,7 +311,7 @@ defmodule PointexWeb.WatchParty.Voting do
     <div class="px-2 bg-transparent cursor-pointer" phx-click="give_points" phx-value-id={@song_id} phx-value-points={@points}>
       <div class={"flex justify-center rounded-full #{if @used, do: "bg-sky-100 border border-sky-600 py-2 text-sky-800", else: "bg-sky-600 py-3 text-white/80"}"}>
         <span class={"text-center #{if @used, do: "w-12 text-xl", else: "w-14"}"}>
-          <%= @points %>
+          {@points}
         </span>
       </div>
     </div>

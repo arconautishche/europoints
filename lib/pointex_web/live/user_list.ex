@@ -7,8 +7,8 @@ defmodule PointexWeb.UserList do
     ~H"""
     <div class="grid grid-cols-2 gap-2 font-mono max-w-fit">
       <%= for user <- @all_users do %>
-        <span><%= user.name %></span>
-        <span><%= user.id %></span>
+        <span>{user.name}</span>
+        <span>{user.id}</span>
       <% end %>
     </div>
     """

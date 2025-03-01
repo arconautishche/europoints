@@ -18,7 +18,7 @@ defmodule PointexWeb.ShowOverview do
 
     ~H"""
     <div>
-      <h1 class="text-center text-2xl text-slate-800"><%= @show_name %></h1>
+      <h1 class="text-center text-2xl text-slate-800">{@show_name}</h1>
       <div class="mx-1 sm:mx-8">
         <%= if @final do %>
           <span class="my-2 text-slate-600">The actual TOP 10</span>
@@ -26,7 +26,7 @@ defmodule PointexWeb.ShowOverview do
             <div :for={place <- 1..10} class="flex flex-col gap-4">
               <div class="sticky top-0 flex justify-center gap-2 items-center border-b-4 border-sky-700 text-sky-800 px-2 py-1 text-xl font-bold bg-slate-100">
                 <.icon name="hero-check" class={["-ml-6 text-green-600", unless(place_filled(@songs, place), do: "invisible")]} />
-                <span class="text-center "><%= place %></span>
+                <span class="text-center ">{place}</span>
               </div>
               <div class="flex flex-col">
                 <button
@@ -42,8 +42,8 @@ defmodule PointexWeb.ShowOverview do
                   phx-value-country={song.country}
                   phx-value-place={place}
                 >
-                  <span class="-mb-1"><%= song.flag %></span>
-                  <span class="text-sm text-slate-600"><%= song.country %></span>
+                  <span class="-mb-1">{song.flag}</span>
+                  <span class="text-sm text-slate-600">{song.country}</span>
                 </button>
               </div>
             </div>
@@ -53,8 +53,8 @@ defmodule PointexWeb.ShowOverview do
           <.simple_form :for={form <- @song_forms} for={form} phx-change="update">
             <div class="grid grid-cols-12 text-lg my-2 items-center">
               <div class="col-span-1"><.input type="checkbox" field={form[:went_to_final]} class="w-4 h-4" /></div>
-              <div class="col-span-1"><%= form[:flag].value %></div>
-              <div class="col-span-10"><%= form[:country].value %></div>
+              <div class="col-span-1">{form[:flag].value}</div>
+              <div class="col-span-10">{form[:country].value}</div>
             </div>
           </.simple_form>
         <% end %>

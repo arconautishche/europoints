@@ -11,7 +11,7 @@ defmodule PointexWeb.WatchParty.Admin do
         <h1 class="text-2xl text-slate-800 border-b border-slate-200">Participants</h1>
         <div :for={participant <- @watch_party.participants} class="flex items-center bg-blue-200/25 px-2 py-1">
           <div class="grow flex flex-col gap-2 items-start">
-            <span><%= participant.account.name %></span>
+            <span>{participant.account.name}</span>
             <span
               :if={length(participant.used_points) == 0 && length(participant.noped) == 0 && length(participant.shortlist) == 0}
               class="bg-red-200 px-2 py-1 text-xs rounded"

@@ -117,7 +117,7 @@ defmodule PointexWeb.WatchParty.Results do
     <div class="flex">
       <div class="grow flex w-72 transition-all">
         <div :if={@place > 0} class={"w-8 font-bold text-black/25 text-2xl text-center " <> song_bg(@place)}>
-          <%= @place %>
+          {@place}
         </div>
         <SongComponents.description song={@song} class={song_bg(@place)} />
       </div>
@@ -177,17 +177,17 @@ defmodule PointexWeb.WatchParty.Results do
     <div class="flex flex-col gap-6 mx-6 my-4 min-w-96">
       <div class="space-y-2 pb-4 mb-2 border-b border-slate-200">
         <h3 class="text-slate-600">Who's got the same taste as Europe?</h3>
-        <%= render_slot(@score_explanation) %>
+        {render_slot(@score_explanation)}
       </div>
       <div class="flex flex-col gap-4 justify-items-start items-top">
         <%= for entry <- @scores do %>
           <div class="flex justify-items-start gap-6">
             <div class="w-1/3 flex items-center gap-1 rounded bg-amber-100 border-b border-amber-300/50 text-amber-900 px-2 py-1">
               <.icon name="hero-user-solid" class="h-3 w-3" />
-              <span class="truncate"><%= entry.name %></span>
+              <span class="truncate">{entry.name}</span>
             </div>
             <div class="grow flex items-center gap-2">
-              <span class="text-slate-500 bg-slate-100 px-2 rounded"><%= entry.score %></span>
+              <span class="text-slate-500 bg-slate-100 px-2 rounded">{entry.score}</span>
               <div :if={entry.score > 0} class="flex gap-1 flex-wrap">
                 <span :for={_ <- 1..entry.score}>📺</span>
               </div>
@@ -205,7 +205,7 @@ defmodule PointexWeb.WatchParty.Results do
   defp section_header(assigns) do
     ~H"""
     <h2 class={["uppercase px-2 my-2", @class]}>
-      <%= @label %>
+      {@label}
     </h2>
     """
   end
@@ -213,7 +213,7 @@ defmodule PointexWeb.WatchParty.Results do
   defp scores_container(assigns) do
     ~H"""
     <div class="flex flex-col divide-y divide-gray-200 bg-white shadow-lg border-t border-amber-200">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -226,7 +226,7 @@ defmodule PointexWeb.WatchParty.Results do
     ]}>
       <span class="">
         <%= if @place > 0 do %>
-          <%= @points %>
+          {@points}
         <% else %>
           ?
         <% end %>
@@ -239,7 +239,7 @@ defmodule PointexWeb.WatchParty.Results do
     ~H"""
     <div class="flex items-center gap-1 rounded bg-red-50 text-red-900 shadow px-2 py-1 animate-bounce">
       <.icon name="hero-user-solid" class="text-red-800 h-3 w-3" />
-      <span><%= @name %></span>
+      <span>{@name}</span>
     </div>
     """
   end

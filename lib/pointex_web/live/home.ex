@@ -65,7 +65,7 @@ defmodule PointexWeb.Home do
       <div class="flex gap-2 sm:gap-4 items-top">
         <.icon name="hero-user-group" class="text-sky-700 h-8 w-8 mt-1" />
         <div class="flex flex-col gap-2">
-          <h2><%= @watch_party.name %></h2>
+          <h2>{@watch_party.name}</h2>
           <ShowLabel.show_label year={@watch_party.show.year} show_name={@watch_party.show.kind} />
 
           <div class="flex gap-2 flex-wrap text-gray-500 mt-4">
@@ -81,7 +81,7 @@ defmodule PointexWeb.Home do
     ~H"""
     <div class="flex items-center gap-1 rounded bg-gray-100 px-1">
       <.icon name="hero-user" class="text-sky-700 h-3 w-3" />
-      <span><%= @name %></span>
+      <span>{@name}</span>
     </div>
     """
   end
@@ -101,7 +101,7 @@ defmodule PointexWeb.Home do
       </.link>
       <p :if={@live_action == :show_login_instructions} class="flex flex-col gap-2">
         <span>1. Copy or send yourself your unique ID: </span>
-        <code class="ml-4 px-4 py-2 text-xs bg-slate-100 border border-slate-200"><%= @user.id %></code>
+        <code class="ml-4 px-4 py-2 text-xs bg-slate-100 border border-slate-200">{@user.id}</code>
         <div>
           <span>2. Go to the Login page</span>
           <div class="flex flex-col ml-4 text-slate-500">

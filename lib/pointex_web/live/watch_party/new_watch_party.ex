@@ -100,7 +100,7 @@ defmodule PointexWeb.WatchParty.New do
   defp show_selector(assigns) do
     ~H"""
     <div :for={season <- @seasons} class="flex flex-col gap-4">
-      <span class="text-lg opacity-50"><%= season.year %></span>
+      <span class="text-lg opacity-50">{season.year}</span>
       <div class="grid grid-rows-3 gap-4">
         <.show_button :for={show <- sort_shows(season.shows)} show={show} field={@field} />
       </div>
@@ -124,7 +124,7 @@ defmodule PointexWeb.WatchParty.New do
     ]}>
       <.icon :if={@selected} name="hero-check-circle" class="w-6 h-6" />
       <div :if={!@selected} class="w-6 h-6" />
-      <span class="grow"><%= show_label(@show.kind) %></span>
+      <span class="grow">{show_label(@show.kind)}</span>
       <input type="radio" name={@field.name} value={@show.id} checked={@selected} class="hidden" />
     </label>
     """

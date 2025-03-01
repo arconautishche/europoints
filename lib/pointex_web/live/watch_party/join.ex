@@ -110,7 +110,7 @@ defmodule PointexWeb.WatchParty.Join do
       <div class="flex gap-2 sm:gap-4 items-top">
         <.icon name="hero-user-group" class="text-sky-700 h-8 w-8 mt-1" />
         <div class="flex flex-col gap-2">
-          <h2 class="text-start text-lg font-normal"><%= @watch_party.name %></h2>
+          <h2 class="text-start text-lg font-normal">{@watch_party.name}</h2>
           <ShowLabel.show_label year={@watch_party.show.year} show_name={@watch_party.show.kind} />
 
           <div class="flex gap-2 flex-wrap text-gray-500 mt-4">
@@ -126,7 +126,7 @@ defmodule PointexWeb.WatchParty.Join do
     ~H"""
     <div class="flex items-center gap-1 rounded bg-gray-100 px-1">
       <.icon name="hero-user" class="text-sky-700 h-3 w-3" />
-      <span><%= @name %></span>
+      <span>{@name}</span>
     </div>
     """
   end

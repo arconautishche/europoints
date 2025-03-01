@@ -30,13 +30,13 @@ defmodule Pointex.Europoints.Season do
     has_many :shows, Show do
       source_attribute :year
       destination_attribute :year
-      sort :kind
+      sort kind: :asc
     end
 
     has_many :songs, Song do
       source_attribute :year
       destination_attribute :year
-      sort :country
+      sort country: :asc
     end
   end
 

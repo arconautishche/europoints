@@ -7,8 +7,8 @@ defmodule PointexWeb.Components.ShowLabel do
   def show_label(assigns) do
     ~H"""
     <div class="flex gap-2 text-amber-800 text-sm px-2 py-1 bg-amber-100/50 rounded">
-      <span class="opacity-50"><%= @year %></span>
-      <span><%= display_name(@show_name) %></span>
+      <span class="opacity-50">{@year}</span>
+      <span>{display_name(@show_name)}</span>
     </div>
     """
   end

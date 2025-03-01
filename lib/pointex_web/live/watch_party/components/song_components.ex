@@ -33,7 +33,7 @@ defmodule PointexWeb.WatchParty.SongComponents do
       </div>
       <div class="absolute w-full h-full bg-gradient-to-b from-white/70 via-white/30 to-white/50" />
       <div class="relative grow">
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </div>
     </div>
     """
@@ -48,20 +48,20 @@ defmodule PointexWeb.WatchParty.SongComponents do
       <div class="relative flex flex-col gap-2">
         <div class="flex gap-2">
           <div class="text-4xl">
-            <%= @song.flag %>
+            {@song.flag}
           </div>
           <div class="text-xl pt-1">
-            <%= @song.country %>
+            {@song.country}
           </div>
         </div>
         <div class="flex flex-col gap-2 ml-6">
           <div class="flex gap-2 items-center text-black/80">
             <.icon name="hero-microphone" class="text-sky-400 w-4 h-4" />
-            <%= @song.artist %>
+            {@song.artist}
           </div>
           <div class="flex gap-2 items-center text-black/80">
             <.icon name="hero-musical-note" class="text-sky-400 w-4 h-4" />
-            <%= @song.name %>
+            {@song.name}
           </div>
         </div>
       </div>
@@ -72,7 +72,7 @@ defmodule PointexWeb.WatchParty.SongComponents do
   def ro(assigns) do
     ~H"""
     <div class="w-8 font-bold text-black/25 text-3xl">
-      <%= @song.order %>
+      {@song.order}
     </div>
     """
   end

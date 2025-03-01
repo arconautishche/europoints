@@ -3,7 +3,8 @@ defmodule Pointex.Europoints.Participant do
     domain: Pointex.Europoints,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAdmin.Resource],
-    notifiers: [Ash.Notifier.PubSub]
+    notifiers: [Ash.Notifier.PubSub],
+    primary_read_warning?: false
 
   import Ash.Changeset, only: [get_argument: 2, get_attribute: 2, change_attribute: 3]
   alias Pointex.Europoints
@@ -74,7 +75,7 @@ defmodule Pointex.Europoints.Participant do
         allow_nil? false
       end
 
-      accept [:owner]
+      accept [:owner, :watch_party_id]
 
       change manage_relationship(:account_id, :account,
                type: :append_and_remove,
