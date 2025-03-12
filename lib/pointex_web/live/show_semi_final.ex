@@ -5,19 +5,20 @@ defmodule PointexWeb.ShowSemiFinal do
 
   @impl Phoenix.LiveView
   def render(assigns) do
-    assigns =
-      assign(assigns,
-        show_name:
-          case assigns.show.kind do
-            :semi_final_1 -> "#{assigns.show.year} - Semi Final 1"
-            :semi_final_2 -> "#{assigns.show.year} - Semi Final 2"
-            _ -> "#{assigns.show.year}"
-          end
-      )
-
     ~H"""
     <div>
-      <h1 class="text-center text-2xl text-slate-800">{@show_name}</h1>
+      <h1 class="text-center text-2xl text-slate-800">
+        <.link navigate={~p"/season/#{@year}"} class="text-sky-700 hover:text-sky-900 hover:underline">{@year}</.link>
+        -
+        <%= case @show.kind do %>
+          <% :semi_final_1 -> %>
+            Semi Final 1
+          <% :semi_final_2 -> %>
+            Semi Final 2
+          <% _ -> %>
+            {@show.year}
+        <% end %>
+      </h1>
       <div class="mx-1 sm:mx-8">
         <span class="my-2 text-slate-600">Who's actually going to the Final?</span>
         <.simple_form :for={form <- @song_forms} for={form} phx-change="update">

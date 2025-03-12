@@ -5,14 +5,11 @@ defmodule PointexWeb.ShowFinal do
 
   @impl Phoenix.LiveView
   def render(assigns) do
-    assigns =
-      assign(assigns,
-        show_name: "#{assigns.show.year} - FINAL"
-      )
-
     ~H"""
     <div>
-      <h1 class="text-center text-2xl text-slate-800">{@show_name}</h1>
+      <h1 class="text-center text-2xl text-slate-800">
+        <.link navigate={~p"/season/#{@year}"} class="text-sky-700 hover:text-sky-900 hover:underline">{@year}</.link> - FINAL
+      </h1>
       <div class="mx-1 sm:mx-8">
         <span class="my-2 text-slate-600">The actual TOP 10</span>
         <div class="flex divide-x divide-slate-200 flex-wrap">
