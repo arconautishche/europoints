@@ -55,6 +55,7 @@ defmodule PointexWeb.Router do
 
         # Season overview route
         live "/season/:year", SeasonOverview
+        live "/season/:year/songs", SeasonSongs
 
         # Specific routes for each type
         live "/show/:year/final", ShowFinal

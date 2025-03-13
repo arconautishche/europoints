@@ -1,0 +1,121 @@
+defmodule PointexWeb.SeasonSongs do
+  alias Pointex.Europoints.Season
+  use PointexWeb, :live_view
+  alias Pointex.Europoints.Country
+  alias Pointex.Europoints.Song
+
+  @impl Phoenix.LiveView
+  def render(assigns) do
+    ~H"""
+    <div>
+      <h1 class="text-center text-2xl text-slate-800">
+        <.link navigate={~p"/season/#{@year}"} class="text-sky-700 hover:text-sky-900 hover:underline">{@year}</.link> - Songs
+      </h1>
+      <div class="mx-1 sm:mx-8 mt-4">
+        <div class="bg-white shadow rounded-lg p-4">
+          <h2 class="text-lg font-semibold mb-4">Participating Countries</h2>
+          <div class="flex flex-col gap-4">
+            <.form
+              :for={%{form: form} = wrapped_form <- @all_forms}
+              for={form}
+              class={"border-l-4 rounded p-3 flex flex-col gap-2 #{if form.source.type == :create, do: "border-gray-200", else: "border-green-500"}"}
+              phx-change="validate_song"
+              phx-submit="save_song"
+            >
+              <div class="flex items-center gap-2 border-b border-gray-200">
+                <span class="text-xl">{wrapped_form.flag}</span>
+                <span class="font-medium">{wrapped_form.country}</span>
+              </div>
+              <div class="flex flex-col gap-2">
+                <.input label="Artist" field={form[:artist]} placeholder="👯 ABBA" />
+                <.input label="Song" field={form[:name]} placeholder="🎶 Waterloo" />
+                <.input label="Poster URL" field={form[:img]} input_class="!text-xs" placeholder="https://example.com/poster.jpg" />
+                <img src={Ash.Changeset.get_attribute(form.source.source, :img)} alt="Poster" class="w-1/2 object-cover w-full" />
+              </div>
+              <button
+                type="submit"
+                class="px-8 py-1 bg-sky-200 text-sky-700 rounded hover:bg-sky-300 disabled:opacity-50 disabled:bg-gray-200"
+                phx-disable-with="Saving..."
+              >
+                Save
+              </button>
+            </.form>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  @impl Phoenix.LiveView
+  def handle_params(%{"year" => year}, _uri, socket) do
+    {:noreply,
+     socket
+     |> assign(page_title: "Season Songs")
+     |> assign(year: year)
+     |> assign(all_forms: all_forms(year))}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event("validate_song", params, socket) do
+    form_id = hd(params["_target"])
+
+    all_forms =
+      socket.assigns.all_forms
+      |> Enum.map(fn wrapped_form ->
+        if wrapped_form.form.id == form_id do
+          %{wrapped_form | form: AshPhoenix.Form.validate(wrapped_form.form, params[form_id]) |> dbg()}
+        else
+          wrapped_form
+        end
+      end)
+
+    {:noreply, assign(socket, all_forms: all_forms)}
+  end
+
+  def handle_event("save_song", params, socket) do
+    dbg(params)
+    form_id = hd(Map.keys(params))
+    form = Enum.find_value(socket.assigns.all_forms, &if(&1.form.id == form_id, do: &1.form))
+
+    AshPhoenix.Form.submit!(form, params: params[form_id])
+
+    {:noreply, assign(socket, all_forms: all_forms(socket.assigns.year))}
+  end
+
+  defp all_forms(year) do
+    season = Ash.get!(Season, year, load: [:songs])
+
+    Country.all()
+    |> Enum.sort()
+    |> Enum.map(fn country ->
+      %{
+        country: country,
+        flag: Country.flag(country),
+        form:
+          case Enum.find(season.songs, &(&1.country == country)) do
+            nil -> form_for_create(country, year)
+            song -> form_for_update(song)
+          end
+      }
+    end)
+  end
+
+  defp form_for_create(country, year) do
+    AshPhoenix.Form.for_create(Song, :register,
+      prepare_source: fn changeset ->
+        changeset
+        |> Ash.Changeset.set_argument(:season, year)
+        |> Ash.Changeset.change_attribute(:country, country)
+      end,
+      as: "song_#{country}"
+    )
+    |> to_form()
+  end
+
+  defp form_for_update(song) do
+    song
+    |> AshPhoenix.Form.for_update(:change_description, as: "song_#{song.country}")
+    |> to_form()
+  end
+end

@@ -93,6 +93,19 @@ defmodule Pointex.Europoints.Song do
              )
     end
 
+    update :change_description do
+      accept [:artist, :name, :img]
+    end
+
+    update :went_to_final do
+      accept [:went_to_final]
+    end
+
+    update :set_actual_place_in_final do
+      require_atomic? false
+      accept [:actual_place_in_final]
+    end
+
     read :songs_in_show do
       argument :year, :integer do
         allow_nil? false
@@ -129,15 +142,6 @@ defmodule Pointex.Europoints.Song do
             |> Ash.Query.sort([:order_in_final])
         end
       end
-    end
-
-    update :went_to_final do
-      accept [:went_to_final]
-    end
-
-    update :set_actual_place_in_final do
-      require_atomic? false
-      accept [:actual_place_in_final]
     end
   end
 

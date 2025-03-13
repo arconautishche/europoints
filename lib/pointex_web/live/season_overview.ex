@@ -8,6 +8,7 @@ defmodule PointexWeb.SeasonOverview do
       <h1 class="text-center text-2xl text-slate-800 mb-6">Eurovision {@year} Season Overview</h1>
 
       <div class="flex flex-col gap-4 w-full max-w-md">
+        <.page_link destination={~p"/season/#{@year}/songs"} label="Manage Songs" />
         <h2 class="text-center text-lg font-bold">Results</h2>
         <.show_link year={@year} kind="semi_final_1" label="Semi Final 1" />
         <.show_link year={@year} kind="semi_final_2" label="Semi Final 2" />
@@ -17,12 +18,18 @@ defmodule PointexWeb.SeasonOverview do
     """
   end
 
-  defp show_link(assigns) do
+  defp page_link(assigns) do
     ~H"""
-    <.link navigate={~p"/show/#{@year}/#{@kind}"} class="flex items-center justify-between p-4 bg-white shadow rounded hover:bg-sky-100 transition">
+    <.link navigate={@destination} class="flex items-center justify-between p-4 bg-white shadow rounded hover:bg-sky-100 transition">
       <span class="text-lg">{@label}</span>
       <.icon name="hero-arrow-right" class="h-5 w-5 text-sky-700" />
     </.link>
+    """
+  end
+
+  defp show_link(assigns) do
+    ~H"""
+    <.page_link destination={~p"/show/#{@year}/#{@kind}"} label={@label} />
     """
   end
 
