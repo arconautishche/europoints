@@ -75,6 +75,19 @@ defmodule Pointex.Europoints.Season do
     define :active
   end
 
+  def export_songs(year) do
+    __MODULE__
+    |> Ash.get!(year, load: [:songs])
+    |> Map.get(:songs)
+    |> Enum.map(&Map.take(&1, [:country, :artist, :name, :img, :order_in_sf1, :order_in_sf2, :order_in_final]))
+  end
+
+  def import_songs(year, songs) do
+    songs = Enum.map(songs, &Map.put(&1, :year, year))
+
+    Ash.bulk_create!(songs, Song, :import, return_errors?: true)
+  end
+
   defp create_and_link_show(changeset, kind) do
     Ash.Changeset.manage_relationship(
       changeset,

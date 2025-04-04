@@ -1,20 +1,22 @@
 defmodule Pointex.Europoints.Country do
   @flags %{
+    "Albania" => "🇦🇱",
+    "Armenia" => "🇦🇲",
+    "Austria" => "🇦🇹",
     "Sweden" => "🇸🇪",
     "Greece" => "🇬🇷",
     "France" => "🇫🇷",
-    "Armenia" => "🇦🇲",
     "San Marino" => "🇸🇲",
     "United Kingdom" => "🇬🇧",
     "Serbia" => "🇷🇸",
     "Spain" => "🇪🇸",
     "Ireland" => "🇮🇪",
-    "Moldova" => "🇲🇩",
     "Denmark" => "🇩🇰",
     "Israel" => "🇮🇱",
     "Czechia" => "🇨🇿",
     "Malta" => "🇲🇹",
-    "Albania" => "🇦🇱",
+    "Moldova" => "🇲🇩",
+    "Montenegro" => "🇲🇪",
     "Slovenia" => "🇸🇮",
     "Poland" => "🇵🇱",
     "Lithuania" => "🇱🇹",
@@ -23,7 +25,6 @@ defmodule Pointex.Europoints.Country do
     "Cyprus" => "🇨🇾",
     "Belgium" => "🇧🇪",
     "Croatia" => "🇭🇷",
-    "Austria" => "🇦🇹",
     "Latvia" => "🇱🇻",
     "Azerbaijan" => "🇦🇿",
     "Australia" => "🇦🇺",
@@ -39,7 +40,6 @@ defmodule Pointex.Europoints.Country do
     "Italy" => "🇮🇹",
     "Luxembourg" => "🇱🇺"
   }
-
 
   def all do
     Map.keys(@flags)

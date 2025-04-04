@@ -50,14 +50,14 @@ liveSocket.connect()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
-document.addEventListener("visibilitychange", () => {
-  console.log("liveSocket.isConnected()", liveSocket.isConnected())
+// document.addEventListener("visibilitychange", () => {
+//   console.log("liveSocket.isConnected()", liveSocket.isConnected())
 
-  if (!document.hidden) {
-    liveSocket.disconnect(() => {
-      console.log("disconnected")
-      liveSocket.connect()
-    });
-  }
-});
+//   if (!document.hidden) {
+//     liveSocket.disconnect(() => {
+//       console.log("disconnected")
+//       liveSocket.connect()
+//     });
+//   }
+// });
 

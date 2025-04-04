@@ -14,31 +14,41 @@ defmodule PointexWeb.SeasonSongs do
       <div class="mx-1 sm:mx-8 mt-4">
         <div class="bg-white shadow rounded-lg p-4">
           <h2 class="text-lg font-semibold mb-4">Participating Countries</h2>
-          <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-8">
             <.form
               :for={%{form: form} = wrapped_form <- @all_forms}
               for={form}
-              class={"border-l-4 rounded p-3 flex flex-col gap-2 #{if form.source.type == :create, do: "border-gray-200", else: "border-green-500"}"}
+              class={"border-l-4 rounded flex flex-col gap-2 shadow-lg #{if form.source.type == :create, do: "border-gray-200", else: "border-green-500"}"}
               phx-change="validate_song"
               phx-submit="save_song"
             >
-              <div class="flex items-center gap-2 border-b border-gray-200">
+              <div class="flex items-center gap-2 bg-slate-100 px-4 py-2">
                 <span class="text-xl">{wrapped_form.flag}</span>
                 <span class="font-medium">{wrapped_form.country}</span>
               </div>
               <div class="flex flex-col gap-2">
-                <.text_input label="👯" field={form[:artist]} placeholder="Artist" />
-                <.text_input label="🎶" field={form[:name]} placeholder="Song" />
-                <.text_input label="🎞️" field={form[:img]} input_class="!text-xs" placeholder="Poster URL" />
-                <img src={Ash.Changeset.get_attribute(form.source.source, :img)} alt="Poster" class="h-[200px] object-contain" />
+                <div class="flex gap-4 px-4 py-2">
+                  <div class="flex flex-col gap-2 grow">
+                    <.text_input label="👯" field={form[:artist]} placeholder="Artist" />
+                    <.text_input label="🎶" field={form[:name]} placeholder="Song" />
+                    <.text_input label="🎞️" field={form[:img]} input_class="!text-xs" placeholder="Poster URL" />
+                  </div>
+                  <img src={Ash.Changeset.get_attribute(form.source.source, :img)} alt="Poster" class="h-[200px] object-contain" />
+                </div>
+                <div :if={form.source.type == :update} class="flex flex-col gap-1 items-start px-4">
+                  <.num_input label="Starts in SF 1 at" field={form[:order_in_sf1]} placeholder="position" />
+                  <.num_input label="Starts in SF 2 at" field={form[:order_in_sf2]} placeholder="position" />
+                </div>
+                <div class="border-b border-gray-200 px-4 py-2 flex justify-center">
+                  <button
+                    type="submit"
+                    class="px-48 py-1 bg-sky-200 text-sky-700 rounded hover:bg-sky-300 disabled:opacity-50 disabled:bg-gray-200"
+                    phx-disable-with="Saving..."
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
-              <button
-                type="submit"
-                class="px-8 py-1 bg-sky-200 text-sky-700 rounded hover:bg-sky-300 disabled:opacity-50 disabled:bg-gray-200"
-                phx-disable-with="Saving..."
-              >
-                Save
-              </button>
             </.form>
           </div>
         </div>
@@ -51,15 +61,42 @@ defmodule PointexWeb.SeasonSongs do
     ~H"""
     <div class="flex gap-2 items-center">
       <.label for={@field.id}>{@label}</.label>
-      <input
+      <.input_tag
         type="text"
         id={@field.id}
         name={@field.name}
         value={@field.value}
         placeholder={@placeholder}
-        class="grow border border-slate-300 rounded-md p-1"
       />
     </div>
+    """
+  end
+
+  defp num_input(assigns) do
+    ~H"""
+    <div class="flex gap-2 items-center">
+      <.label for={@field.id}>{@label}</.label>
+      <.input_tag
+        type="number"
+        id={@field.id}
+        name={@field.name}
+        value={@field.value}
+        placeholder={@placeholder}
+        min={1}
+        max={30}
+      />
+    </div>
+    """
+  end
+
+  attr :type, :string, default: "text"
+  attr :name, :string, required: true
+  attr :value, :string, required: true
+  attr :rest, :global, include: ~w(min max)
+
+  defp input_tag(assigns) do
+    ~H"""
+    <input type={@type} name={@name} value={@value} class="grow border border-slate-300 rounded-md p-1 w-36" {@rest} />
     """
   end
 
@@ -80,7 +117,9 @@ defmodule PointexWeb.SeasonSongs do
       socket.assigns.all_forms
       |> Enum.map(fn wrapped_form ->
         if wrapped_form.form.id == form_id do
-          %{wrapped_form | form: AshPhoenix.Form.validate(wrapped_form.form, params[form_id]) |> dbg()}
+          form = AshPhoenix.Form.validate(wrapped_form.form, params[form_id]) |> dbg()
+
+          %{wrapped_form | form: form}
         else
           wrapped_form
         end
