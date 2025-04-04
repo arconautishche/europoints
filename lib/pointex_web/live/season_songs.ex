@@ -1,7 +1,7 @@
 defmodule PointexWeb.SeasonSongs do
-  alias Pointex.Europoints.Season
   use PointexWeb, :live_view
   alias Pointex.Europoints.Country
+  alias Pointex.Europoints.Season
   alias Pointex.Europoints.Song
 
   @impl Phoenix.LiveView
@@ -27,10 +27,10 @@ defmodule PointexWeb.SeasonSongs do
                 <span class="font-medium">{wrapped_form.country}</span>
               </div>
               <div class="flex flex-col gap-2">
-                <.input label="Artist" field={form[:artist]} placeholder="👯 ABBA" />
-                <.input label="Song" field={form[:name]} placeholder="🎶 Waterloo" />
-                <.input label="Poster URL" field={form[:img]} input_class="!text-xs" placeholder="https://example.com/poster.jpg" />
-                <img src={Ash.Changeset.get_attribute(form.source.source, :img)} alt="Poster" class="w-1/2 object-cover w-full" />
+                <.text_input label="👯" field={form[:artist]} placeholder="Artist" />
+                <.text_input label="🎶" field={form[:name]} placeholder="Song" />
+                <.text_input label="🎞️" field={form[:img]} input_class="!text-xs" placeholder="Poster URL" />
+                <img src={Ash.Changeset.get_attribute(form.source.source, :img)} alt="Poster" class="h-[200px] object-contain" />
               </div>
               <button
                 type="submit"
@@ -43,6 +43,22 @@ defmodule PointexWeb.SeasonSongs do
           </div>
         </div>
       </div>
+    </div>
+    """
+  end
+
+  defp text_input(assigns) do
+    ~H"""
+    <div class="flex gap-2 items-center">
+      <.label for={@field.id}>{@label}</.label>
+      <input
+        type="text"
+        id={@field.id}
+        name={@field.name}
+        value={@field.value}
+        placeholder={@placeholder}
+        class="grow border border-slate-300 rounded-md p-1"
+      />
     </div>
     """
   end
