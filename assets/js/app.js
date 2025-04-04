@@ -29,7 +29,11 @@ Hooks.InitDragAndDrop = InitDragAndDrop
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
-  hooks: Hooks
+  hooks: Hooks,
+  reconnectAfterMs: (tries) => {
+    console.log("reconnecting", tries)
+    return 200;
+  }
 })
 
 // Show progress bar on live navigation and form submits
@@ -45,4 +49,15 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
+
+document.addEventListener("visibilitychange", () => {
+  console.log("liveSocket.isConnected()", liveSocket.isConnected())
+
+  if (!document.hidden) {
+    liveSocket.disconnect(() => {
+      console.log("disconnected")
+      liveSocket.connect()
+    });
+  }
+});
 
