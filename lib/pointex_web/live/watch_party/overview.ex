@@ -23,7 +23,7 @@ defmodule PointexWeb.WatchParty.Overview do
         <span class="text-sm text-gray-400">Send this link</span>
         <div class="flex items-baseline justify-start gap-4 text-sky-900">
           <span>🔗</span>
-          <.link navigate={@link} class=" border-b border-sky-900/20"><%= @link %></.link>
+          <.link navigate={@link} class=" border-b border-sky-900/20">{@link}</.link>
         </div>
 
         <span class="text-sm text-gray-400">... or lazy much?</span>

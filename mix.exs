@@ -38,7 +38,7 @@ defmodule Pointex.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
-      {:phoenix_live_view, "~> 0.20"},
+      {:phoenix_live_view, "~> 1.0"},
       {:floki, ">= 0.30.0", only: [:dev, :test]},
       {:phoenix_live_dashboard, "~> 0.8"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
@@ -51,10 +51,10 @@ defmodule Pointex.MixProject do
       {:jason, "~> 1.4"},
       {:plug_cowboy, "~> 2.5"},
       {:eqrcode, "~> 0.1.10"},
-      {:ash, "~> 3.0"},
-      {:ash_postgres, "~> 2.0"},
-      {:ash_admin, "~> 0.10"},
-      {:ash_phoenix, "~> 2.0"},
+      {:ash, "~> 3.4"},
+      {:ash_postgres, "~> 2.5"},
+      {:ash_admin, "~> 0.13"},
+      {:ash_phoenix, "~> 2.1"},
       {:sentry, "~> 10.4.0"},
       # sentry requires hackney
       {:hackney, "~> 1.19"}

@@ -16,17 +16,14 @@ defmodule Pointex.Europoints.Song do
 
     attribute :artist, :string do
       public? true
-      allow_nil? false
     end
 
     attribute :name, :string do
       public? true
-      allow_nil? false
     end
 
     attribute :img, :string do
       public? true
-      allow_nil? false
     end
 
     attribute :order_in_sf1, :integer do
@@ -93,6 +90,26 @@ defmodule Pointex.Europoints.Song do
              )
     end
 
+    create :import do
+      upsert? true
+      upsert_identity :song_in_season
+      upsert_fields :replace_all
+      accept [:year, :country, :artist, :name, :img, :order_in_sf1, :order_in_sf2, :order_in_final]
+    end
+
+    update :change_description do
+      accept [:artist, :name, :img, :order_in_sf1, :order_in_sf2]
+    end
+
+    update :went_to_final do
+      accept [:went_to_final]
+    end
+
+    update :set_actual_place_in_final do
+      require_atomic? false
+      accept [:actual_place_in_final]
+    end
+
     read :songs_in_show do
       argument :year, :integer do
         allow_nil? false
@@ -129,15 +146,6 @@ defmodule Pointex.Europoints.Song do
             |> Ash.Query.sort([:order_in_final])
         end
       end
-    end
-
-    update :went_to_final do
-      accept [:went_to_final]
-    end
-
-    update :set_actual_place_in_final do
-      require_atomic? false
-      accept [:actual_place_in_final]
     end
   end
 

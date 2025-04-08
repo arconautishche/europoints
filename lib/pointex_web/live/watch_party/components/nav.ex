@@ -5,7 +5,7 @@ defmodule PointexWeb.WatchParty.Nav do
     ~H"""
     <div class="relative pb-12">
       <.nav wp_id={@wp_id} mobile={false} active={@active} />
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
       <.nav wp_id={@wp_id} mobile={true} active={@active} />
     </div>
     """
@@ -47,7 +47,7 @@ defmodule PointexWeb.WatchParty.Nav do
         if(@active, do: "bg-amber-300/70 text-gray-900/80", else: "bg-gray-200/70 text-gray-600")
       ]}
     >
-      <%= @label %>
+      {@label}
     </.link>
     """
   end

@@ -53,7 +53,16 @@ defmodule PointexWeb.Router do
           live "/:id/admin", WatchParty.Admin
         end
 
-        live "/show/:year/:kind", ShowOverview
+        # Season overview route
+        live "/season/:year", SeasonOverview
+        live "/season/:year/songs", SeasonSongs
+
+        # Specific routes for each type
+        live "/show/:year/final", ShowFinal
+        live "/show/:year/:kind", ShowSemiFinal, :semi_final
+
+        # Redirect old routes to the new season overview
+        live "/show/:year/:kind/overview", SeasonOverview
       end
     end
   end
