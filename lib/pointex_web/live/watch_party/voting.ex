@@ -102,16 +102,39 @@ defmodule PointexWeb.WatchParty.Voting do
 
   def handle_event("reposition", params, socket) do
     song_id = params["id"]
-    points = Enum.at(PossiblePoints.desc(), params["new"])
+    new_points = Enum.at(PossiblePoints.desc(), params["new"])
     participant = socket.assigns.participant
 
-    participant = Participant.give_points!(participant, song_id, points)
-    {:noreply, assign(socket, participant: participant |> dbg())}
+    current_points =
+      Enum.find_value(participant.top_10_with_points, fn
+        {points, ^song_id} -> points
+        _ -> nil
+      end)
+
+    # TODO: Should this be implemented in Participant.give_points?
+    participant =
+      participant.top_10_with_points
+      |> Enum.sort_by(&elem(&1, 0), :desc)
+      |> Enum.reduce(participant, fn
+        {points, ^song_id}, participant ->
+          Participant.give_points!(participant, song_id, nil)
+
+        {points, song}, participant ->
+          if points < current_points && points >= new_points do
+            Participant.give_points!(participant, song, PossiblePoints.inc(points))
+          else
+            participant
+          end
+      end)
+
+    participant = Participant.give_points!(participant, song_id, new_points)
+    {:noreply, assign(socket, participant: participant)}
   end
 
   @impl Phoenix.LiveView
   def handle_info(%{payload: %{data: updated_participant}}, socket) do
-    {:noreply, assign(socket, participant: updated_participant)}
+    # {:noreply, assign(socket, participant: updated_participant)}
+    {:noreply, socket}
   end
 
   defp load_data(wp_id, user_id) do
