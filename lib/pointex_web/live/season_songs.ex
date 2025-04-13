@@ -117,7 +117,7 @@ defmodule PointexWeb.SeasonSongs do
       socket.assigns.all_forms
       |> Enum.map(fn wrapped_form ->
         if wrapped_form.form.id == form_id do
-          form = AshPhoenix.Form.validate(wrapped_form.form, params[form_id]) |> dbg()
+          form = AshPhoenix.Form.validate(wrapped_form.form, params[form_id])
 
           %{wrapped_form | form: form}
         else
@@ -129,7 +129,6 @@ defmodule PointexWeb.SeasonSongs do
   end
 
   def handle_event("save_song", params, socket) do
-    dbg(params)
     form_id = hd(Map.keys(params))
     form = Enum.find_value(socket.assigns.all_forms, &if(&1.form.id == form_id, do: &1.form))
 

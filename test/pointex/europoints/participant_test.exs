@@ -1,5 +1,6 @@
 defmodule Pointex.Europoints.ParticipantTest do
   use Pointex.DataCase, async: true
+  import Pointex.Test.SeasonFixtures
   alias Pointex.Europoints
   alias Pointex.Europoints.Song
   alias Pointex.Europoints.WatchParty
@@ -153,16 +154,28 @@ defmodule Pointex.Europoints.ParticipantTest do
     end
 
     test "bumping a song up", %{participant: participant} do
-      participant = Participant.give_points!(participant, "Original2", 2)
+      participant =
+        participant
+        |> Participant.give_points!("Original2", 2)
+        |> Participant.give_points!("Original2", 3)
 
-      assert {:ok,
-              %{
-                top_10_with_points: %{
-                  3 => "Original2",
-                  2 => nil
-                }
-              }} =
-               Participant.give_points(participant, "Original2", 3)
+      assert participant.top_10 == [nil, nil, nil, nil, nil, nil, nil, "Original2", nil, nil]
+
+      assert participant.top_10_with_points == %{
+               12 => nil,
+               10 => nil,
+               8 => nil,
+               7 => nil,
+               6 => nil,
+               5 => nil,
+               4 => nil,
+               3 => "Original2",
+               2 => nil,
+               1 => nil
+             }
+
+      assert participant.used_points == [3]
+      assert participant.unused_points == [12, 10, 8, 7, 6, 5, 4, 2, 1]
     end
 
     test "can remove a song from top_10", %{participant: participant} do
@@ -207,5 +220,31 @@ defmodule Pointex.Europoints.ParticipantTest do
 
     @tag :skip
     test "validates 'country' to be from the WatchParty's show"
+  end
+
+  describe "finalize_top_10" do
+    test "cannot submit final vote if not all points have been used", %{participant: participant} do
+      {:error, %{errors: [%{field: :can_submit_final_vote}]}} = Participant.finalize_top_10(participant)
+    end
+
+    test "can submit final vote if all points have been used", %{season: season, participant: participant} do
+      generate_songs(season.year)
+
+      participant =
+        participant
+        |> Participant.give_points!("Ukraine", 12)
+        |> Participant.give_points!("Belgium", 10)
+        |> Participant.give_points!("United Kingdom", 8)
+        |> Participant.give_points!("Sweden", 7)
+        |> Participant.give_points!("Netherlands", 6)
+        |> Participant.give_points!("Albania", 5)
+        |> Participant.give_points!("Italy", 4)
+        |> Participant.give_points!("France", 3)
+        |> Participant.give_points!("Germany", 2)
+        |> Participant.give_points!("Spain", 1)
+        |> Participant.finalize_top_10!()
+
+      assert participant.final_vote_submitted
+    end
   end
 end

@@ -9,9 +9,9 @@ defmodule Pointex.Europoints.Participant.UsedPoints do
 
   @impl true
   def calculate(participants, _opts, _context) do
-    Enum.map(
-      participants,
-      &Voting.points(&1.top_10_with_points, fn {_points, song} -> song != nil end)
-    )
+    participants
+    |> Enum.map(&Voting.map_points_to_top_10(&1.top_10))
+    |> Enum.map(&Voting.points(&1, fn {_points, song} -> song != nil end))
   end
+
 end

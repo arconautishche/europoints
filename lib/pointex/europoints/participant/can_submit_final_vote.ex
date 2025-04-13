@@ -1,4 +1,5 @@
 defmodule Pointex.Europoints.Participant.CanSubmitFinalVote do
+  alias Pointex.Europoints.Participant
   use Ash.Resource.Calculation
 
   @impl true
@@ -10,7 +11,11 @@ defmodule Pointex.Europoints.Participant.CanSubmitFinalVote do
   def calculate(participants, _opts, _context) do
     Enum.map(
       participants,
-      &(&1.final_vote_submitted == false && &1.unused_points == [])
+      &(&1.final_vote_submitted == false && all_votes_given?(&1))
     )
+  end
+
+  defp all_votes_given?(%Participant{top_10: top_10}) do
+    Enum.all?(top_10, &(&1 != nil))
   end
 end

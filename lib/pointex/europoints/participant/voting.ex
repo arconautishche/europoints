@@ -21,6 +21,12 @@ defmodule Pointex.Europoints.Participant.Voting do
     |> Enum.take(10)
   end
 
+  def map_points_to_top_10(top_10_as_list) do
+    @points
+    |> Enum.zip(top_10_as_list)
+    |> Map.new()
+  end
+
   defp remove_country(top_10, country) do
     Enum.map(top_10, fn
       ^country -> nil

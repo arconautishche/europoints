@@ -146,23 +146,23 @@ defmodule Pointex.Europoints.Participant do
       validate attribute_equals(:final_vote_submitted, false)
 
       change fn changeset, _ ->
-        if changeset.valid? do
-          change_attribute(
-            changeset,
-            :top_10,
-            Voting.give_points(
-              get_attribute(changeset, :top_10),
-              get_argument(changeset, :country),
-              get_argument(changeset, :points)
-            )
-          )
-        else
-          changeset
-        end
-      end
+               change_attribute(
+                 changeset,
+                 :top_10,
+                 Voting.give_points(
+                   get_attribute(changeset, :top_10),
+                   get_argument(changeset, :country),
+                   get_argument(changeset, :points)
+                 )
+               )
+             end,
+             only_when_valid?: true
+
+             change load(:unused_points)
     end
 
     update :finalize_top_10 do
+      require_atomic? false
       validate attribute_equals(:can_submit_final_vote, true)
       change set_attribute(:final_vote_submitted, true)
     end

@@ -1,4 +1,4 @@
-defmodule :"Elixir.Pointex.Repo.Migrations.Allow partial entry for songsExtensions1" do
+defmodule Pointex.Repo.Migrations.AshExtensionsApr8 do
   @moduledoc """
   Installs any extensions that are mentioned in the repo's `installed_extensions/0` callback
 

@@ -87,7 +87,7 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   def handle_event("give_points", params, socket) do
-    song_id = params["id"] |> dbg()
+    song_id = params["id"]
     points = params["points"]
     participant = socket.assigns.participant
 
@@ -106,7 +106,7 @@ defmodule PointexWeb.WatchParty.Voting do
     participant = socket.assigns.participant
 
     participant = Participant.give_points!(participant, song_id, points)
-    {:noreply, assign(socket, participant: participant)}
+    {:noreply, assign(socket, participant: participant |> dbg())}
   end
 
   @impl Phoenix.LiveView
