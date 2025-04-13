@@ -13,5 +13,4 @@ defmodule Pointex.Europoints.Participant.UsedPoints do
     |> Enum.map(&Voting.map_points_to_top_10(&1.top_10))
     |> Enum.map(&Voting.points(&1, fn {_points, song} -> song != nil end))
   end
-
 end

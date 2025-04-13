@@ -158,7 +158,7 @@ defmodule Pointex.Europoints.Participant do
              end,
              only_when_valid?: true
 
-             change load(:unused_points)
+      change load(:unused_points)
     end
 
     update :finalize_top_10 do

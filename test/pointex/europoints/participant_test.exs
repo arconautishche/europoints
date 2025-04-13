@@ -2,7 +2,6 @@ defmodule Pointex.Europoints.ParticipantTest do
   use Pointex.DataCase, async: true
   import Pointex.Test.SeasonFixtures
   alias Pointex.Europoints
-  alias Pointex.Europoints.Song
   alias Pointex.Europoints.WatchParty
   alias Pointex.Europoints.Participant
 
@@ -11,15 +10,17 @@ defmodule Pointex.Europoints.ParticipantTest do
     owner_account = Europoints.Account.register!("Euro Papa")
     show = Enum.find(season.shows, &(&1.kind == :semi_final_1))
 
-    %{season: season.year, country: "Ukraine", artist: "Who Knows", name: "Trololo", img: "ua.png"}
-    |> Song.register!()
-    |> Ash.Changeset.for_update(:update, %{order_in_sf1: 1})
-    |> Ash.update!()
+    generate_songs(season.year)
 
-    %{season: season.year, country: "Belgium", artist: "Wie Weet", name: "Tralala", img: "be.png"}
-    |> Song.register!()
-    |> Ash.Changeset.for_update(:update, %{order_in_sf1: 2})
-    |> Ash.update!()
+    # %{season: season.year, country: "Ukraine", artist: "Who Knows", name: "Trololo", img: "ua.png"}
+    # |> Song.register!()
+    # |> Ash.Changeset.for_update(:update, %{order_in_sf1: 1})
+    # |> Ash.update!()
+
+    # %{season: season.year, country: "Belgium", artist: "Wie Weet", name: "Tralala", img: "be.png"}
+    # |> Song.register!()
+    # |> Ash.Changeset.for_update(:update, %{order_in_sf1: 2})
+    # |> Ash.update!()
 
     %{participants: [participant]} = WatchParty.start!("Test WP", owner_account.id, show.id)
 
@@ -94,63 +95,63 @@ defmodule Pointex.Europoints.ParticipantTest do
 
   describe "give_points" do
     test "first vote", %{participant: participant} do
-      assert {:ok, participant} = Participant.give_points(participant, "Some country", 5)
-      assert %{5 => "Some country", 4 => nil, 6 => nil} = participant.top_10_with_points
+      assert {:ok, participant} = Participant.give_points(participant, "Belgium", 5)
+      assert %{5 => "Belgium", 4 => nil, 6 => nil} = participant.top_10_with_points
     end
 
     test "not the first vote, from unused points", %{participant: participant} do
-      participant = Participant.give_points!(participant, "FivePointer", 5)
+      participant = Participant.give_points!(participant, "Belgium", 5)
 
       assert {:ok,
               %{
                 top_10_with_points: %{
-                  5 => "FivePointer",
-                  12 => "TheWinner"
+                  5 => "Belgium",
+                  12 => "Ukraine"
                 }
               }} =
-               Participant.give_points(participant, "TheWinner", 12)
+               Participant.give_points(participant, "Ukraine", 12)
     end
 
     test "giving 12 points, when 12 is used, but 10 is not", %{participant: participant} do
-      participant = Participant.give_points!(participant, "FirstWinner", 12)
+      participant = Participant.give_points!(participant, "Belgium", 12)
 
       assert {:ok,
               %{
                 top_10_with_points: %{
-                  12 => "ActualWinner",
-                  10 => "FirstWinner"
+                  12 => "Ukraine",
+                  10 => "Belgium"
                 }
               }} =
-               Participant.give_points(participant, "ActualWinner", 12)
+               Participant.give_points(participant, "Ukraine", 12)
     end
 
-    test "giving 8 points, when 7 & 8 are already used", %{participant: participant} do
-      participant = Participant.give_points!(participant, "Original7", 7)
-      participant = Participant.give_points!(participant, "Original8", 8)
+    test "giving 8 points, when 7 & 8 are already used -> previous 7 & 8 are bumped down", %{participant: participant} do
+      participant = Participant.give_points!(participant, "Sweden", 7)
+      participant = Participant.give_points!(participant, "United Kingdom", 8)
 
       assert {:ok,
               %{
                 top_10_with_points: %{
-                  8 => "Current8",
-                  7 => "Original8",
-                  6 => "Original7"
+                  8 => "Finland",
+                  7 => "United Kingdom",
+                  6 => "Sweden"
                 }
               }} =
-               Participant.give_points(participant, "Current8", 8)
+               Participant.give_points(participant, "Finland", 8)
     end
 
-    test "giving 2 points, when 1 & 2 are already used", %{participant: participant} do
-      participant = Participant.give_points!(participant, "Original1", 1)
-      participant = Participant.give_points!(participant, "Original2", 2)
+    test "giving 2 points, when 1 & 2 are already used, previous 2 is bumped down, previous 1 is removed", %{participant: participant} do
+      participant = Participant.give_points!(participant, "Netherlands", 1)
+      participant = Participant.give_points!(participant, "Belgium", 2)
 
       assert {:ok,
               %{
                 top_10_with_points: %{
-                  2 => "Current2",
-                  1 => "Original2"
+                  2 => "Luxembourg",
+                  1 => "Belgium"
                 }
               }} =
-               Participant.give_points(participant, "Current2", 2)
+               Participant.give_points(participant, "Luxembourg", 2)
     end
 
     test "bumping a song up", %{participant: participant} do
@@ -208,14 +209,13 @@ defmodule Pointex.Europoints.ParticipantTest do
     test "cannot give points after submission", %{participant: participant} do
       participant =
         participant
-        |> Ash.Changeset.for_update(:update, %{final_vote_submitted: true})
-        |> Ash.update!()
+        |> Ash.update!(%{final_vote_submitted: true})
 
-      assert {:error, %{errors: [%{field: :final_vote_submitted}]}} = Participant.give_points(participant, "TheWinner", 12)
+      assert {:error, %{errors: [%{field: :final_vote_submitted}]}} = Participant.give_points(participant, "Ukraine", 12)
     end
 
     test "validates 'points' to be valid", %{participant: participant} do
-      assert {:error, %{errors: [%{field: :points}]}} = Participant.give_points(participant, "TheWinner", 11)
+      assert {:error, %{errors: [%{field: :points}]}} = Participant.give_points(participant, "Ukraine", 11)
     end
 
     @tag :skip
@@ -227,9 +227,7 @@ defmodule Pointex.Europoints.ParticipantTest do
       {:error, %{errors: [%{field: :can_submit_final_vote}]}} = Participant.finalize_top_10(participant)
     end
 
-    test "can submit final vote if all points have been used", %{season: season, participant: participant} do
-      generate_songs(season.year)
-
+    test "can submit final vote if all points have been used", %{participant: participant} do
       participant =
         participant
         |> Participant.give_points!("Ukraine", 12)

@@ -61,13 +61,7 @@ defmodule PointexWeb.SeasonSongs do
     ~H"""
     <div class="flex gap-2 items-center">
       <.label for={@field.id}>{@label}</.label>
-      <.input_tag
-        type="text"
-        id={@field.id}
-        name={@field.name}
-        value={@field.value}
-        placeholder={@placeholder}
-      />
+      <.input_tag type="text" id={@field.id} name={@field.name} value={@field.value} placeholder={@placeholder} />
     </div>
     """
   end
@@ -76,15 +70,7 @@ defmodule PointexWeb.SeasonSongs do
     ~H"""
     <div class="flex gap-2 items-center">
       <.label for={@field.id}>{@label}</.label>
-      <.input_tag
-        type="number"
-        id={@field.id}
-        name={@field.name}
-        value={@field.value}
-        placeholder={@placeholder}
-        min={1}
-        max={30}
-      />
+      <.input_tag type="number" id={@field.id} name={@field.name} value={@field.value} placeholder={@placeholder} min={1} max={30} />
     </div>
     """
   end
