@@ -116,6 +116,9 @@ defmodule PointexWeb.WatchParty.Voting do
       participant.top_10_with_points
       |> Enum.sort_by(&elem(&1, 0), :desc)
       |> Enum.reduce(participant, fn
+        {points, nil}, participant ->
+          participant
+
         {points, ^song_id}, participant ->
           Participant.give_points!(participant, song_id, nil)
 
