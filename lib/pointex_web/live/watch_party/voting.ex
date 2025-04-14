@@ -136,6 +136,7 @@ defmodule PointexWeb.WatchParty.Voting do
 
   @impl Phoenix.LiveView
   def handle_info(%{payload: %{data: updated_participant}}, socket) do
+    # TODO: replace participant with updated_participant if notification is coming from a different LV
     # {:noreply, assign(socket, participant: updated_participant)}
     {:noreply, socket}
   end
