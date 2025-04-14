@@ -7,6 +7,7 @@ defmodule Pointex.Europoints.Participant do
     primary_read_warning?: false
 
   import Ash.Changeset, only: [get_argument: 2, get_attribute: 2, change_attribute: 3]
+  alias Pointex.Accounts.Account
   alias Pointex.Europoints
   alias Pointex.Europoints.Participant
   alias Pointex.Europoints.Participant.Voting
@@ -44,7 +45,7 @@ defmodule Pointex.Europoints.Participant do
   end
 
   relationships do
-    belongs_to :account, Europoints.Account do
+    belongs_to :account, Account do
       allow_nil? false
     end
 

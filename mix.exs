@@ -8,6 +8,7 @@ defmodule Pointex.MixProject do
       elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      consolidate_protocols: Mix.env() != :dev,
       aliases: aliases(),
       deps: deps()
     ]
@@ -32,6 +33,9 @@ defmodule Pointex.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:picosat_elixir, "~> 0.2"},
+      {:ash_authentication, "~> 4.0"},
+      {:igniter, "~> 0.5", only: [:dev, :test]},
       {:phoenix, "~> 1.7"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.11"},

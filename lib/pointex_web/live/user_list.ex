@@ -1,6 +1,6 @@
 defmodule PointexWeb.UserList do
   use PointexWeb, :live_view
-  alias Pointex.Europoints.Account
+  alias Pointex.Accounts.Account
 
   @impl Phoenix.LiveView
   def render(assigns) do

@@ -1,4 +1,6 @@
 import Config
+config :pointex, token_signing_secret: "uhM8wfMbN6ti7MomcXocEw9o5cV3J12Z"
+config :bcrypt_elixir, log_rounds: 1
 
 # Configure your database
 #

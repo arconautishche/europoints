@@ -1,13 +1,14 @@
 defmodule Pointex.Europoints.ParticipantTest do
   use Pointex.DataCase, async: true
   import Pointex.Test.SeasonFixtures
+  alias Pointex.Accounts
   alias Pointex.Europoints
   alias Pointex.Europoints.WatchParty
   alias Pointex.Europoints.Participant
 
   setup do
     season = Europoints.Season.new!(2024)
-    owner_account = Europoints.Account.register!("Euro Papa")
+    owner_account = Accounts.register_account!("Euro Papa")
     show = Enum.find(season.shows, &(&1.kind == :semi_final_1))
 
     generate_songs(season.year)
