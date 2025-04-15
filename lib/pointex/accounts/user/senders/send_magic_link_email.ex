@@ -1,4 +1,4 @@
-defmodule Pointex.Accounts.User.Senders.SendMagicLinkEmail do
+defmodule Pointex.Accounts.Account.Senders.SendMagicLinkEmail do
   @moduledoc """
   Sends a magic link email
   """
@@ -15,7 +15,7 @@ defmodule Pointex.Accounts.User.Senders.SendMagicLinkEmail do
     # if you get an email, then the user does not yet exist.
 
     email =
-      case user_or_email do
+      case user_or_email |> dbg() do
         %{email: email} -> email
         email -> email
       end
@@ -27,10 +27,11 @@ defmodule Pointex.Accounts.User.Senders.SendMagicLinkEmail do
     |> subject("Your login link")
     |> html_body(body(token: token, email: email))
     |> Mailer.deliver!()
+    |> dbg()
   end
 
   defp body(params) do
-    url = url(~p"/auth/user/magic_link/?token=#{params[:token]}")
+    url = url(~p"/auth/account/magic_link/?token=#{params[:token]}")
 
     """
     <p>Hello, #{params[:email]}! Click this link to sign in:</p>

@@ -33,6 +33,7 @@ defmodule Pointex.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:ash_authentication_phoenix, "~> 2.0"},
       {:picosat_elixir, "~> 0.2"},
       {:ash_authentication, "~> 4.0"},
       {:igniter, "~> 0.5", only: [:dev, :test]},
@@ -48,17 +49,16 @@ defmodule Pointex.MixProject do
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
-      {:finch, "~> 0.13"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.4"},
       {:plug_cowboy, "~> 2.5"},
       {:eqrcode, "~> 0.1.10"},
-      {:ash, "~> 3.4"},
-      {:ash_postgres, "~> 2.5"},
+      {:ash, "~> 3.5", override: true},
+      {:ash_postgres, "~> 2.5", override: true},
       {:ash_admin, "~> 0.13"},
-      {:ash_phoenix, "~> 2.1"},
+      {:ash_phoenix, "~> 2.2", override: true},
       {:sentry, "~> 10.4.0"},
       # sentry requires hackney
       {:hackney, "~> 1.19"}
@@ -79,7 +79,8 @@ defmodule Pointex.MixProject do
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
+      "phx.routes": ["phx.routes", "ash_authentication.phoenix.routes"]
     ]
   end
 end

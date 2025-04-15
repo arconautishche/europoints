@@ -3,7 +3,7 @@ defmodule Pointex.Secrets do
 
   def secret_for(
         [:authentication, :tokens, :signing_secret],
-        Pointex.Accounts.User,
+        Pointex.Accounts.Account,
         _opts,
         _context
       ) do

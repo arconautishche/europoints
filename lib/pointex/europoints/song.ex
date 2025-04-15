@@ -7,6 +7,11 @@ defmodule Pointex.Europoints.Song do
   require Ash.Query
   alias Pointex.Europoints
 
+  postgres do
+    table "songs"
+    repo Pointex.Repo
+  end
+
   attributes do
     attribute :country, :string do
       public? true
@@ -62,14 +67,6 @@ defmodule Pointex.Europoints.Song do
       source_attribute :year
       destination_attribute :year
     end
-  end
-
-  calculations do
-    calculate :flag, :string, Europoints.Song.FlagForSongCountry
-  end
-
-  identities do
-    identity :song_in_season, [:year, :country]
   end
 
   actions do
@@ -149,10 +146,6 @@ defmodule Pointex.Europoints.Song do
     end
   end
 
-  preparations do
-    prepare build(load: [:flag])
-  end
-
   code_interface do
     define :register
     define :songs_in_show, args: [:year, :kind]
@@ -160,8 +153,15 @@ defmodule Pointex.Europoints.Song do
     define :set_actual_place_in_final, args: [:actual_place_in_final]
   end
 
-  postgres do
-    table "songs"
-    repo Pointex.Repo
+  identities do
+    identity :song_in_season, [:year, :country]
+  end
+
+  preparations do
+    prepare build(load: [:flag])
+  end
+
+  calculations do
+    calculate :flag, :string, Europoints.Song.FlagForSongCountry
   end
 end

@@ -38,7 +38,7 @@ defmodule Pointex.Accounts.Account do
         identity_field :email
         registration_enabled? true
 
-        sender Pointex.Accounts.User.Senders.SendMagicLinkEmail
+        sender Pointex.Accounts.Account.Senders.SendMagicLinkEmail
       end
     end
   end
@@ -59,6 +59,8 @@ defmodule Pointex.Accounts.Account do
     attribute :name, :string do
       allow_nil? false
     end
+
+    timestamps()
   end
 
   relationships do

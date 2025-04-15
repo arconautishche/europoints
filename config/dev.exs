@@ -79,3 +79,4 @@ config :phoenix, :plug_init_mode, :runtime
 config :swoosh, :api_client, false
 
 config :ash, :pub_sub, debug?: false
+config :ash_authentication, debug_authentication_failures?: true

@@ -6,7 +6,7 @@ defmodule Pointex.Accounts do
     resource Pointex.Accounts.Token
 
     resource Pointex.Accounts.Account do
-      define :register_with_magic_link, action: :register, args: [:name, :email]
+      define :register_account, action: :register, args: [:name, :email]
     end
   end
 end
