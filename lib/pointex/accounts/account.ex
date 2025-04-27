@@ -14,7 +14,8 @@ defmodule Pointex.Accounts.Account do
     end
 
     policy always() do
-      forbid_if always()
+      # TODO: change this when/if actual policies are needed
+      authorize_if always()
     end
   end
 
@@ -72,11 +73,11 @@ defmodule Pointex.Accounts.Account do
       allow_nil? true
     end
 
-    timestamps()
-
     attribute :hashed_password, :string do
       sensitive? true
     end
+
+    timestamps()
   end
 
   relationships do
@@ -106,6 +107,11 @@ defmodule Pointex.Accounts.Account do
 
     create :register do
       accept [:name, :email]
+    end
+
+    update :change_name do
+      argument :name, :string, constraints: [min_length: 2]
+      change set_attribute(:name, arg(:name))
     end
 
     update :change_password do

@@ -14,7 +14,7 @@ defmodule PointexWeb.LiveUserAuth do
     {:cont, AshAuthentication.Phoenix.LiveSession.assign_new_resources(socket, session) |> dbg()}
   end
 
-  def on_mount(:live_user_optional, _params, _session, socket) do
+  def on_mount(:account_optional, _params, _session, socket) do
     if socket.assigns[:current_account] do
       {:cont, socket}
     else
@@ -22,7 +22,7 @@ defmodule PointexWeb.LiveUserAuth do
     end
   end
 
-  def on_mount(:live_user_required, _params, _session, socket) do
+  def on_mount(:account_required, _params, _session, socket) do
     if socket.assigns[:current_account] do
       {:cont, socket}
     else
@@ -30,7 +30,17 @@ defmodule PointexWeb.LiveUserAuth do
     end
   end
 
-  def on_mount(:live_no_user, _params, _session, socket) do
+  def on_mount(:account_with_name_required, _params, _session, socket) do
+    case socket.assigns[:current_account] do
+      %{name: nil} ->
+        {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/account/name")}
+
+      _ ->
+        {:cont, socket}
+    end
+  end
+
+  def on_mount(:no_account, _params, _session, socket) do
     if socket.assigns[:current_account] do
       {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/")}
     else

@@ -29,7 +29,11 @@ defmodule PointexWeb.Router do
       pipe_through :try_prolong_user_session
 
       ash_authentication_live_session :logged_in,
-        on_mount: [{PointexWeb.LiveUserAuth, :current_account}, {PointexWeb.LiveUserAuth, :live_user_required}] do
+        on_mount: [
+          {PointexWeb.LiveUserAuth, :current_account},
+          {PointexWeb.LiveUserAuth, :account_required},
+          {PointexWeb.LiveUserAuth, :account_with_name_required}
+        ] do
         live "/", Home
         live "/login_instructions", Home, :show_login_instructions, as: :home
         live "/felicitoshka", UserList
@@ -58,6 +62,11 @@ defmodule PointexWeb.Router do
         # Redirect old routes to the new season overview
         live "/show/:year/:kind/overview", SeasonOverview
       end
+
+      ash_authentication_live_session :account_setup_incomplete,
+        on_mount: [{PointexWeb.LiveUserAuth, :current_account}, {PointexWeb.LiveUserAuth, :account_required}] do
+        live "/account/name", ChangeAccountName
+      end
     end
 
     auth_routes AuthController, Pointex.Accounts.Account, path: "/auth"
@@ -67,7 +76,7 @@ defmodule PointexWeb.Router do
     sign_in_route register_path: "/register",
                   reset_path: "/reset",
                   auth_routes_prefix: "/auth",
-                  on_mount: [{PointexWeb.LiveUserAuth, :live_no_user}],
+                  on_mount: [{PointexWeb.LiveUserAuth, :no_account}],
                   overrides: [PointexWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
 
     # Remove this if you do not want to use the reset password feature
