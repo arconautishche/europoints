@@ -9,10 +9,12 @@ defmodule PointexWeb.AuthOverrides do
 
   # For a complete reference, see https://hexdocs.pm/ash_authentication_phoenix/ui-overrides.html
 
-  # override AshAuthentication.Phoenix.Components.Banner do
-  #   set :image_url, "https://media.giphy.com/media/g7GKcSzwQfugw/giphy.gif"
-  #   set :text_class, "bg-red-500"
-  # end
+  override AshAuthentication.Phoenix.Components.Banner do
+    set :image_url, "https://upload.wikimedia.org/wikipedia/en/e/e1/Eurovision_Song_Contest.svg"
+    set :image_class, "w-[400px]"
+    set :text, "EuroPoints"
+    set :root_class, "flex flex-col gap-4 items-center"
+  end
 
   # override AshAuthentication.Phoenix.Components.SignIn do
   #  set :show_banner, false

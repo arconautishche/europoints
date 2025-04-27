@@ -21,7 +21,7 @@
       "type": "citext"
     },
     {
-      "allow_nil?": false,
+      "allow_nil?": true,
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
@@ -49,6 +49,16 @@
       "size": null,
       "source": "updated_at",
       "type": "utc_datetime_usec"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "hashed_password",
+      "type": "text"
     }
   ],
   "base_filter": null,
@@ -56,7 +66,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "04445E6434D28FE3D2CE1481D07122561763263CF6F2F5AEAC4A4E154A8928CF",
+  "hash": "E728DCE85B37C561746D6906064D436CAB049C1ECE978659EDB143F467FE3D5E",
   "identities": [
     {
       "all_tenants?": false,

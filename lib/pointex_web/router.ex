@@ -25,23 +25,11 @@ defmodule PointexWeb.Router do
   scope "/", PointexWeb do
     pipe_through :browser
 
-    # post "/register", LoginController, :register
-    # post "/login", LoginController, :login
-    # get "/logout", LoginController, :logout
-
-    # live_session :default, on_mount: PointexWeb.UserAuth do
-    #   live "/register", Register
-    #   live "/login", Login
-    # end
-
     scope "/" do
       pipe_through :try_prolong_user_session
 
-      live_session :logged_in,
-        on_mount: [
-          PointexWeb.UserAuth,
-          {PointexWeb.UserAuth, :ensure_logged_in}
-        ] do
+      ash_authentication_live_session :logged_in,
+        on_mount: [{PointexWeb.LiveUserAuth, :current_account}, {PointexWeb.LiveUserAuth, :live_user_required}] do
         live "/", Home
         live "/login_instructions", Home, :show_login_instructions, as: :home
         live "/felicitoshka", UserList

@@ -8,21 +8,22 @@ defmodule PointexWeb.LiveUserAuth do
 
   # This is used for nested liveviews to fetch the current user.
   # To use, place the following at the top of that liveview:
-  # on_mount {PointexWeb.LiveUserAuth, :current_user}
-  def on_mount(:current_user, _params, session, socket) do
-    {:cont, AshAuthentication.Phoenix.LiveSession.assign_new_resources(socket, session)}
+  # on_mount {PointexWeb.LiveUserAuth, :current_account}
+  def on_mount(:current_account, _params, session, socket) do
+    dbg(session)
+    {:cont, AshAuthentication.Phoenix.LiveSession.assign_new_resources(socket, session) |> dbg()}
   end
 
   def on_mount(:live_user_optional, _params, _session, socket) do
-    if socket.assigns[:current_user] do
+    if socket.assigns[:current_account] do
       {:cont, socket}
     else
-      {:cont, assign(socket, :current_user, nil)}
+      {:cont, assign(socket, :current_account, nil)}
     end
   end
 
   def on_mount(:live_user_required, _params, _session, socket) do
-    if socket.assigns[:current_user] do
+    if socket.assigns[:current_account] do
       {:cont, socket}
     else
       {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/sign-in")}
@@ -30,10 +31,10 @@ defmodule PointexWeb.LiveUserAuth do
   end
 
   def on_mount(:live_no_user, _params, _session, socket) do
-    if socket.assigns[:current_user] do
+    if socket.assigns[:current_account] do
       {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/")}
     else
-      {:cont, assign(socket, :current_user, nil)}
+      {:cont, assign(socket, :current_account, nil)}
     end
   end
 end
