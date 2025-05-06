@@ -7,6 +7,8 @@
 # General application configuration
 import Config
 
+config :spark, formatter: ["Ash.Resource": [section_order: [:authentication, :tokens]]]
+
 config :pointex,
   ecto_repos: [Pointex.Repo]
 
@@ -58,7 +60,7 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :pointex, :ash_domains, [Pointex.Europoints]
+config :pointex, :ash_domains, [Pointex.Accounts, Pointex.Europoints]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

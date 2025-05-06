@@ -55,6 +55,7 @@ config :pointex, PointexWeb.Endpoint,
 # Watch static and templates for browser reloading.
 config :pointex, PointexWeb.Endpoint,
   live_reload: [
+    web_console_logger: true,
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
@@ -63,7 +64,7 @@ config :pointex, PointexWeb.Endpoint,
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :pointex, dev_routes: true
+config :pointex, dev_routes: true, token_signing_secret: "sYiXIce+cgNnl+tmoERuKKR2w5hI329g"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
@@ -75,7 +76,15 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
+config :phoenix_live_view,
+  # Include HEEx debug annotations as HTML comments in rendered markup.
+  # Changing this configuration will require mix clean and a full recompile.
+  debug_heex_annotations: true,
+  # Enable helpful, but potentially expensive runtime checks
+  enable_expensive_runtime_checks: true
+
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
 config :ash, :pub_sub, debug?: false
+config :ash_authentication, debug_authentication_failures?: true

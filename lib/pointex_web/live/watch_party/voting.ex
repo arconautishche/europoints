@@ -116,10 +116,10 @@ defmodule PointexWeb.WatchParty.Voting do
       participant.top_10_with_points
       |> Enum.sort_by(&elem(&1, 0), :desc)
       |> Enum.reduce(participant, fn
-        {points, nil}, participant ->
+        {_points, nil}, participant ->
           participant
 
-        {points, ^song_id}, participant ->
+        {_points, ^song_id}, participant ->
           Participant.give_points!(participant, song_id, nil)
 
         {points, song}, participant ->
@@ -135,7 +135,7 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   @impl Phoenix.LiveView
-  def handle_info(%{payload: %{data: updated_participant}}, socket) do
+  def handle_info(%{payload: %{data: _updated_participant}}, socket) do
     # TODO: replace participant with updated_participant if notification is coming from a different LV
     # {:noreply, assign(socket, participant: updated_participant)}
     {:noreply, socket}

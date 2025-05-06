@@ -27,7 +27,7 @@ defmodule PointexWeb.WatchParty.Join do
           <:actions>
             <.button :if={!@already_joined?} class="grow !text-slate-800 !p-[1px] !pb-2" disabled={!@valid?} type="submit">
               <div class="flex flex-col gap-2">
-                <.watch_party_card :if={@watch_party_details} watch_party={@watch_party_details} current_user={@user} />
+                <.watch_party_card :if={@watch_party_details} watch_party={@watch_party_details} current_user={@current_account} />
                 <span class="text-white/90">Let's do this!</span>
               </div>
             </.button>
@@ -38,7 +38,7 @@ defmodule PointexWeb.WatchParty.Join do
               href={~p"/wp/#{@watch_party_details.id}/viewing"}
             >
               <div class="flex flex-col gap-2">
-                <.watch_party_card :if={@watch_party_details} watch_party={@watch_party_details} current_user={@user} />
+                <.watch_party_card :if={@watch_party_details} watch_party={@watch_party_details} current_user={@current_account} />
                 <span class="text-white/90 px-4">Already joined! Go there →</span>
               </div>
             </.link>

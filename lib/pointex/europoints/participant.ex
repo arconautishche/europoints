@@ -7,14 +7,21 @@ defmodule Pointex.Europoints.Participant do
     primary_read_warning?: false
 
   import Ash.Changeset, only: [get_argument: 2, get_attribute: 2, change_attribute: 3]
+  alias Pointex.Accounts.Account
   alias Pointex.Europoints
   alias Pointex.Europoints.Participant
   alias Pointex.Europoints.Participant.Voting
 
-  resource do
-    description """
-    A participant in a `WatchParty`. A user can have multiple `Participant` records - one for each `WatchParty` they've joined.
-    """
+  postgres do
+    table "ash_participants"
+    repo Pointex.Repo
+  end
+
+  pub_sub do
+    module PointexWeb.Endpoint
+    publish_all :update, ["participant", :id]
+    publish_all :create, ["watch_party", :watch_party_id]
+    publish_all :update, ["watch_party", :watch_party_id]
   end
 
   attributes do
@@ -44,7 +51,7 @@ defmodule Pointex.Europoints.Participant do
   end
 
   relationships do
-    belongs_to :account, Europoints.Account do
+    belongs_to :account, Account do
       allow_nil? false
     end
 
@@ -52,17 +59,6 @@ defmodule Pointex.Europoints.Participant do
       attribute_writable? true
       allow_nil? false
     end
-  end
-
-  calculations do
-    calculate :top_10_with_points, :map, Participant.Top10WithPoints
-    calculate :used_points, {:array, :integer}, Participant.UsedPoints
-    calculate :unused_points, {:array, :integer}, Participant.UnusedPoints
-    calculate :can_submit_final_vote, :boolean, Participant.CanSubmitFinalVote
-  end
-
-  identities do
-    identity :one_participant_per_account_per_wp, [:account_id, :watch_party_id]
   end
 
   actions do
@@ -168,16 +164,6 @@ defmodule Pointex.Europoints.Participant do
     end
   end
 
-  @top_10_derivatives [:top_10_with_points, :used_points, :unused_points, :can_submit_final_vote]
-
-  preparations do
-    prepare build(load: @top_10_derivatives)
-  end
-
-  changes do
-    change load(@top_10_derivatives)
-  end
-
   code_interface do
     define :new, args: [:account_id, :watch_party_id]
     define :for_account, args: [:account_id], action: :for_account
@@ -187,16 +173,31 @@ defmodule Pointex.Europoints.Participant do
     define :finalize_top_10
   end
 
-  pub_sub do
-    module PointexWeb.Endpoint
-    publish_all :update, ["participant", :id]
-    publish_all :create, ["watch_party", :watch_party_id]
-    publish_all :update, ["watch_party", :watch_party_id]
+  @top_10_derivatives [:top_10_with_points, :used_points, :unused_points, :can_submit_final_vote]
+
+  resource do
+    description """
+    A participant in a `WatchParty`. A user can have multiple `Participant` records - one for each `WatchParty` they've joined.
+    """
   end
 
-  postgres do
-    table "ash_participants"
-    repo Pointex.Repo
+  identities do
+    identity :one_participant_per_account_per_wp, [:account_id, :watch_party_id]
+  end
+
+  changes do
+    change load(@top_10_derivatives)
+  end
+
+  preparations do
+    prepare build(load: @top_10_derivatives)
+  end
+
+  calculations do
+    calculate :top_10_with_points, :map, Participant.Top10WithPoints
+    calculate :used_points, {:array, :integer}, Participant.UsedPoints
+    calculate :unused_points, {:array, :integer}, Participant.UnusedPoints
+    calculate :can_submit_final_vote, :boolean, Participant.CanSubmitFinalVote
   end
 
   defp toggle_country_in_list(changeset, list_attr) do

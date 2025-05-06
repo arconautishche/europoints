@@ -1,11 +1,13 @@
 defmodule PointexWeb.LoginController do
   use PointexWeb, :controller
-  alias Pointex.Europoints.Account
+  alias Pointex.Accounts
+  alias Pointex.Accounts.Account
 
   def register(conn, %{"register_params" => register_params, "return_to" => return_to}) do
     name = Map.get(register_params, "user_name", "")
+    email = Map.get(register_params, "user_email", "")
 
-    case Account.register(name) do
+    case Accounts.register_account!(name, email) do
       {:ok, account} ->
         conn
         |> Plug.Conn.put_session("user", %{

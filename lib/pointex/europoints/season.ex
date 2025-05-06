@@ -8,10 +8,6 @@ defmodule Pointex.Europoints.Season do
     fragments: [Pointex.Europoints.Season.DataLayer],
     extensions: [AshAdmin.Resource]
 
-  code_interface do
-    define :new, args: [:year]
-  end
-
   attributes do
     attribute :year, :integer do
       primary_key? true
@@ -68,6 +64,10 @@ defmodule Pointex.Europoints.Season do
       prepare build(load: [:shows])
       filter expr(active == true)
     end
+  end
+
+  code_interface do
+    define :new, args: [:year]
   end
 
   code_interface do
