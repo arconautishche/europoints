@@ -64,7 +64,6 @@ if config_env() == :prod do
     secret_key_base: secret_key_base
 
   config :sentry, dsn: System.fetch_env!("SENTRY_DSN")
-  config :pointex, token_signing_secret: System.get_env("TOKEN_SIGNING_SECRET") || raise("Missing environment variable `TOKEN_SIGNING_SECRET`!")
 
   # ## SSL Support
   #

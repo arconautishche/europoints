@@ -1,6 +1,6 @@
 defmodule Pointex.Europoints.WatchPartyTest do
   use Pointex.DataCase
-  alias Pointex.Accounts.Account
+  alias Pointex.Europoints.Account
   alias Pointex.Europoints.Season
   alias Pointex.Europoints.WatchParty
 

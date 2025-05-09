@@ -5,6 +5,7 @@ defmodule Pointex.Europoints do
     extensions: [AshAdmin.Domain]
 
   resources do
+    resource Europoints.Account
     resource Europoints.Season
     resource Europoints.Show
     resource Europoints.Song

@@ -8,11 +8,6 @@ defmodule Pointex.Europoints.WatchParty do
   alias Pointex.Europoints
   alias Pointex.Europoints.WatchParty
 
-  postgres do
-    table "ash_watch_parties"
-    repo Pointex.Repo
-  end
-
   attributes do
     uuid_primary_key :id
 
@@ -27,6 +22,11 @@ defmodule Pointex.Europoints.WatchParty do
     end
 
     has_many :participants, Europoints.Participant
+  end
+
+  calculations do
+    calculate :total_points_by_participants, {:array, :map}, WatchParty.TotalPointsCalculation
+    calculate :prediction_scores, :map, WatchParty.PredictionScoresCalculation
   end
 
   actions do
@@ -126,8 +126,8 @@ defmodule Pointex.Europoints.WatchParty do
     |> Ash.read!(load: [:show, participants: :account])
   end
 
-  calculations do
-    calculate :total_points_by_participants, {:array, :map}, WatchParty.TotalPointsCalculation
-    calculate :prediction_scores, :map, WatchParty.PredictionScoresCalculation
+  postgres do
+    table "ash_watch_parties"
+    repo Pointex.Repo
   end
 end

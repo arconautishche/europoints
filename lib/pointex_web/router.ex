@@ -1,8 +1,5 @@
 defmodule PointexWeb.Router do
   use PointexWeb, :router
-  use AshAuthentication.Phoenix.Router
-
-  import AshAuthentication.Plug.Helpers
   import PointexWeb.UserAuth
   import AshAdmin.Router
 
@@ -13,26 +10,31 @@ defmodule PointexWeb.Router do
     plug :put_root_layout, {PointexWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug :load_from_session
   end
 
   pipeline :api do
     plug :accepts, ["json"]
-    plug :load_from_bearer
-    plug :set_actor, :user
   end
 
   scope "/", PointexWeb do
     pipe_through :browser
 
+    post "/register", LoginController, :register
+    post "/login", LoginController, :login
+    get "/logout", LoginController, :logout
+
+    live_session :default, on_mount: PointexWeb.UserAuth do
+      live "/register", Register
+      live "/login", Login
+    end
+
     scope "/" do
       pipe_through :try_prolong_user_session
 
-      ash_authentication_live_session :logged_in,
+      live_session :logged_in,
         on_mount: [
-          {PointexWeb.LiveUserAuth, :current_account},
-          {PointexWeb.LiveUserAuth, :account_required},
-          {PointexWeb.LiveUserAuth, :account_with_name_required}
+          PointexWeb.UserAuth,
+          {PointexWeb.UserAuth, :ensure_logged_in}
         ] do
         live "/", Home
         live "/login_instructions", Home, :show_login_instructions, as: :home
@@ -62,41 +64,6 @@ defmodule PointexWeb.Router do
         # Redirect old routes to the new season overview
         live "/show/:year/:kind/overview", SeasonOverview
       end
-
-      ash_authentication_live_session :account_setup_incomplete,
-        on_mount: [{PointexWeb.LiveUserAuth, :current_account}, {PointexWeb.LiveUserAuth, :account_required}] do
-        live "/account/name", ChangeAccountName
-      end
-    end
-
-    auth_routes AuthController, Pointex.Accounts.Account, path: "/auth"
-    sign_out_route AuthController
-
-    # Remove these if you'd like to use your own authentication views
-    sign_in_route register_path: "/register",
-                  reset_path: "/reset",
-                  auth_routes_prefix: "/auth",
-                  on_mount: [{PointexWeb.LiveUserAuth, :no_account}],
-                  overrides: [PointexWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
-
-    # Remove this if you do not want to use the reset password feature
-    reset_route auth_routes_prefix: "/auth", overrides: [PointexWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
-  end
-
-  scope "/", PointexWeb do
-    pipe_through :browser
-
-    ash_authentication_live_session :authenticated_routes do
-      # in each liveview, add one of the following at the top of the module:
-      #
-      # If an authenticated user must be present:
-      # on_mount {PointexWeb.LiveUserAuth, :live_user_required}
-      #
-      # If an authenticated user *may* be present:
-      # on_mount {PointexWeb.LiveUserAuth, :live_user_optional}
-      #
-      # If an authenticated user must *not* be present:
-      # on_mount {PointexWeb.LiveUserAuth, :live_no_user}
     end
   end
 

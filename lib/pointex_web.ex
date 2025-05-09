@@ -61,7 +61,7 @@ defmodule PointexWeb do
       end
 
       defp user(assigns) do
-        assigns.current_account
+        assigns.user
       end
     end
   end

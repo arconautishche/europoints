@@ -42,7 +42,9 @@ defmodule PointexWeb.UserAuth do
     {:cont, socket}
   end
 
-  def on_mount(:ensure_logged_in, _params, _session, socket) do
+  def on_mount(:ensure_logged_in, _params, session, socket) do
+    dbg(session)
+
     {:halt,
      push_navigate(socket,
        to: path(socket, Router, ~p"/register?return_to=#{socket.private.connect_info.request_path}")

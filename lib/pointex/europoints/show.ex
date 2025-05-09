@@ -9,11 +9,6 @@ defmodule Pointex.Europoints.Show do
 
   @kinds [:semi_final_1, :semi_final_2, :final]
 
-  postgres do
-    table "ash_shows"
-    repo Pointex.Repo
-  end
-
   attributes do
     uuid_primary_key :id
 
@@ -62,6 +57,11 @@ defmodule Pointex.Europoints.Show do
 
   identities do
     identity :show_in_season, [:year, :kind]
+  end
+
+  postgres do
+    table "ash_shows"
+    repo Pointex.Repo
   end
 
   def kinds(), do: @kinds

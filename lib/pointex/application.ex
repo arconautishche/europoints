@@ -17,8 +17,7 @@ defmodule Pointex.Application do
       # Start Finch
       {Finch, name: Pointex.Finch},
       # Start the Endpoint (http/https)
-      PointexWeb.Endpoint,
-      {AshAuthentication.Supervisor, [otp_app: :pointex]}
+      PointexWeb.Endpoint
     ]
 
     Logger.add_handlers(:pointex)
