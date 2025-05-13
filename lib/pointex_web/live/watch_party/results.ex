@@ -51,7 +51,7 @@ defmodule PointexWeb.WatchParty.Results do
   end
 
   defp load_data(wp_id, user_id) do
-    with {:ok, watch_party} <- Ash.get(WatchParty, wp_id, action: :results) do
+    with {:ok, watch_party} <- Ash.get(WatchParty, wp_id, action: :results, load: :show) do
       participant = Enum.find(watch_party.participants, &(&1.account_id == user_id))
 
       %{
