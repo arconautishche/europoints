@@ -172,8 +172,6 @@ defmodule PointexWeb.CoreComponents do
       title="Connection problems"
       close={false}
       autoshow={false}
-      phx-disconnected={show("#disconnected")}
-      phx-connected={hide("#disconnected")}
     >
       Attempting to reconnect <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
     </.flash>

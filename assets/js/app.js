@@ -36,10 +36,7 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
   hooks: Hooks,
-  reconnectAfterMs: (tries) => {
-    console.log("reconnecting", tries)
-    return 200;
-  }
+  reconnectAfterMs: (tries) => [200, 500, 1000, 2000, 5000][tries - 1] || 5000
 })
 
 // Show progress bar on live navigation and form submits
@@ -50,20 +47,43 @@ window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
 // connect if there are any LiveViews on the page
 liveSocket.connect()
 
+const showDisconnected = () => {
+  document.getElementById("disconnected")?.classList.remove("hidden")
+}
+const hideDisconnected = () => {
+  document.getElementById("disconnected")?.classList.add("hidden")
+}
+const scheduleDisconnected = (delay = DISCONNECT_GRACE_MS) => {
+  if (disconnectedTimer != null) return
+  disconnectedTimer = setTimeout(() => {
+    disconnectedTimer = null
+    if (!liveSocket.isConnected()) showDisconnected()
+  }, delay)
+}
+const clearDisconnected = () => {
+  if (disconnectedTimer != null) {
+    clearTimeout(disconnectedTimer)
+    disconnectedTimer = null
+  }
+  hideDisconnected()
+}
+liveSocket.socket.onOpen(clearDisconnected)
+liveSocket.socket.onClose(() => scheduleDisconnected())
+liveSocket.socket.onError(() => scheduleDisconnected())
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return
+  if (liveSocket.isConnected()) return
+  // Tab just woke up and the socket is down. Don't trust the in-flight
+  // reconnect timer — drop it and start a fresh, fast reconnect cycle.
+  clearDisconnected()
+  liveSocket.disconnect()
+  liveSocket.connect()
+  scheduleDisconnected()
+})
+
 // expose liveSocket on window for web console debug logs and latency simulation:
 // >> liveSocket.enableDebug()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
-
-// document.addEventListener("visibilitychange", () => {
-//   console.log("liveSocket.isConnected()", liveSocket.isConnected())
-
-//   if (!document.hidden) {
-//     liveSocket.disconnect(() => {
-//       console.log("disconnected")
-//       liveSocket.connect()
-//     });
-//   }
-// });
 
