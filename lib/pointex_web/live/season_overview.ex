@@ -40,13 +40,4 @@ defmodule PointexWeb.SeasonOverview do
      |> assign(page_title: "Season Overview")
      |> assign(year: year)}
   end
-
-  # Handle the old route format for backward compatibility
-  @impl Phoenix.LiveView
-  def handle_params(%{"year" => year, "kind" => _kind}, _uri, socket) do
-    {:noreply,
-     socket
-     |> assign(page_title: "Season Overview")
-     |> assign(year: year)}
-  end
 end
