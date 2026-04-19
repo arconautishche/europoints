@@ -188,7 +188,7 @@ defmodule PointexWeb.WatchParty.Voting do
         id="top-10-list"
         phx-hook="InitDragAndDrop"
         class={[
-          "flex flex-col divide-y divide-gray-200 bg-white shadow-lg border border-gray-200 transition transition-all",
+          "flex flex-col divide-y divide-gray-200 bg-white shadow-lg border border-gray-200 transition-all",
           if(@empty, do: "-mt-12 -mb-24")
         ]}
         style={
@@ -199,14 +199,14 @@ defmodule PointexWeb.WatchParty.Voting do
         id="top-10"
         phx-hook="AutoAnimate"
       >
-        <div id={"points-#{points}"} :for={points <- PossiblePoints.desc()}>
-        <.points_given
-          points={points}
-          readonly={@readonly}
-          song={song_with_points(@songs, points)}
-          song_above={song_with_points(@songs, PossiblePoints.inc(points))}
-          song_below={song_with_points(@songs, PossiblePoints.dec(points))}
-        />
+        <div :for={points <- PossiblePoints.desc()} id={"points-#{points}"}>
+          <.points_given
+            points={points}
+            readonly={@readonly}
+            song={song_with_points(@songs, points)}
+            song_above={song_with_points(@songs, PossiblePoints.inc(points))}
+            song_below={song_with_points(@songs, PossiblePoints.dec(points))}
+          />
         </div>
       </ul>
     </section>

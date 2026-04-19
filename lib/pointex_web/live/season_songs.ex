@@ -16,7 +16,7 @@ defmodule PointexWeb.SeasonSongs do
           <h2 class="text-lg font-semibold mb-4">Participating Countries</h2>
           <div class="flex flex-col gap-8">
             <.form
-              :for={%{form: form} = wrapped_form <- @all_forms}
+              :for={%{form: form, went_to_final: went_to_final} = wrapped_form <- @all_forms}
               for={form}
               class={"border-l-4 rounded flex flex-col gap-2 shadow-lg #{if form.source.type == :create, do: "border-gray-200", else: "border-green-500"}"}
               phx-change="validate_song"
@@ -35,10 +35,7 @@ defmodule PointexWeb.SeasonSongs do
                   </div>
                   <img src={Ash.Changeset.get_attribute(form.source.source, :img)} alt="Poster" class="h-[200px] object-contain" />
                 </div>
-                <div :if={form.source.type == :update} class="flex flex-col gap-1 items-start px-4">
-                  <.num_input label="Starts in SF 1 at" field={form[:order_in_sf1]} placeholder="position" />
-                  <.num_input label="Starts in SF 2 at" field={form[:order_in_sf2]} placeholder="position" />
-                </div>
+                <.running_order_input :if={form.source.type == :update} form={form} went_to_final={went_to_final} />
                 <div class="border-b border-gray-200 px-4 py-2 flex justify-center">
                   <button
                     type="submit"
@@ -75,6 +72,35 @@ defmodule PointexWeb.SeasonSongs do
     """
   end
 
+  defp running_order_input(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-1 items-start px-4">
+      <.num_input :if={@form[:order_in_sf1].value} label="Ranking order in Semi Final 1" field={@form[:order_in_sf1]} placeholder="position" />
+      <button
+        :if={!@form[:order_in_sf1].value}
+        type="button"
+        class="text-sm px-2 bg-sky-100 text-sky-800 rounded hover:bg-sky-200"
+        phx-click="move_to_sf1"
+        phx-value-form_id={@form.id}
+      >
+        🔄 In Semi Final 1
+      </button>
+      <.num_input :if={@form[:order_in_sf2].value} label="Ranking order in Semi Final 2" field={@form[:order_in_sf2]} placeholder="position" />
+      <button
+        :if={!@form[:order_in_sf2].value}
+        type="button"
+        class="text-sm px-2 bg-sky-100 text-sky-800 rounded hover:bg-sky-200"
+        phx-click="move_to_sf2"
+        phx-value-form_id={@form.id}
+      >
+        🔄 In Semi Final 2
+      </button>
+      <hr :if={@went_to_final} class="w-full border-gray-200" />
+      <.num_input :if={@went_to_final} label="Ranking order in final" field={@form[:order_in_final]} placeholder="position" />
+    </div>
+    """
+  end
+
   attr :type, :string, default: "text"
   attr :name, :string, required: true
   attr :value, :string, required: true
@@ -96,20 +122,25 @@ defmodule PointexWeb.SeasonSongs do
   end
 
   @impl Phoenix.LiveView
+  def handle_event("move_to_sf1", params, socket) do
+    all_forms = socket.assigns.all_forms
+    all_forms = update_form(all_forms, params["form_id"], %{order_in_sf1: next_place(all_forms, :sf1), order_in_sf2: nil})
+
+    {:noreply, assign(socket, all_forms: all_forms)}
+  end
+
+  def handle_event("move_to_sf2", params, socket) do
+    all_forms = socket.assigns.all_forms
+    all_forms = update_form(all_forms, params["form_id"], %{order_in_sf2: next_place(all_forms, :sf2), order_in_sf1: nil})
+
+    {:noreply, assign(socket, all_forms: all_forms)}
+  end
+
   def handle_event("validate_song", params, socket) do
     form_id = hd(params["_target"])
 
     all_forms =
-      socket.assigns.all_forms
-      |> Enum.map(fn wrapped_form ->
-        if wrapped_form.form.id == form_id do
-          form = AshPhoenix.Form.validate(wrapped_form.form, params[form_id])
-
-          %{wrapped_form | form: form}
-        else
-          wrapped_form
-        end
-      end)
+      update_form(socket.assigns.all_forms, form_id, params[form_id])
 
     {:noreply, assign(socket, all_forms: all_forms)}
   end
@@ -132,6 +163,7 @@ defmodule PointexWeb.SeasonSongs do
       %{
         country: country,
         flag: Country.flag(country),
+        went_to_final: Enum.find(season.songs, &(&1.country == country and &1.went_to_final)),
         form:
           case Enum.find(season.songs, &(&1.country == country)) do
             nil -> form_for_create(country, year)
@@ -157,5 +189,25 @@ defmodule PointexWeb.SeasonSongs do
     song
     |> AshPhoenix.Form.for_update(:change_description, as: "song_#{song.country}")
     |> to_form()
+  end
+
+  defp update_form(all_forms, form_id, params) do
+    Enum.map(all_forms, fn wrapped_form ->
+      if wrapped_form.form.id == form_id do
+        %{wrapped_form | form: AshPhoenix.Form.validate(wrapped_form.form, params)}
+      else
+        wrapped_form
+      end
+    end)
+  end
+
+  defp next_place(all_forms, show_kind) do
+    all_forms
+    |> Enum.map(& &1.form[:"order_in_#{show_kind}"].value)
+    |> Enum.reject(&(&1 == nil))
+    |> case do
+      [] -> 1
+      taken_places -> Enum.max(taken_places) + 1
+    end
   end
 end
