@@ -1,8 +1,7 @@
 defmodule PointexWeb.UserAuth do
-  alias PointexWeb.Router
   import Phoenix.LiveView
   import Phoenix.Component
-  import Phoenix.VerifiedRoutes
+  use PointexWeb, :verified_routes
 
   def try_prolong_user_session(conn, _opts) do
     case Plug.Conn.get_session(conn, "user") do
@@ -45,7 +44,7 @@ defmodule PointexWeb.UserAuth do
   def on_mount(:ensure_logged_in, _params, _session, socket) do
     {:halt,
      push_navigate(socket,
-       to: path(socket, Router, ~p"/register?return_to=#{socket.private.connect_info.request_path}")
+       to: ~p"/register?return_to=#{socket.private.connect_info.request_path}"
      )}
   end
 end

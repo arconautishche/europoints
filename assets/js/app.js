@@ -47,6 +47,21 @@ window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
 // connect if there are any LiveViews on the page
 liveSocket.connect()
 
+// --- Connection banner with grace period ---------------------------------
+//
+// We only want users to see the "Connection problems" banner when the
+// connection is actually broken — not for the brief moment between the
+// browser pausing the tab and the socket reconnecting after wake-up.
+//
+// Strategy:
+//   * On socket close/error, schedule the banner to appear after a grace
+//     period; if we reconnect before then, it never shows.
+//   * On socket open, hide it and clear any pending timer.
+//   * When the tab becomes visible again while disconnected, force a fresh
+//     reconnect and (re)start the grace period so a sleeping tab never
+//     flashes the banner on wake.
+const DISCONNECT_GRACE_MS = 3000
+let disconnectedTimer = null
 const showDisconnected = () => {
   document.getElementById("disconnected")?.classList.remove("hidden")
 }
@@ -60,26 +75,6 @@ const scheduleDisconnected = (delay = DISCONNECT_GRACE_MS) => {
     if (!liveSocket.isConnected()) showDisconnected()
   }, delay)
 }
-const clearDisconnected = () => {
-  if (disconnectedTimer != null) {
-    clearTimeout(disconnectedTimer)
-    disconnectedTimer = null
-  }
-  hideDisconnected()
-}
-liveSocket.socket.onOpen(clearDisconnected)
-liveSocket.socket.onClose(() => scheduleDisconnected())
-liveSocket.socket.onError(() => scheduleDisconnected())
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState !== "visible") return
-  if (liveSocket.isConnected()) return
-  // Tab just woke up and the socket is down. Don't trust the in-flight
-  // reconnect timer — drop it and start a fresh, fast reconnect cycle.
-  clearDisconnected()
-  liveSocket.disconnect()
-  liveSocket.connect()
-  scheduleDisconnected()
-})
 
 // expose liveSocket on window for web console debug logs and latency simulation:
 // >> liveSocket.enableDebug()

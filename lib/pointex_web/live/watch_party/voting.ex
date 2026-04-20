@@ -196,18 +196,15 @@ defmodule PointexWeb.WatchParty.Voting do
             do: "transform: perspective(1cm) rotateX(-10deg) translate3d(0, 0, -100px) ",
             else: ""
         }
-        id="top-10"
-        phx-hook="AutoAnimate"
       >
-        <div :for={points <- PossiblePoints.desc()} id={"points-#{points}"}>
-          <.points_given
-            points={points}
-            readonly={@readonly}
-            song={song_with_points(@songs, points)}
-            song_above={song_with_points(@songs, PossiblePoints.inc(points))}
-            song_below={song_with_points(@songs, PossiblePoints.dec(points))}
-          />
-        </div>
+        <.points_given
+          :for={points <- PossiblePoints.desc()}
+          points={points}
+          readonly={@readonly}
+          song={song_with_points(@songs, points)}
+          song_above={song_with_points(@songs, PossiblePoints.inc(points))}
+          song_below={song_with_points(@songs, PossiblePoints.dec(points))}
+        />
       </ul>
     </section>
     """
@@ -257,6 +254,7 @@ defmodule PointexWeb.WatchParty.Voting do
 
     ~H"""
     <li
+      id={"points-#{@points}-#{@song && @song.country}"}
       data-id={@song && @song.country}
       class={["drag-ghost:bg-zinc-200 drag-ghost:py-4 drag-ghost:animate-pulse drag-item:scale-110", if(@readonly || !@song, do: "not-draggable")]}
     >
