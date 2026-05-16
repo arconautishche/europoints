@@ -74,7 +74,7 @@ defmodule PointexWeb.WatchParty.Viewing do
   defp song_viewing(assigns) do
     ~H"""
     <SongComponents.song_container song={@song}>
-      <div class={["h-full flex items-top justify-between gap-2 px-2 sm:px-4 py-3 hover:bg-sky-100/50", if(@song.noped, do: "opacity-80", else: "")]}>
+      <div class={["h-full flex items-top justify-between gap-2 px-2 sm:px-4 py-3 hover:bg-sky-100/50", if(@song.noped, do: "opacity-70", else: "")]}>
         <SongComponents.ro song={@song} />
         <SongComponents.description song={@song} />
         <div class="flex gap-2 sm:gap-4 items-center">

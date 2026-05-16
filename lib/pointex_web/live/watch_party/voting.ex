@@ -1,5 +1,6 @@
 defmodule PointexWeb.WatchParty.Voting do
   use PointexWeb, :live_view
+  use Gettext, backend: PointexWeb.Gettext
   alias Pointex.Europoints.Song
   alias Pointex.Europoints.Participant
   alias Pointex.Europoints.WatchParty
@@ -14,47 +15,53 @@ defmodule PointexWeb.WatchParty.Voting do
     %{show: show, songs: songs, participant: participant} = assigns
     rendered_songs = Enum.map(songs, &SongComponents.prepare(&1, show.kind, participant))
     show_hint = Enum.all?(rendered_songs, &(&1.points == nil))
+    votes_given = Enum.count(rendered_songs, &(&1.points != nil))
 
-    assigns = assign(assigns, songs: rendered_songs, show_hint: show_hint)
+    assigns = assign(assigns, songs: rendered_songs, show_hint: show_hint, votes_given: votes_given)
 
     ~H"""
     <Nav.layout wp_id={@wp_id} active={:voting}>
       <div class="flex flex-col sm:flex-row gap-6 my-2">
-        <div class="w-full flex flex-col items-center">
-          <.button
+        <div class="w-full flex flex-col items-center sticky top-0 z-10 -mb-4">
+          <div :if={@votes_given > 0 and @votes_given < 10} class="w-full px-4 py-2 bg-white/60 text-gray-600 text-center">
+            {ngettext("%{count} place left", "%{count} places left", 10 - @votes_given)}
+          </div>
+          <button
             :if={@participant.can_submit_final_vote}
             phx-click="submit_vote"
-            class="flex w-fit gap-2 mt-2 bg-gradient-to-br from-red-300 to-red-400 border border-red-400 shadow-lg text-red-800 uppercase hover:from-red-300 hover:to-red-300 active:from-red-200 active:to-red-200"
+            class="flex w-fit gap-2 py-2 px-4 rounded-lg mt-2 bg-red-200 border border-red-800/20 shadow-lg text-red-800 uppercase"
           >
-            <span>🚨</span>
+            <span class="animate-pulse">🚨</span>
             <span>This is my definitive top 10</span>
-            <span>🚀</span>
-          </.button>
-          <.top_10 songs={@songs} readonly={@participant.final_vote_submitted} />
+            <span class="animate-bounce">🚀</span>
+          </button>
         </div>
+        <.top_10 songs={@songs} readonly={@participant.final_vote_submitted} />
         <div :if={!@participant.final_vote_submitted} class="flex flex-col gap-4 w-full overflow-x-hidden">
-          <h3 class="text-sm uppercase text-center text-slate-500">My watching experience</h3>
           <.unvoted_section
             label="👍 Shortlisted"
+            all_songs={@songs}
             songs={unvoted_subset(@songs, :shortlisted)}
             selected_id={@selected_id}
-            header_class="bg-gradient-to-tl from-green-200 border-b border-green-400"
+            header_class="bg-gradient-to-b from-green-200 border-t border-green-600/50"
             used_points={@participant.used_points}
             unused_points={@participant.unused_points}
           />
           <.unvoted_section
             label="🫤 Undecided"
+            all_songs={@songs}
             songs={unvoted_subset(@songs, :meh)}
             selected_id={@selected_id}
-            header_class="bg-gradient-to-tl from-amber-200 border-b border-amber-400"
+            header_class="bg-gradient-to-b from-amber-200 border-t border-amber-600/50"
             used_points={@participant.used_points}
             unused_points={@participant.unused_points}
           />
           <.unvoted_section
             label="💩 Noped"
+            all_songs={@songs}
             songs={unvoted_subset(@songs, :noped)}
             selected_id={@selected_id}
-            header_class="bg-gradient-to-tl from-red-300 border-b border-red-400"
+            header_class="bg-gradient-to-b from-red-300 border-t border-red-600/50"
             used_points={@participant.used_points}
             unused_points={@participant.unused_points}
           />
@@ -175,7 +182,12 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   defp top_10(assigns) do
-    assigns = assign(assigns, empty: Enum.all?(assigns.songs, &(&1.points == nil)))
+    first_free_spot = Enum.find(PossiblePoints.desc(), &(song_with_points(assigns.songs, &1) == nil))
+
+    assigns =
+      assigns
+      |> assign(empty: Enum.all?(assigns.songs, &(&1.points == nil)))
+      |> assign(first_free_spot: first_free_spot)
 
     ~H"""
     <section class="w-full">
@@ -204,6 +216,7 @@ defmodule PointexWeb.WatchParty.Voting do
           song={song_with_points(@songs, points)}
           song_above={song_with_points(@songs, PossiblePoints.inc(points))}
           song_below={song_with_points(@songs, PossiblePoints.dec(points))}
+          first_free_spot={@first_free_spot}
         />
       </ul>
     </section>
@@ -211,6 +224,8 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   defp unvoted_section(assigns) do
+    assigns = assign(assigns, used_points: Enum.map(assigns.used_points, &{&1, song_with_points(assigns.all_songs, &1)}))
+
     ~H"""
     <section :if={Enum.any?(@songs)} class="w-full">
       <.section_header label={@label} class={@header_class} />
@@ -282,7 +297,9 @@ defmodule PointexWeb.WatchParty.Voting do
             </div>
           </div>
         </SongComponents.song_container>
-        <div :if={!@song} class="text-gray-300 px-2 py-2 w-72 transition-all">No song here (yet)</div>
+        <div :if={!@song} class="text-gray-300 px-2 py-2 w-72 h-10 transition-all">
+          <span :if={@first_free_spot == @points}>{hint_for_free_spot(@points)}</span>
+        </div>
       </div>
     </li>
     """
@@ -327,7 +344,13 @@ defmodule PointexWeb.WatchParty.Voting do
           Points already given, but you can give these to {@song.country} instead
         </span>
         <div class="flex">
-          <.points_button :for={points <- @used_points} points={points} song_id={@song.country} used={true} />
+          <.points_button
+            :for={{points, song_with_points} <- @used_points}
+            points={points}
+            song_id={@song.country}
+            song_with_points={song_with_points}
+            used={true}
+          />
         </div>
       </div>
     </div>
@@ -335,14 +358,36 @@ defmodule PointexWeb.WatchParty.Voting do
   end
 
   defp points_button(assigns) do
+    assigns = assign_new(assigns, :song_with_points, fn -> nil end) |> dbg()
+
     ~H"""
     <div class="px-2 bg-transparent cursor-pointer" phx-click="give_points" phx-value-id={@song_id} phx-value-points={@points}>
-      <div class={"flex justify-center rounded-full #{if @used, do: "bg-sky-100 border border-sky-600 py-2 text-sky-800", else: "bg-sky-600 py-3 text-white/80"}"}>
-        <span class={"text-center #{if @used, do: "w-12 text-xl", else: "w-14"}"}>
+      <div class={"flex justify-center rounded-full #{if @used, do: "bg-sky-100 border border-sky-600/50 py-2 px-2 text-sky-800", else: "bg-sky-600 py-3 text-white/80"}"}>
+        <span :if={not @used} class="text-center w-14">
           {@points}
+        </span>
+        <span :if={@used} class="text-center w-12 text-xl">
+          {@points}
+          {@song_with_points.flag}
         </span>
       </div>
     </div>
     """
+  end
+
+  defp hint_for_free_spot(12) do
+    "👇 Who was the best?"
+  end
+
+  defp hint_for_free_spot(10) do
+    "👇 Who gets the silver?"
+  end
+
+  defp hint_for_free_spot(1) do
+    "👇 Last spot"
+  end
+
+  defp hint_for_free_spot(points) do
+    "👇 Who gets #{points} points?"
   end
 end
