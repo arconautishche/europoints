@@ -363,12 +363,14 @@ defmodule PointexWeb.WatchParty.Voting do
 
     ~H"""
     <div class="px-2 bg-transparent cursor-pointer" phx-click="give_points" phx-value-id={@song_id} phx-value-points={@points}>
-      <div class={"flex justify-center rounded-full #{if @used, do: "bg-sky-100 border border-sky-600/50 py-2 px-2 text-sky-800", else: "bg-sky-600 py-3 text-white/80"}"}>
+      <div class={"flex justify-center gap-1 rounded-full #{if @used, do: "bg-sky-100 border border-sky-600/50 py-2 px-2 text-sky-800", else: "bg-sky-600 py-3 text-white/80"}"}>
         <span :if={not @used} class="text-center w-14">
           {@points}
         </span>
-        <span :if={@used} class="text-center w-12 text-xl">
+        <span :if={@used}>
           {@points}
+        </span>
+        <span :if={@song_with_points} class="opacity-50">
           {@song_with_points.flag}
         </span>
       </div>
