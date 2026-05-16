@@ -74,14 +74,15 @@ defmodule PointexWeb.WatchParty.Viewing do
   defp song_viewing(assigns) do
     ~H"""
     <SongComponents.song_container song={@song}>
-      <div class="h-full flex items-top justify-between gap-2 px-2 sm:px-4 py-3 hover:bg-sky-100/50">
+      <div class={["h-full flex items-top justify-between gap-2 px-2 sm:px-4 py-3 hover:bg-sky-100/50", if(@song.noped, do: "opacity-80", else: "")]}>
         <SongComponents.ro song={@song} />
         <SongComponents.description song={@song} />
-        <div class="flex gap-1 sm:gap-4 items-center">
+        <div class="flex gap-2 sm:gap-4 items-center">
           <.shortlist_button id={@song.country} active={@song.shortlisted} />
           <.nope_button id={@song.country} active={@song.noped} />
         </div>
       </div>
+      <div :if={@song.shortlisted} class="absolute left-0 h-full top-0 w-2 bg-gradient-to-r from-green-300/50 to-transparent" />
     </SongComponents.song_container>
     """
   end
@@ -92,10 +93,10 @@ defmodule PointexWeb.WatchParty.Viewing do
       phx-click="shortlist"
       phx-value-id={@id}
       class={[
-        "border border-transparent rounded-lg py-2 px-3 hover:border-green-500 hover:text-green-600 active:text-green-600 shadow-lg",
+        "border border-transparent rounded-lg px-3 py-2 hover:border-green-500 hover:text-green-600 active:text-green-600 shadow-lg",
         if(@active,
-          do: "bg-green-300 text-green-700 hover:bg-green-300",
-          else: "text-green-500 bg-white/50 backdrop-blur-sm hover:bg-transparent"
+          do: "bg-green-300 text-green-700 hover:bg-green-300 scale-110",
+          else: "text-gray-600 bg-white/50 backdrop-blur-sm hover:bg-transparent "
         )
       ]}
     >
@@ -110,10 +111,10 @@ defmodule PointexWeb.WatchParty.Viewing do
       phx-click="nope"
       phx-value-id={@id}
       class={[
-        "border border-transparent rounded-lg py-2 px-3 hover:border-red-700 hover:text-red-600 active:text-red-600 shadow-lg",
+        "border border-transparent rounded-lg px-3 py-2 hover:border-red-700 hover:text-red-600 active:text-red-600 shadow-lg",
         if(@active,
-          do: "bg-red-200 text-red-700 hover:bg-red-200",
-          else: "text-red-600 bg-white/50 backdrop-blur-sm hover:bg-transparent"
+          do: "bg-red-200 text-red-700 hover:bg-red-200 scale-110",
+          else: "text-gray-600 bg-white/50 backdrop-blur-sm hover:bg-transparent"
         )
       ]}
     >

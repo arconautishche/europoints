@@ -32,6 +32,7 @@ defmodule PointexWeb.WatchParty.SongComponents do
         <img src={@song.img} class="object-cover w-full sm:max-w-sm md:ml-12" />
       </div>
       <div class="absolute w-full h-full bg-gradient-to-b from-white/70 via-white/30 to-white/50" />
+      <div class="absolute w-full h-full bg-gradient-to-r from-white/90 via-white/50 to-transparent" />
       <div class="relative grow">
         {render_slot(@inner_block)}
       </div>
@@ -50,7 +51,7 @@ defmodule PointexWeb.WatchParty.SongComponents do
           <div class="text-4xl">
             {@song.flag}
           </div>
-          <div class="text-xl pt-1">
+          <div class="text-2xl pt-1">
             {@song.country}
           </div>
         </div>
