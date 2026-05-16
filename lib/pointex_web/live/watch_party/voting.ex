@@ -294,6 +294,7 @@ defmodule PointexWeb.WatchParty.Voting do
               >
                 <.icon name="hero-arrow-small-down" class="w-8 h-8" />
               </button>
+              <span class="text-gray-800/50">⋮⋮</span>
             </div>
           </div>
         </SongComponents.song_container>
