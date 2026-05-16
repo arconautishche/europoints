@@ -97,8 +97,8 @@ defmodule Pointex.Europoints.Song do
       accept [:year, :country, :artist, :name, :img, :order_in_sf1, :order_in_sf2, :order_in_final]
     end
 
-    update :change_description do
-      accept [:artist, :name, :img, :order_in_sf1, :order_in_sf2]
+    update :admin_update do
+      accept [:artist, :name, :img, :order_in_sf1, :order_in_sf2, :order_in_final]
     end
 
     update :went_to_final do

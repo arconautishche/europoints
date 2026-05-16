@@ -149,7 +149,7 @@ defmodule PointexWeb.SeasonSongs do
     form_id = hd(Map.keys(params))
     form = Enum.find_value(socket.assigns.all_forms, &if(&1.form.id == form_id, do: &1.form))
 
-    AshPhoenix.Form.submit!(form, params: params[form_id])
+    AshPhoenix.Form.submit!(form, params: params[form_id] |> dbg())
 
     {:noreply, assign(socket, all_forms: all_forms(socket.assigns.year))}
   end
@@ -187,7 +187,7 @@ defmodule PointexWeb.SeasonSongs do
 
   defp form_for_update(song) do
     song
-    |> AshPhoenix.Form.for_update(:change_description, as: "song_#{song.country}")
+    |> AshPhoenix.Form.for_update(:admin_update, as: "song_#{song.country}")
     |> to_form()
   end
 
